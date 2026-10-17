@@ -36,6 +36,22 @@ def fix_links(src, body):
         return f'{attr}="{target(src, href)}"'
     return re.sub(r'(href|src)="([^"]+)"', sub, body)
 
+def broken(src, text):
+    """Relative links and backticked repo paths in src that point at nothing tracked."""
+    known = set(files) | {posixpath.dirname(f) for f in files if "/" in f}
+    known |= {d.rsplit("/", 1)[0] for d in list(known) if "/" in d}
+    refs = re.findall(r"\]\(([^)#\s]+)", text) + re.findall(r'src="([^"#:]+)"', text)
+    refs += [r for r in re.findall(r"`([^`\s]+)`", text) if "/" in r and re.match(r"(\.\./)*[0-9]{2}-", r)]
+    out = []
+    for r in refs:
+        if re.match(r"^[a-z]+:|^/|^~", r) or "<" in r:
+            continue
+        path = r.split()[0].rstrip("/")
+        here = posixpath.normpath(posixpath.join(posixpath.dirname(src), path))
+        if here not in known and posixpath.normpath(path) not in known:
+            out.append(r)
+    return out
+
 def description(text):
     for block in re.split(r"\n\s*\n", text):
         block = block.strip()
@@ -50,6 +66,11 @@ for f in files:
     (OUT / f).parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(f, OUT / f)
 shutil.copy(PAGES / "logo.svg", OUT / "logo.svg")
+
+bad = {md: broken(md, pathlib.Path(md).read_text()) for md in docs}
+bad = {k: v for k, v in bad.items() if v}
+if bad:
+    sys.exit("broken links:\n" + "\n".join(f"  {k}: {', '.join(v)}" for k, v in bad.items()))
 
 for md in docs:
     text = pathlib.Path(md).read_text()
