@@ -31,6 +31,8 @@ def fix_links(src, body):
         attr, href = m.group(1), m.group(2)
         if re.match(r"^[a-z]+:|^#|^/", href):
             return m.group(0)
+        if attr == "src":  # images are copied to the site as is
+            return f'src="/{posixpath.normpath(posixpath.join(posixpath.dirname(src), href))}"'
         return f'{attr}="{target(src, href)}"'
     return re.sub(r'(href|src)="([^"]+)"', sub, body)
 

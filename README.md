@@ -1,10 +1,12 @@
-# OpenTokenMini
+# <img src="docs/humans/logo.svg" width="32" height="32" alt=""> OpenTokenMini
 
 [English](README.md) · [中文](docs/humans/zh/README.md) · [Español](docs/humans/es/README.md)
 
 Know what your AI agents cost, and what you get for it.
 
 Your team uses Claude Code, Codex, Gemini CLI or a mix. OpenTokenMini records what every call costs, how long it takes and where it fails, links that to the commits and pull requests it produced, and shows where the spend goes and what to change. It works the same across agents and models, and it's open source: you can read everything it collects.
+
+<img src="docs/humans/flow.svg" alt="Agent spend by vendor, split by the work it went to and what came out of it (illustrative numbers)">
 
 <!-- TODO: docs/humans/dashboard.png, then link docs/demo/ -->
 
