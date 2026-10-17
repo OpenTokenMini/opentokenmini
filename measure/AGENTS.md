@@ -9,6 +9,7 @@ Collects what coding agents do: a collector service, and telemetry turned on in 
 ## Files
 
 - `collector.py` receives OTLP and appends it unmodified. `python3 collector.py`, listens on `127.0.0.1:7811`, settings as constants at the top, stdlib only. Still embeds the first dashboard (`GET /`, `GET /data`, `POST /console` for its browser errors).
+- `from-transcripts.py` summarizes local Claude Code session logs (last N days) into usage JSON for `../docs/demo/`. Reads usage metadata only, never prompts or code.
 - `claude-code-with-telemetry` runs `claude` with telemetry on for that process only.
 - `harnesses.md` how to turn telemetry on in each harness.
 - `transcripts.md` opt-in push of full session transcripts (placeholder).

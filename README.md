@@ -4,18 +4,21 @@
 
 Know what your AI agents cost, and what you get for it.
 
-Your team uses Claude Code, Codex, Gemini CLI or a mix. OpenTokenMini records what every call costs, how long it takes and where it fails, links that to the commits and pull requests it produced, and shows where the spend goes and what to change. It works the same across agents and models, and it's open source: you can read everything it collects.
+For one developer, a team or a whole company, on Claude Code, Codex, Gemini CLI or a mix: OpenTokenMini records what every call costs, how long it takes and where it fails, links that to the commits and pull requests it produced, and shows where the spend goes and what to change. It works the same across agents and models, and it's open source: you can read everything it collects.
 
 <img src="docs/humans/flow.svg" alt="Agent spend by vendor, split by the work it went to and what came out of it (illustrative numbers)">
 
-<!-- TODO: docs/humans/dashboard.png, then link docs/demo/ -->
+<!-- TODO: docs/humans/dashboard.png, then link docs/demo/ once usage.json is reviewed -->
 
-## Install
+## Try it
 
-Ask your own coding agent to do it:
+Paste this into your coding agent:
 
-- whoever owns the data: "follow the service section of `measure/AGENTS.md`". It sets up the service and gives you an address and a key.
-- each developer machine: "follow the workstation section of `measure/AGENTS.md`" with that address and key.
+```
+Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
+```
+
+It explains each step and asks before turning anything on. Every step past the basic setup is optional. Add whatever you want to the prompt, like "only Claude Code", "send it to our Grafana" or "just show me last month".
 
 Prompts and code are not collected. Nothing is collected before you turn it on.
 

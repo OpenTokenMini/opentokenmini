@@ -8,14 +8,17 @@
 
 <!-- TODO: ../dashboard.png -->
 
-## 安装
+## 试用
 
-让你自己的编程智能体来完成：
+把这句话粘贴给你的编程智能体：
 
-- 数据所有者："按照 `components/install-owner/AGENTS.md` 操作"。它会部署服务，并给你一个地址和一个密钥。
-- 每台开发机器："按照 `components/install-workstation/AGENTS.md` 操作"，并提供上面的地址和密钥。
+```
+Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
+```
 
-不收集提示词和代码。启用之前不收集任何数据。
+它会逐步说明，每一步开启前都会先问你。基础安装之后的步骤都是可选的。你可以在提示里加上自己的要求，比如“只用 Claude Code”、“发到我们的 Grafana”或“只看上个月”。
+
+不收集提示词和代码。开启之前不收集任何数据。
 
 ## 效果
 

@@ -32,6 +32,7 @@ Tentative, used in the checklist and diagrams; directories stay unnumbered.
 
 ## Status
 
-- Working: Claude Code → `measure/collector.py` → embedded dashboard.
+- Working: Claude Code → `measure/collector.py` → embedded dashboard; past Claude Code usage via `measure/from-transcripts.py`.
+- Draft: `docs/demo/` guided walkthrough with real usage data (not published yet).
 - Drafted: other harnesses, token configs, deploy options.
 - Placeholder: transcripts push, storage, all integrations, analyze and its output, decision models, quality checks, metric catalog, standalone dashboard, MCP server, demo, dashboard i18n.

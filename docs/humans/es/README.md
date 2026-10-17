@@ -8,12 +8,15 @@ Tu equipo usa Claude Code, Codex, Gemini CLI o una mezcla. OpenTokenMini registr
 
 <!-- TODO: ../dashboard.png -->
 
-## Instalación
+## Probalo
 
-Pedíselo a tu propio agente de código:
+Pegá esto en tu agente de código:
 
-- quien es dueño de los datos: "seguí `components/install-owner/AGENTS.md`". Levanta el servicio y te da una dirección y una clave.
-- cada máquina de desarrollo: "seguí `components/install-workstation/AGENTS.md`" con esa dirección y esa clave.
+```
+Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
+```
+
+Te explica cada paso y te pregunta antes de activar nada. Todo lo que va después de la instalación básica es opcional. Podés sumarle lo que quieras al prompt, como "solo Claude Code", "mandalo a nuestro Grafana" o "mostrame solo el último mes".
 
 No se recolectan prompts ni código. No se recolecta nada antes de activarlo.
 
