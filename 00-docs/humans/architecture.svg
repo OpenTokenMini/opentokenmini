@@ -34,14 +34,18 @@
 
 <path class="ln" d="M480,100 L538,100"/>
 
-<rect class="grp" x="520" y="24" width="420" height="310" rx="12"/>
+<rect class="grp" x="520" y="24" width="420" height="226" rx="12"/>
 <text class="h" x="730" y="48">READ</text>
 <rect class="box" x="540" y="70" width="210" height="60" rx="8"/><text x="645" y="100">Analysis</text>
 <rect class="opt" x="790" y="70" width="130" height="60" rx="8"/><text x="855" y="92">Decision models</text><text class="s" x="855" y="110">optional</text>
 <path class="ln" d="M790,100 L752,100"/>
-<rect class="box" x="540" y="250" width="180" height="60" rx="8"/><text x="630" y="280">Human dashboards</text>
-<rect class="box" x="740" y="250" width="180" height="60" rx="8"/><text x="830" y="280">Agentic MCP server</text>
-<path class="ln" d="M630,130 L630,247"/><path class="ln" d="M720,130 L720,190 L830,190 L830,247"/>
+<rect class="box" x="540" y="170" width="180" height="60" rx="8"/><text x="630" y="200">Human dashboards</text>
+<rect class="box" x="740" y="170" width="180" height="60" rx="8"/><text x="830" y="200">Agentic MCP server</text>
+<path class="ln" d="M630,130 L630,167"/><path class="ln" d="M690,130 L690,150 L830,150 L830,167"/>
+<path class="ln" d="M730,250 L730,263"/>
+<rect class="opt" x="520" y="266" width="420" height="68" rx="12"/>
+<text class="h" x="730" y="288">AUTOMATIC WORKFLOW IMPROVEMENTS</text>
+<text class="s" x="730" y="312">optional · changes to try, each measured before and after</text>
 
 <text class="s" x="480" y="358">metadata by default · prompts and code only if turned on · analysis reads from any tier</text>
 </svg>
