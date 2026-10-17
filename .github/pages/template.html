@@ -18,12 +18,15 @@
 <style>
   :root { --bg:#eef1ec; --ink:#1f2a22; --dim:#5f6e62; --green:#2f7a4f; --line:#cdd5ce; --code:#e2e8e2 }
   body { margin:0; background:var(--bg); color:var(--ink); font:400 16px/1.65 Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased }
-  header { display:flex; gap:20px; align-items:center; padding:14px 24px; border-bottom:1px solid var(--line); font-size:14px }
+  header { position:relative; display:flex; gap:20px; align-items:center; padding:14px 24px; border-bottom:1px solid var(--line); font-size:14px }
   header .brand { display:flex; gap:8px; align-items:center; margin-right:auto; color:var(--ink); text-decoration:none;
                   font:400 15px "JetBrains Mono", monospace; letter-spacing:.02em; text-transform:uppercase }
   header .brand b { font-weight:800 }
   header .brand b:first-of-type { margin-right:.28em } header .brand b:last-of-type { margin-left:.28em }
   header a { color:var(--green); text-decoration:none }
+  header .go { position:absolute; left:50%; transform:translateX(-50%); color:#fff; background:var(--green); font-weight:500; padding:8px 16px; border-radius:8px }
+  header .go:hover { opacity:.88 }
+  @media (max-width:700px) { header .go { position:static; transform:none } }
   .wrap { display:flex; gap:40px; justify-content:center; padding:32px 24px 80px }
   main { flex:0 1 760px; min-width:0 }
   .tree { flex:0 0 220px; position:sticky; top:24px; align-self:flex-start; max-height:calc(100vh - 48px); overflow:auto; font-size:14px }
@@ -45,6 +48,7 @@
 <body>
 <header>
   <a class="brand" href="/"><img src="/logo.svg" width="22" height="22" alt=""><span><b>Open</b>Token<b>Mini</b></span></a>
+  <a class="go" href="https://github.com/OpenTokenMini/opentokenmini">Get the code →</a>
   <a href="/docs/">Docs</a>
   <a href="/llms.txt">For agents</a>
   <a href="https://github.com/OpenTokenMini/opentokenmini">GitHub</a>

@@ -8,7 +8,7 @@
 
 无论是一个开发者、一个团队还是整个公司，用的是 Claude Code、Codex、Gemini CLI 还是几种混用：OpenTokenMini 记录每次调用的花费、耗时和失败位置，把这些和它产生的 commit 与 pull request 关联起来，并告诉你钱花在哪里、该改什么。它对所有智能体和模型一视同仁，而且是开源的：它收集的一切你都能查看。
 
-<img src="../flow.svg" alt="按厂商划分的智能体花费，以及它流向的工作和最终产出（示意数据）">
+<img src="../architecture.svg" alt="各类 harness 通过 OTLP 将数据发送到开发机、团队部署或组织级的 collector；仪表盘、分析和 MCP 服务器从中读取">
 
 <!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
 
