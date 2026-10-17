@@ -12,6 +12,12 @@
 
 <!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
 
+## 个人、团队和组织
+
+- **个人**：在你自己的电脑上运行，无需服务器。按仓库、模型和会话查看你自己的花费。
+- **团队**：一台你们自己的小型服务器（在虚拟机上用 Docker Compose）。个人花费需主动开启，且只有本人可见；团队看到的是总数。
+- **组织**：发送到你们已在使用的后端（Datadog、Grafana、OpenTelemetry collector），接入企业登录，把人员对应到团队，并查看各部门的采用情况，以及与实际用量对照的账单。
+
 ## 试一试
 
 把这句话粘贴到你的编程智能体里：

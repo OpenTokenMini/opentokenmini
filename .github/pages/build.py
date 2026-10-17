@@ -10,14 +10,17 @@ REPO = "https://github.com/OpenTokenMini/opentokenmini/blob/main/"
 DESC_MAX = 160
 PAGES = pathlib.Path(__file__).parent
 OUT = pathlib.Path(sys.argv[1])
+HOME = "00-docs/humans/overview.md"  # served at /docs/
+NAV_LABEL = {HOME: "How it works", "README.md": "README", "AGENTS.md": "For agents"}
+NAV_HIDE = ("00-docs/humans/es/", "00-docs/humans/zh/")  # generated translations, reached from the language links instead
 ASSETS = ["logo.svg", "flow.svg", "og.png"]  # from 00-docs/humans/, served at the root for the landing
 
 files = [f for f in subprocess.check_output(["git", "ls-files"], text=True).split() if not f.startswith(".github/")]
 docs = [f for f in files if f.endswith(".md")]
 
 def page_of(md):
-    """README.md at the root is the home page; every other .md sits next to its source as .html."""
-    return "index.html" if md == "README.md" else md[:-3] + ".html"
+    """HOME is the docs home page; every other .md sits next to its source as .html."""
+    return "index.html" if md == HOME else md[:-3] + ".html"
 
 def target(src, href):
     """Where a relative link from src should point on the site."""
@@ -55,6 +58,31 @@ def broken(src, text):
             out.append(r)
     return out
 
+def label(md):
+    """Sidebar text for md: its section overview, or its first heading without markup."""
+    if md.endswith("AGENTS.md") and md.count("/") == 1:
+        return "Overview"
+    if md in NAV_LABEL:
+        return NAV_LABEL[md]
+    h1 = re.search(r"^# (.+)$", pathlib.Path(md).read_text(), re.M)
+    return (re.sub(r"<[^>]+>", "", h1.group(1)).strip() if h1 else "") or posixpath.basename(md)[:-3].capitalize()
+
+def nav(current):
+    """Docs tree for the right sidebar: home pages, then one collapsible group per top folder, current page marked."""
+    def item(md):
+        mark = ' aria-current="page"' if md == current else ""
+        return f'<li><a href="/docs/{page_of(md).removesuffix("index.html")}"{mark}>{html.escape(label(md))}</a></li>'
+    shown = [d for d in docs if not d.startswith(NAV_HIDE) and d not in NAV_LABEL]
+    top = [HOME, "README.md", "AGENTS.md"]
+    out = '<nav class="tree"><ul>' + "".join(item(d) for d in top) + "</ul>"
+    for group in sorted({d.split("/")[0] for d in shown if "/" in d}):
+        pages = sorted((d for d in shown if d.startswith(group + "/")),
+                       key=lambda d: (not d.endswith("/AGENTS.md") or d.count("/") > 1, "METHOD" not in d, d))
+        name = re.sub(r"^\d+-", "", group)
+        opened = " open" if current in pages else ""
+        out += f'<details{opened}><summary>{name}</summary><ul>' + "".join(item(d) for d in pages) + "</ul></details>"
+    return out + "</nav>"
+
 def description(text):
     for block in re.split(r"\n\s*\n", text):
         block = block.strip()
@@ -88,20 +116,20 @@ for md in docs:
     text = pathlib.Path(md).read_text()
     h1 = re.search(r"^# (.+)$", text, re.M)
     title = h1.group(1).strip() if h1 else md
-    if md == "README.md":
+    if md == HOME:
         title = "OpenTokenMini docs: measure what AI agents cost and produce"
     elif not title.startswith("OpenTokenMini"):
         title += " · OpenTokenMini"
     body = fix_links(md, markdown.markdown(text, extensions=["tables", "fenced_code"]))
-    url = DOCS + ("" if md == "README.md" else page_of(md))
+    url = DOCS + page_of(md).removesuffix("index.html")
     fields = {"title": title, "description": description(text), "url": url, "raw": "/docs/" + md,
-              "github": REPO + md, "path": md, "body": body}
+              "github": REPO + md, "path": md, "nav": nav(md), "body": body}
     out = template
     for k, v in fields.items():
-        out = out.replace("{" + k + "}", v if k == "body" else html.escape(v))
+        out = out.replace("{" + k + "}", v if k in ("body", "nav") else html.escape(v))
     (OUT / "docs" / page_of(md)).write_text(out)
 
-urls = [SITE] + [SITE + l + "/" for l in i18n.LANGS] + [DOCS + ("" if md == "README.md" else page_of(md)) for md in docs]
+urls = [SITE] + [SITE + l + "/" for l in i18n.LANGS] + [DOCS + page_of(md).removesuffix("index.html") for md in docs]
 (OUT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")

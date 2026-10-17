@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" role="img" aria-label="Any harness sends OTLP to the dev machine collector, which syncs to team and organization; analysis reads from any tier, helped by optional decision models, and feeds human dashboards and an agentic MCP server">
+<rect width="960" height="380" rx="12" fill="#eef1ec"/>
+<style>
+  text { font:600 14px Inter, system-ui, sans-serif; fill:#1f2a22; text-anchor:middle; dominant-baseline:central }
+  .h { font:400 11px "JetBrains Mono", ui-monospace, monospace; letter-spacing:.1em; fill:#2f7a4f }
+  .s { font-weight:400; font-size:12px; fill:#5f6e62 }
+  .w { fill:#fff }
+  .grp { fill:none; stroke:#cdd5ce; stroke-width:1.5 }
+  .box { fill:#f8faf7; stroke:#1f2a22; stroke-width:1.5 }
+  .opt { fill:none; stroke:#5f6e62; stroke-width:1.5; stroke-dasharray:5 4 }
+  .key { fill:#2f7a4f }
+  .ln { fill:none; stroke:#2f7a4f; stroke-width:1.5; marker-end:url(#a) }
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#2f7a4f"/></marker></defs>
+
+<rect class="grp" x="20" y="24" width="190" height="310" rx="12"/>
+<text class="h" x="115" y="48">ANY HARNESS</text>
+<rect class="box" x="36" y="70" width="158" height="36" rx="8"/><text x="115" y="88">Claude Code</text>
+<rect class="box" x="36" y="116" width="158" height="36" rx="8"/><text x="115" y="134">Codex</text>
+<rect class="box" x="36" y="162" width="158" height="36" rx="8"/><text x="115" y="180">Antigravity</text>
+<rect class="box" x="36" y="208" width="158" height="36" rx="8"/><text x="115" y="226">OpenCode</text>
+<rect class="opt" x="36" y="254" width="158" height="36" rx="8"/><text class="s" x="115" y="272">other open harnesses</text>
+
+<path class="ln" d="M210,100 L288,100"/>
+<text class="h" x="250" y="86">OTLP</text>
+
+<rect class="grp" x="270" y="24" width="210" height="310" rx="12"/>
+<text class="h" x="375" y="48">COLLECTOR</text>
+<rect class="key" x="290" y="70" width="170" height="60" rx="8"/><text class="w" x="375" y="100">Dev machine</text>
+<rect class="key" x="290" y="160" width="170" height="60" rx="8"/><text class="w" x="375" y="190">Team</text>
+<rect class="key" x="290" y="250" width="170" height="60" rx="8"/><text class="w" x="375" y="280">Organization</text>
+<path class="ln" d="M375,132 L375,157"/><path class="ln" d="M375,222 L375,247"/>
+<text class="s" x="375" y="145" dx="30">sync</text><text class="s" x="375" y="235" dx="30">sync</text>
+
+<path class="ln" d="M480,179 C510,179 510,100 538,100"/>
+
+<rect class="grp" x="520" y="24" width="420" height="310" rx="12"/>
+<text class="h" x="730" y="48">READ</text>
+<rect class="box" x="540" y="70" width="210" height="60" rx="8"/><text x="645" y="100">Analysis</text>
+<rect class="opt" x="790" y="70" width="130" height="60" rx="8"/><text x="855" y="92">Decision models</text><text class="s" x="855" y="110">optional</text>
+<path class="ln" d="M790,100 L752,100"/>
+<rect class="box" x="540" y="250" width="180" height="60" rx="8"/><text x="630" y="280">Human dashboards</text>
+<rect class="box" x="740" y="250" width="180" height="60" rx="8"/><text x="830" y="280">Agentic MCP server</text>
+<path class="ln" d="M645,130 L632,247"/><path class="ln" d="M645,130 C645,200 830,190 830,247"/>
+
+<text class="s" x="480" y="358">metadata by default · prompts and code only if turned on · analysis reads from any tier</text>
+</svg>

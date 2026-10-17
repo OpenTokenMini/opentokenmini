@@ -12,6 +12,12 @@ Para una persona, un equipo o una empresa entera, con Claude Code, Codex, Gemini
 
 <!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
 
+## Una persona, equipos y organizaciones
+
+- **Una persona**: corre en tu máquina, sin servidor. Ves tu propio gasto por repo, modelo y sesión.
+- **Equipos**: un servidor chico propio (Docker Compose en una VM). El gasto por persona es opcional y solo lo ve esa persona; el equipo ve los totales.
+- **Organizaciones**: lo mandas al backend que ya usas (Datadog, Grafana, un collector de OpenTelemetry), agregas login corporativo, asignas personas a equipos y ves la adopción por área y la facturación junto al uso medido.
+
 ## Pruébalo
 
 Pega esto en tu agente de código:

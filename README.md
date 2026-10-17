@@ -10,6 +10,12 @@ For one developer, a team or a whole company, on Claude Code, Codex, Gemini CLI 
 
 <!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
 
+## Single user, teams and organizations
+
+- **Single user**: runs on your machine, no server. See your own spend per repo, model and session.
+- **Teams**: one small server you own (Docker Compose on a VM). Spend per person is opt-in and visible only to that person; the team sees totals.
+- **Organizations**: send it to the backend you already run (Datadog, Grafana, an OpenTelemetry collector), add corporate login, map people to teams, and see adoption across areas and billing next to measured use.
+
 ## Try it
 
 Paste this into your coding agent:
