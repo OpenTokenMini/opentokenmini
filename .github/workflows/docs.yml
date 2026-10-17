@@ -1,4 +1,4 @@
-# Publishes the repo as raw files plus a markdown viewer at docs.opentokenmini.org
+# Publishes the repo as raw files plus one HTML page per .md at docs.opentokenmini.org
 name: docs
 on:
   push: {branches: [main]}
@@ -11,11 +11,7 @@ jobs:
     environment: {name: github-pages, url: "${{ steps.deploy.outputs.page_url }}"}
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          mkdir _site
-          git ls-files | grep -v '^\.github/' | xargs -I{} cp --parents {} _site/
-          cp .github/pages/index.html .github/pages/logo.svg _site/
-          { cat .github/pages/llms.txt; git ls-files '*.md' | sed 's|.*|- [&](https://docs.opentokenmini.org/&)|'; } > _site/llms.txt
+      - run: pip install markdown && python3 .github/pages/build.py _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: {path: _site}

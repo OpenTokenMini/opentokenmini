@@ -2,7 +2,7 @@
 
 [English](README.md) · [中文](docs/humans/zh/README.md) · [Español](docs/humans/es/README.md)
 
-Know what your coding agents cost before you switch models.
+Know what your AI agents cost, and what you get for it.
 
 Your team uses Claude Code, Codex, Gemini CLI or a mix. OpenTokenMini records what every call costs, how long it takes and where it fails, links that to the commits and pull requests it produced, and shows where the spend goes and what to change. It works the same across agents and models, and it's open source: you can read everything it collects.
 

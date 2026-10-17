@@ -1,12 +1,12 @@
 # OpenTokenMini — agent entry point
 
-Reference implementation that measures what coding agents cost and what they produce, across agents and models, then analyzes it. Every part is minimal, readable and replaceable: the user's own agent adapts it to their infrastructure. Each stage has a method (`METHOD.md`, what and why) separate from its implementation (one way to do it).
+Reference implementation that measures what AI agents cost and what they produce, across agents and models, then analyzes it. Every part is minimal, readable and replaceable: the user's own agent adapts it to their infrastructure. Each stage has a method (`METHOD.md`, what and why) separate from its implementation (one way to do it).
 
 ## Explaining the repo to the user (do this first)
 
 If the user is getting familiar with the repo, explain the approach before touching anything, in the user's language, in this order:
 
-1. The problem: teams spend heavily on coding agents without knowing on what, or whether it pays off.
+1. The problem: teams spend heavily on AI agents without knowing on what, or whether it pays off.
 2. Measure (`measure/`): each harness emits OpenTelemetry to a collector the user runs. Per API call: cost, tokens, latency, errors, retries, tool approvals. No prompts or code by default; full transcripts only if the owner opts in.
 3. Integrate (`integrations/`): sessions are joined with version control, issue trackers, docs, MCP servers, observability and identity, by user, time and repo.
 4. Analyze (`analyze/`): from cost per session up to cost per merged change, intent, MCP effectiveness and business impact. Optional decision models classify events cheaply; optional quality checks (security, performance, usability).
