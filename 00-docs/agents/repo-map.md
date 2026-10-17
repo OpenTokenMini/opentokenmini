@@ -5,10 +5,11 @@
 Top-level directories are numbered in install order: `00-docs/`, `01-deploy/`, `02-measure/`, `03-analyze/`, `04-auto-analysis/`, `05-dashboards/`, `06-optional/`. `04-auto-analysis/` holds the readers that pull data from git, deployments, cloud logs and other systems into `02-measure/`'s records, one per system. `06-optional/` holds what only some setups need: corporate login, the MCP server for agents, decision models. Numbers are tentative; renumbering means renaming the directory and fixing links, which the docs build checks. At most two levels. Each directory has an `AGENTS.md` that opens with what it does, its input, its output, and what data it touches; keep it accurate, nothing is hidden or obfuscated. Stages with a method keep it in `METHOD.md`, separate from the implementation. A piece becomes its own directory only when one file gets too big.
 
 - `00-docs/agents/` technical notes for agents.
-- `00-docs/humans/<lang>/README.md` translations of the root `README.md` (`zh`, `es`). Frozen: out of date with the current layout until the owner approves the English version; then re-translate.
+- `00-docs/humans/` human pages: `landing.html` (served at `/`), logo, flow graph, share image. `<lang>/strings.json` is the phrase table per language (`es`, `zh`); `<lang>/README.md` is generated from it, never edited by hand.
 - `00-docs/use-case-reports/` measured results from deployments, one file per case, any language, from `TEMPLATE.md`.
 - `00-docs/demo/` walkthrough with screenshots, once dashboard mockups exist.
 - `00-docs/humans/` will also hold the dashboard screenshot used by every README (pending).
+- The site: `opentokenmini.org` serves the landing, `/docs/` serves this repo (raw files plus one page per `.md`), `/llms.txt` indexes it for agents. Built by `.github/pages/build.py`.
 
 ## Section numbers
 
@@ -27,8 +28,8 @@ Used in the checklist and diagrams; the first digit is the directory number.
 - Code for what must give the same number everywhere (collector, schemas, metrics, outliers, MCP tools); specs for what touches each org's infra (integrations, deploy, vendors).
 
 - Agent-facing content (`AGENTS.md`, `METHOD.md`, `00-docs/agents/`, code comments): English only.
-- Human-facing content (READMEs, dashboard UI): `en`, `zh`, `es`. While translations are frozen, edit English only.
-- Root stays clean: `AGENTS.md`, `README.md`, `LICENSE` and the pipeline directories. `.github/` publishes the docs site (viewer, `llms.txt` header, workflow).
+- Human-facing content (landing, READMEs, dashboard UI): `en`, `zh`, `es`. Edit English only, then run `python3 .github/pages/i18n.py`: it lists new phrases with an empty translation in each `strings.json`; fill them in and rerun. The build fails if a generated README is out of date and shows English for any empty phrase.
+- Root stays clean: `AGENTS.md`, `README.md`, `LICENSE` and the pipeline directories. `.github/` publishes the site (build, translations, docs viewer, `llms.txt` header, workflow).
 - No savings figure in any doc unless it comes from a report in `00-docs/use-case-reports/`.
 
 ## Status

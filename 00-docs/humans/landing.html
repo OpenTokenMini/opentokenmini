@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenTokenMini: see what your AI agents spend, and what you get for it</title>
+<meta name="description" content="An open method and reference implementation to see what AI agents spend, on what work, and what comes out of it.">
+<link rel="canonical" href="https://opentokenmini.org/">
+<link rel="alternate" hreflang="en" href="https://opentokenmini.org/">
+<link rel="alternate" hreflang="es" href="https://opentokenmini.org/es/">
+<link rel="alternate" hreflang="zh-Hans" href="https://opentokenmini.org/zh/">
+<link rel="alternate" hreflang="x-default" href="https://opentokenmini.org/">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="OpenTokenMini">
+<meta property="og:url" content="https://opentokenmini.org/">
+<meta property="og:title" content="OpenTokenMini: see what your AI agents spend, and what you get for it">
+<meta property="og:description" content="Most teams paying for AI agents can't say what the money buys. An open method and reference implementation to find out, across OpenAI, Anthropic and open models.">
+<meta property="og:image" content="https://opentokenmini.org/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"OpenTokenMini",
+ "description":"Open method and reference implementation to measure what AI agents spend, on which work, and what comes out of it.",
+ "url":"https://opentokenmini.org/","codeRepository":"https://github.com/OpenTokenMini/opentokenmini",
+ "license":"https://www.apache.org/licenses/LICENSE-2.0","programmingLanguage":"Python",
+ "sameAs":["https://github.com/OpenTokenMini"]}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#eef1ec; --ink:#1f2a22; --dim:#5f6e62; --green:#2f7a4f; --line:#cdd5ce }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:var(--bg); color:var(--ink); font:400 18px/1.6 Inter, system-ui, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; text-align:center;
+         -webkit-font-smoothing:antialiased }
+  main { max-width:760px; padding:56px 24px }
+  h1 { display:flex; gap:14px; align-items:center; justify-content:center; margin:0;
+       font:400 32px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing:.02em; text-transform:uppercase }
+  h1 b { font-weight:800 }
+  h1 b:first-child { margin-right:.28em } h1 b:last-child { margin-left:.28em }
+  .lead { font-size:30px; line-height:1.25; font-weight:600; letter-spacing:-.015em; max-width:560px; margin:0 auto 18px }
+  p { max-width:540px; margin:0 auto 20px }
+  figure { margin:44px 0 40px }
+  figure img { width:100% }
+  nav { margin:28px 0 48px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap }
+  .go { font:500 15px Inter, system-ui, sans-serif; color:var(--green); box-shadow:inset 0 0 0 1.5px var(--green); padding:12px 20px; border-radius:8px; text-decoration:none }
+  .go + .go { color:#fff; background:var(--green) }
+  .go:hover { opacity:.88 }
+  .small { color:var(--dim); font-size:15px }
+  .talk { display:inline-block; margin-top:10px; padding:12px 22px; border-radius:999px; background:#dfe8e0;
+          color:var(--green); font-weight:600; text-decoration:none; box-shadow:0 1px 0 #c5d3c8 }
+  .talk:hover { background:var(--green); color:#fff }
+  .lang { margin-top:36px; font-size:14px; color:var(--dim) }
+  .lang a { color:var(--dim); margin:0 6px } .lang a[aria-current] { color:var(--ink); text-decoration:none; font-weight:600 }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3BVRYNN200"></script>
+<script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag("js", new Date()); gtag("config", "G-3BVRYNN200");</script>
+</head>
+<body>
+<main>
+  <h1><img src="/logo.svg" width="40" height="40" alt=""><span><b>Open</b>Token<b>Mini</b></span></h1>
+  <nav>
+    <a class="go" href="/docs/03-analyze/METHOD.html">Read the method →</a>
+    <a class="go" href="https://github.com/OpenTokenMini/opentokenmini">Get the code →</a>
+  </nav>
+  <p class="lead">Most teams paying for AI agents can't say what the money buys.</p>
+  <p>OpenTokenMini is an open method and reference implementation to find out: what each agent spends, on which work, and what came out of it.<br>Across OpenAI, Anthropic and open models.</p>
+  <figure>
+    <img src="/flow.svg" alt="Agent spend by vendor, split by the work it went to and what came out of it">
+  </figure>
+  <p class="small">Free and open source. Your own agent installs it and fits it to your setup. Unusual setup, or want it built for you?<br><a class="talk" href="https://forms.gle/cqjyqVN9qky4gQ5U6">Talk to us, we build it with you →</a></p>
+  <div class="lang"><a href="/" hreflang="en" aria-current="page">English</a>·<a href="/es/" hreflang="es">Español</a>·<a href="/zh/" hreflang="zh-Hans">中文</a></div>
+</main>
+<script>
+  // first visit to the English page: follow the browser language once; any click on the switcher sticks
+  document.querySelectorAll(".lang a").forEach(a => a.onclick = () => localStorage.lang = a.hreflang);
+  const want = (navigator.language || "").slice(0, 2);
+  if (location.pathname === "/" && !localStorage.lang && (want === "es" || want === "zh")) location.replace("/" + want + "/");
+</script>
+</body>
+</html>
