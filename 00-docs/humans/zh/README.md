@@ -6,19 +6,7 @@
 
 看清你的 AI 智能体花了多少钱，换来了什么。
 
-无论是一个开发者、一个团队还是整个公司，用的是 Claude Code、Codex、Gemini CLI 还是几种混用：OpenTokenMini 记录每次调用的花费、耗时和失败位置，把这些和它产生的 commit 与 pull request 关联起来，并告诉你钱花在哪里、该改什么。它对所有智能体和模型一视同仁，而且是开源的：它收集的一切你都能查看。
-
-为什么：如今你和你的智能体都看不清委派的成本、它消耗多少上下文，以及它对代码库造成了什么影响。委派要么过于简单，要么代价高昂，而你既看不到也无法控制。OpenTokenMini 对此进行测量，并在智能体决定委派什么的时刻把测量结果反馈给它，让它花更少的 token，也让你需要关注的事情更少。每个部分都可以根据你的环境调整。取舍都写了下来，重要的决定留给你。
-
-<img src="../architecture.svg" alt="各类 harness 通过 OTLP 将数据发送到开发机、团队部署或组织级的 collector；仪表盘、分析和 MCP 服务器从中读取">
-
-<!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
-
-## 个人、团队和组织
-
-- **个人**：在你自己的电脑上运行，无需服务器。按仓库、模型和会话查看你自己的花费。
-- **团队**：一台你们自己的小型服务器（在虚拟机上用 Docker Compose）。个人花费需主动开启，且只有本人可见；团队看到的是总数。
-- **组织**：发送到你们已在使用的后端（Datadog、Grafana、OpenTelemetry collector），接入企业登录，把人员对应到团队，并查看各部门的采用情况，以及与实际用量对照的账单。
+OpenTokenMini 度量智能体每次调用的花费、耗时和失败位置，把这些关联到它产生的提交，再反馈给智能体，让它更好地分配任务。支持 Claude Code、Codex、开源模型或混合使用，适用于个人、团队或整个公司。免费开源：它收集的所有内容你都能查看。
 
 ## 试一试
 
@@ -28,9 +16,17 @@
 Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
 ```
 
-它会解释每一步，并在开启任何功能前先征求你的同意。基础安装之后的每一步都是可选的。你可以在提示词里加上任何要求，比如“只用 Claude Code”、“发到我们的 Grafana”或“只看上个月”。
+它会解释每一步，开启任何功能前都会先征得你的同意。在此之前不收集任何数据，默认也从不收集提示词和代码。可以在提示里加上你的要求，比如“只用 Claude Code”或“发送到我们的 Grafana”。
 
-不收集提示词和代码。在你开启之前，什么都不收集。
+<img src="../architecture.svg" alt="各类 harness 通过 OTLP 将数据发送到开发机、团队部署或组织级的 collector；仪表盘、分析和 MCP 服务器从中读取">
+
+<!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
+
+## 个人、团队和组织
+
+- **个人**：在你的机器上运行，无需服务器。
+- **团队**：一台你自己的小服务器（在虚拟机上用 Docker Compose）。个人花费只有本人可见；团队看到的是总数。
+- **组织**：发送到你们已有的后端（Datadog、Grafana、OpenTelemetry 收集器），支持企业登录和团队划分。
 
 ## 成果
 

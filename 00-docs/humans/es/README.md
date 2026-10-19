@@ -6,19 +6,7 @@
 
 Sabé cuánto te cuestan tus agentes de IA y qué obtenés a cambio.
 
-Para una persona, un equipo o una empresa entera, con Claude Code, Codex, Gemini CLI o una mezcla: OpenTokenMini registra cuánto cuesta cada llamada, cuánto tarda y dónde falla, lo vincula con los commits y pull requests que produjo, y muestra en qué se va el gasto y qué cambiar. Funciona igual con cualquier agente y cualquier modelo, y es de código abierto: podés leer todo lo que recolecta.
-
-Por qué: hoy vos y tu agente trabajan a ciegas sobre cuánto cuesta delegar, cuánto contexto consume y qué le hace al código. La delegación suele ser ingenua o cara, y no podés verla ni dirigirla. OpenTokenMini lo mide y le devuelve esas mediciones al agente en los puntos donde decide qué delegar, así gasta menos tokens y vos tenés menos que seguir. Cada parte está pensada para adaptarse a tu entorno. Las concesiones están escritas y las decisiones importantes quedan en tus manos.
-
-<img src="../architecture.svg" alt="Los arneses envían OTLP a un collector en la máquina de desarrollo, en un despliegue del equipo o en la organización; los dashboards, el análisis y un servidor MCP leen de ahí">
-
-<!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
-
-## Una persona, equipos y organizaciones
-
-- **Una persona**: corre en tu máquina, sin servidor. Ves tu propio gasto por repo, modelo y sesión.
-- **Equipos**: un servidor chico propio (Docker Compose en una VM). El gasto por persona es opcional y solo lo ve esa persona; el equipo ve los totales.
-- **Organizaciones**: lo mandás al backend que ya usas (Datadog, Grafana, un collector de OpenTelemetry), agregás login corporativo, asignás personas a equipos y ves la adopción por área y la facturación junto al uso medido.
+OpenTokenMini mide cuánto cuesta cada llamada de tus agentes, cuánto tarda y dónde falla, lo vincula con los commits que produjo y se lo devuelve al agente para que delegue mejor. Funciona con Claude Code, Codex, modelos abiertos o una mezcla, para una persona, un equipo o una empresa. Libre y de código abierto: podés leer todo lo que recolecta.
 
 ## Probalo
 
@@ -28,9 +16,17 @@ Pegá esto en tu agente de código:
 Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
 ```
 
-Te explica cada paso y te pregunta antes de activar nada. Todo lo que va después de la instalación básica es opcional. Podés sumarle lo que quieras al prompt, como "solo Claude Code", "mandalo a nuestro Grafana" o "mostrame solo el último mes".
+Explica cada paso y pregunta antes de activar cualquier cosa. No se recolecta nada antes de eso, y por defecto nunca se recolectan prompts ni código. Agregá lo que quieras al prompt, como "solo Claude Code" o "mandalo a nuestro Grafana".
 
-No se recolectan prompts ni código. No se recolecta nada antes de que lo actives.
+<img src="../architecture.svg" alt="Los arneses envían OTLP a un collector en la máquina de desarrollo, en un despliegue del equipo o en la organización; los dashboards, el análisis y un servidor MCP leen de ahí">
+
+<!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
+
+## Una persona, equipos y organizaciones
+
+- **Una persona**: corre en tu máquina, sin servidor.
+- **Equipos**: un servidor chico propio (Docker Compose en una VM). El gasto por persona lo ve solo esa persona; el equipo ve los totales.
+- **Organizaciones**: mandalo al backend que ya usan (Datadog, Grafana, un collector de OpenTelemetry), con login corporativo y equipos.
 
 ## Resultados
 
