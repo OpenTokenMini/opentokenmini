@@ -31,7 +31,7 @@
   .swap:hover .big { text-decoration:underline dotted var(--mute); text-underline-offset:6px }
   .inf { font-style:italic }
 
-  .hist { margin-top:24px; height:220px; display:flex; flex-direction:column }
+  .hist { margin-top:24px; height:225px; display:flex; flex-direction:column; gap:5px }
   .hist .row { flex:1; display:flex; gap:3px }
   .hist .up { align-items:flex-end; border-bottom:1px solid var(--line) }
   .hist .down { align-items:flex-start }
@@ -164,15 +164,15 @@ const rng = (s) => () => (s = (s * 16807) % 2147483647) / 2147483647;
 function sample(seed, scale, cards) {
   const r = rng(seed);
   const cost = Array.from({ length: DAYS }, (_, i) => scale * (300 + 500 * r() + (i % 7 > 4 ? -200 : 0)));
-  const vol = cost.map((c) => c * TOKENS_PER_DOLLAR * (0.7 + 0.6 * r()));
-  const impact = cost.map((c) => Math.min(1, (c / scale / 800) * (0.4 + 0.6 * r())));
+  const vol = cost.map((c, i) => c * TOKENS_PER_DOLLAR * (0.5 + 1.1 * i / DAYS) * (0.85 + 0.3 * r()));  // output grows over the window
+  const impact = cost.map((_, i) => Math.min(0.95, 0.3 + 0.55 * i / DAYS + 0.15 * (r() - 0.5)));  // trends to green
   const total = cost.reduce((a, b) => a + b);
   const w = cards.map((_, k) => 1 / (k + 1.5) + 0.05 * r()), ws = w.reduce((a, b) => a + b);
   return { cost, vol, impact, total, volTotal: vol.reduce((a, b) => a + b), cards: cards.map(([name, sub], k) => ({
     mins: Math.round(20 + 200 * r()), subagents: Math.floor(12 * r()), models: 1 + Math.floor(3 * r()),
     commits: Math.floor(8 * r()), files: Math.floor(40 * r()), add: Math.floor(1200 * r()), del: Math.floor(500 * r()), kept: 0.4 + 0.6 * r(),
     good: GOOD.slice(k % 2, k % 2 + 2),
-    name, sub, cost: total * w[k] / ws, vol: total * w[k] / ws * TOKENS_PER_DOLLAR * (0.7 + 0.6 * r()), share: w[k] / ws, impact: 0.3 + 0.6 * r(),
+    name, sub, cost: total * w[k] / ws, vol: total * w[k] / ws * TOKENS_PER_DOLLAR * (0.7 + 0.6 * r()), share: w[k] / ws, impact: 0.5 + 0.45 * r(),
     issues: ISSUES.slice(k % 3, k % 3 + 2 + Math.floor(r() * 2)) })) };
 }
 const VIEWS = {
@@ -212,7 +212,7 @@ function render() {
   document.getElementById("impact").title = `mean daily · last ${DAYS} days · inferred, method TBD`;
   const vmax = Math.max(...v.vol);
   document.getElementById("h-cost").innerHTML = v.cost.map((c) => `<i style="height:${(c / max) * 100}%"></i>`).join("");
-  document.getElementById("h-bars").innerHTML = v.vol.map((c, d) => `<i style="height:${(c / vmax) * 100}%; background:${effHue(v.impact[d])}"></i>`).join("");
+  document.getElementById("h-bars").innerHTML = v.vol.map((c, d) => `<i style="height:${(c / vmax) * 100}%"><b style="height:${v.impact[d] * 100}%; background:${effHue(v.impact[d])}"></b></i>`).join("");
   document.getElementById("cards").innerHTML = v.cards.map(card).join("");
   document.getElementById("views").innerHTML = Object.keys(VIEWS).map((k) => `<button class="${k === view ? "on" : ""}">${k}</button>`).join("");
 }
