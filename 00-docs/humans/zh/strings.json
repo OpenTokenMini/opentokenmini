@@ -1,6 +1,7 @@
 {
  "OpenTokenMini: see what your AI agents spend, and what you get for it": "OpenTokenMini：看清 AI 智能体花了多少钱，换来了什么",
  "Nobody knows what their AI agents are spending money on. OpenTokenMini collects the data, shows it to the people paying and the people building, and feeds it back to the agent. Free and open source.": "没有人知道自己的 AI 智能体把钱花在了哪里。OpenTokenMini 收集这些数据，展示给付钱的人和做开发的人，再反馈给智能体。免费开源。",
+ "Free and open source": "免费开源",
  "Read the docs →": "阅读文档 →",
  "Get the code →": "获取代码 →",
  "Nobody knows what their AI agents spend on": "没有人知道自己的 AI 智能体把钱花在了哪里",
@@ -14,7 +15,6 @@
  "It explains each step and": "它会解释每一步，",
  "asks before turning anything on": "开启任何功能前都会先征得你的同意",
  "Integrations for Open Models, OpenAI and Anthropic": "集成开源模型、OpenAI 和 Anthropic",
- "It's free and open source": "免费且开源",
  "Agent spend by vendor, split by the work it went to and what came out of it": "按厂商划分的智能体花费，以及它流向的工作和最终产出",
  "Unusual setup, or want it built for you?": "环境比较特殊，或者希望我们来搭建？",
  "Talk to us, we build it with you →": "联系我们，一起搭建 →",

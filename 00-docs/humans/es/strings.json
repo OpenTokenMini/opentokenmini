@@ -1,6 +1,7 @@
 {
  "OpenTokenMini: see what your AI agents spend, and what you get for it": "OpenTokenMini: qué gastan tus agentes de IA y qué obtenés a cambio",
  "Nobody knows what their AI agents are spending money on. OpenTokenMini collects the data, shows it to the people paying and the people building, and feeds it back to the agent. Free and open source.": "Nadie sabe en qué gastan dinero sus agentes de IA. OpenTokenMini recopila los datos, se los muestra a quienes pagan y a quienes construyen, y se los devuelve al agente. Libre y de código abierto.",
+ "Free and open source": "Libre y de código abierto",
  "Read the docs →": "Documentación →",
  "Get the code →": "Ver el código →",
  "Nobody knows what their AI agents spend on": "Nadie sabe en qué gastan sus agentes de IA",
@@ -14,7 +15,6 @@
  "It explains each step and": "Explica cada paso y",
  "asks before turning anything on": "pregunta antes de activar cualquier cosa",
  "Integrations for Open Models, OpenAI and Anthropic": "Integraciones para Modelos Abiertos, OpenAI y Anthropic",
- "It's free and open source": "Es libre y de código abierto",
  "Agent spend by vendor, split by the work it went to and what came out of it": "Gasto de agentes por proveedor, dividido por el trabajo al que fue y lo que salió de él",
  "Unusual setup, or want it built for you?": "¿Tu entorno es poco común o preferís que lo armemos nosotros?",
  "Talk to us, we build it with you →": "Hablemos, lo armamos con vos →",
