@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OpenTokenMini: see what your AI agents spend, and what you get for it</title>
-<meta name="description" content="Nobody knows what their AI agents are spending money on. OpenTokenMini collects the data, shows it to the people paying and the people building, and feeds it back to the agent. Free and open source.">
+<title>OpenTokenMini: AI agent cost monitoring and optimization, free and open source</title>
+<meta name="description" content="Nobody knows what their AI agents spend on. OpenTokenMini measures what every agent call costs, links it to the commits it produced, and feeds it back to the agent so it spends less. Works with Claude Code, Codex and open models. Free and open source.">
 <link rel="canonical" href="https://opentokenmini.org/">
 <link rel="alternate" hreflang="en" href="https://opentokenmini.org/">
 <link rel="alternate" hreflang="es" href="https://opentokenmini.org/es/">
@@ -14,8 +14,8 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="OpenTokenMini">
 <meta property="og:url" content="https://opentokenmini.org/">
-<meta property="og:title" content="OpenTokenMini: see what your AI agents spend, and what you get for it">
-<meta property="og:description" content="Nobody knows what their AI agents are spending money on. OpenTokenMini collects the data, shows it to the people paying and the people building, and feeds it back to the agent. Free and open source.">
+<meta property="og:title" content="OpenTokenMini: AI agent cost monitoring and optimization, free and open source">
+<meta property="og:description" content="Nobody knows what their AI agents spend on. OpenTokenMini measures what every agent call costs, links it to the commits it produced, and feeds it back to the agent so it spends less. Works with Claude Code, Codex and open models. Free and open source.">
 <meta property="og:image" content="https://opentokenmini.org/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -35,7 +35,7 @@
   body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
          background:var(--bg); color:var(--ink); font:400 18px/1.6 Inter, system-ui, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; text-align:center;
          -webkit-font-smoothing:antialiased }
-  main { max-width:760px; padding:56px 24px }
+  main { max-width:760px; width:100%; min-width:0; box-sizing:border-box; padding:56px 24px }
   h1 { display:flex; gap:14px; align-items:center; justify-content:center; margin:0;
        font:400 32px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing:.02em; text-transform:uppercase }
   h1 b { font-weight:800 }
@@ -66,6 +66,7 @@
   .try-n { text-align:center; font-size:14px; color:var(--dim); margin-top:10px !important }
   .lang { margin-top:36px; font-size:14px; color:var(--dim) }
   .lang a { color:var(--dim); margin:0 6px } .lang a[aria-current] { color:var(--ink); text-decoration:none; font-weight:600 }
+  @media (max-width:600px) { main { padding:40px 18px } .lead { font-size:26px } }
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-3BVRYNN200"></script>
 <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag("js", new Date()); gtag("config", "G-3BVRYNN200");</script>

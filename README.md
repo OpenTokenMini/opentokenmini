@@ -2,7 +2,7 @@
 
 [English](README.md) · [中文](00-docs/humans/zh/README.md) · [Español](00-docs/humans/es/README.md)
 
-Know what your AI agents cost, and what you get for it.
+Know what your AI agents cost, and what you get for it. Site: [opentokenmini.org](https://opentokenmini.org/)
 
 OpenTokenMini measures what every agent call costs, how long it takes and where it fails, links it to the commits it produced, and feeds that back to the agent so it delegates better. It works with Claude Code, Codex, open models or a mix, for one developer, a team or a company. Free and open source: you can read everything it collects.
 

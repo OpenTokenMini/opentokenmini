@@ -1,6 +1,6 @@
 {
- "OpenTokenMini: see what your AI agents spend, and what you get for it": "OpenTokenMini：看清 AI 智能体花了多少钱，换来了什么",
- "Nobody knows what their AI agents are spending money on. OpenTokenMini collects the data, shows it to the people paying and the people building, and feeds it back to the agent. Free and open source.": "没有人知道自己的 AI 智能体把钱花在了哪里。OpenTokenMini 收集这些数据，展示给付钱的人和做开发的人，再反馈给智能体。免费开源。",
+ "OpenTokenMini: AI agent cost monitoring and optimization, free and open source": "OpenTokenMini：AI 智能体花费监控与优化，免费开源",
+ "Nobody knows what their AI agents spend on. OpenTokenMini measures what every agent call costs, links it to the commits it produced, and feeds it back to the agent so it spends less. Works with Claude Code, Codex and open models. Free and open source.": "没有人知道自己的 AI 智能体把钱花在了哪里。OpenTokenMini 度量每次调用的花费，关联到它产生的提交，再反馈给智能体，让它花得更少。支持 Claude Code、Codex 和开源模型。免费开源。",
  "Free and open source": "免费开源",
  "Read the docs →": "阅读文档 →",
  "Get the code →": "获取代码 →",
@@ -20,7 +20,7 @@
  "Unusual setup, or want it built for you?": "环境比较特殊，或者希望我们来搭建？",
  "Talk to us, we build it with you →": "联系我们，一起搭建 →",
  "[English](README.md) · [中文](00-docs/humans/zh/README.md) · [Español](00-docs/humans/es/README.md)": "[English](README.md) · [中文](00-docs/humans/zh/README.md) · [Español](00-docs/humans/es/README.md)",
- "Know what your AI agents cost, and what you get for it.": "看清你的 AI 智能体花了多少钱，换来了什么。",
+ "Know what your AI agents cost, and what you get for it. Site: [opentokenmini.org](https://opentokenmini.org/)": "了解你的 AI 智能体花了多少钱，以及换来了什么。网站：[opentokenmini.org](https://opentokenmini.org/)",
  "OpenTokenMini measures what every agent call costs, how long it takes and where it fails, links it to the commits it produced, and feeds that back to the agent so it delegates better. It works with Claude Code, Codex, open models or a mix, for one developer, a team or a company. Free and open source: you can read everything it collects.": "OpenTokenMini 度量智能体每次调用的花费、耗时和失败位置，把这些关联到它产生的提交，再反馈给智能体，让它更好地分配任务。支持 Claude Code、Codex、开源模型或混合使用，适用于个人、团队或整个公司。免费开源：它收集的所有内容你都能查看。",
  "## Try it": "## 试一试",
  "Paste this into your coding agent:": "把这句话粘贴到你的编程智能体里：",

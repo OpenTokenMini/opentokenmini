@@ -4,7 +4,7 @@
 
 [English](../../../README.md) · [中文](README.md) · [Español](../es/README.md)
 
-看清你的 AI 智能体花了多少钱，换来了什么。
+了解你的 AI 智能体花了多少钱，以及换来了什么。网站：[opentokenmini.org](https://opentokenmini.org/)
 
 OpenTokenMini 度量智能体每次调用的花费、耗时和失败位置，把这些关联到它产生的提交，再反馈给智能体，让它更好地分配任务。支持 Claude Code、Codex、开源模型或混合使用，适用于个人、团队或整个公司。免费开源：它收集的所有内容你都能查看。
 

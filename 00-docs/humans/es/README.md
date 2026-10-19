@@ -4,7 +4,7 @@
 
 [English](../../../README.md) · [中文](../zh/README.md) · [Español](README.md)
 
-Sabé cuánto te cuestan tus agentes de IA y qué obtenés a cambio.
+Sabé cuánto cuestan tus agentes de IA y qué obtenés a cambio. Sitio: [opentokenmini.org](https://opentokenmini.org/)
 
 OpenTokenMini mide cuánto cuesta cada llamada de tus agentes, cuánto tarda y dónde falla, lo vincula con los commits que produjo y se lo devuelve al agente para que delegue mejor. Funciona con Claude Code, Codex, modelos abiertos o una mezcla, para una persona, un equipo o una empresa. Libre y de código abierto: podés leer todo lo que recolecta.
 
