@@ -40,7 +40,7 @@
        font:400 32px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing:.02em; text-transform:uppercase }
   h1 b { font-weight:800 }
   h1 b:first-child { margin-right:.28em } h1 b:last-child { margin-left:.28em }
-  .lead { font-size:30px; line-height:1.25; font-weight:600; letter-spacing:-.015em; max-width:560px; margin:0 auto 18px }
+  .lead { font-size:30px; line-height:1.25; font-weight:600; letter-spacing:-.015em; max-width:none; margin:0 auto 18px }
   p { max-width:540px; margin:0 auto 20px }
   figure { margin:44px 0 40px }
   figure img { width:100% }
@@ -52,6 +52,15 @@
   .talk { display:inline-block; margin-top:10px; padding:12px 22px; border-radius:999px; background:#dfe8e0;
           color:var(--green); font-weight:600; text-decoration:none; box-shadow:0 1px 0 #c5d3c8 }
   .talk:hover { background:var(--green); color:#fff }
+  .sub { font-size:21px; font-weight:600; color:var(--dim); margin:-10px auto 22px }
+  .value { line-height:1.85; margin-top:30px }
+  .try { max-width:700px; margin:44px auto 0; text-align:left }
+  .try p { margin:0; max-width:none }
+  .try-h { text-align:center; font-weight:600; font-size:15px; margin-bottom:10px !important }
+  .cmd { display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:8px; background:#e2e8e2 }
+  .cmd code { flex:1; min-width:0; overflow-x:auto; white-space:nowrap; font:12.5px "JetBrains Mono", ui-monospace, monospace; overflow-wrap:anywhere }
+  .cmd button { font:500 13px Inter, system-ui, sans-serif; color:var(--green); background:none; border:1.5px solid var(--green); border-radius:6px; padding:6px 12px; cursor:pointer }
+  .try-n { text-align:center; font-size:14px; color:var(--dim); margin-top:10px !important }
   .lang { margin-top:36px; font-size:14px; color:var(--dim) }
   .lang a { color:var(--dim); margin:0 6px } .lang a[aria-current] { color:var(--ink); text-decoration:none; font-weight:600 }
 </style>
@@ -65,17 +74,26 @@
     <a class="go" href="/docs/">Read the docs →</a>
     <a class="go" href="https://github.com/OpenTokenMini/opentokenmini">Get the code →</a>
   </nav>
-  <p class="lead">Nobody knows what their AI agents are spending money on.<br>Not you, not your team, not anyone.</p>
-  <p>Everyone runs agents by brute force: no idea which workflows or delegation patterns are efficient, no measure of what the work does to the product, and the same lessons relearned in every session. The data that would fix this is trivial to collect, and almost nobody collects it.</p>
-  <p>OpenTokenMini collects it, shows it to the people paying and the people building, and feeds it back to the agent so it stops guessing. Share it anonymously if you want, and every user's agents get better from it.</p>
-  <p>Free and open source, across OpenAI, Anthropic and open models.</p>
+  <p class="lead">Nobody knows what their AI agents spend on</p>
+  <p class="sub">Not you, not your team, not anyone</p>
+  <p class="value"><b>Open</b>Token<b>Mini</b> measures, analyzes and shows it<br>
+  <b>Your agent stops guessing</b>, <i>and so do you</i><br>
+  Works for Open Models, OpenAI and Anthropic<br>
+  <b><u>It's free and open source</u></b></p>
+  <div class="try">
+    <p class="try-h">Install using your coding agent</p>
+    <div class="cmd"><code>Clone https://github.com/OpenTokenMini/opentokenmini and follow AGENTS.md</code><button type="button">Copy</button></div>
+    <p class="try-n"><b><i>It explains each step and <u>asks before turning anything on</u>.</i></b></p>
+  </div>
   <figure>
     <img src="/flow.svg" alt="Agent spend by vendor, split by the work it went to and what came out of it">
   </figure>
-  <p class="small">Free and open source. Your own agent installs it and fits it to your setup. Unusual setup, or want it built for you?<br><a class="talk" href="https://forms.gle/cqjyqVN9qky4gQ5U6">Talk to us, we build it with you →</a></p>
+  <p class="small">Unusual setup, or want it built for you?<br><a class="talk" href="https://forms.gle/cqjyqVN9qky4gQ5U6">Talk to us, we build it with you →</a></p>
   <div class="lang"><a href="/" hreflang="en" aria-current="page">English</a>·<a href="/es/" hreflang="es">Español</a>·<a href="/zh/" hreflang="zh-Hans">中文</a></div>
 </main>
 <script>
+  const cp = document.querySelector(".try button"), copied = cp.dataset.done || "Copied!";
+  cp.onclick = () => navigator.clipboard.writeText(document.querySelector(".cmd code").textContent).then(() => { const t = cp.textContent; cp.textContent = copied; setTimeout(() => cp.textContent = t, 1500) });
   // first visit to the English page: follow the browser language once; any click on the switcher sticks
   document.querySelectorAll(".lang a").forEach(a => a.onclick = () => localStorage.lang = a.hreflang);
   const want = (navigator.languages || [navigator.language || ""]).map(l => l.slice(0, 2)).find(l => ["en", "es", "zh"].includes(l));

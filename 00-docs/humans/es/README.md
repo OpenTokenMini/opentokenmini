@@ -4,11 +4,11 @@
 
 [English](../../../README.md) · [中文](../zh/README.md) · [Español](README.md)
 
-Sabe cuánto te cuestan tus agentes de IA y qué obtienes a cambio.
+Sabé cuánto te cuestan tus agentes de IA y qué obtenés a cambio.
 
-Para una persona, un equipo o una empresa entera, con Claude Code, Codex, Gemini CLI o una mezcla: OpenTokenMini registra cuánto cuesta cada llamada, cuánto tarda y dónde falla, lo vincula con los commits y pull requests que produjo, y muestra en qué se va el gasto y qué cambiar. Funciona igual con cualquier agente y cualquier modelo, y es de código abierto: puedes leer todo lo que recolecta.
+Para una persona, un equipo o una empresa entera, con Claude Code, Codex, Gemini CLI o una mezcla: OpenTokenMini registra cuánto cuesta cada llamada, cuánto tarda y dónde falla, lo vincula con los commits y pull requests que produjo, y muestra en qué se va el gasto y qué cambiar. Funciona igual con cualquier agente y cualquier modelo, y es de código abierto: podés leer todo lo que recolecta.
 
-Por qué: hoy tú y tu agente trabajan a ciegas sobre cuánto cuesta delegar, cuánto contexto consume y qué le hace al código. La delegación suele ser ingenua o cara, y no puedes verla ni dirigirla. OpenTokenMini lo mide y le devuelve esas mediciones al agente en los puntos donde decide qué delegar, así gasta menos tokens y tú tienes menos que seguir. Cada parte está pensada para adaptarse a tu entorno. Las concesiones están escritas y las decisiones importantes quedan en tus manos.
+Por qué: hoy vos y tu agente trabajan a ciegas sobre cuánto cuesta delegar, cuánto contexto consume y qué le hace al código. La delegación suele ser ingenua o cara, y no podés verla ni dirigirla. OpenTokenMini lo mide y le devuelve esas mediciones al agente en los puntos donde decide qué delegar, así gasta menos tokens y vos tenés menos que seguir. Cada parte está pensada para adaptarse a tu entorno. Las concesiones están escritas y las decisiones importantes quedan en tus manos.
 
 <img src="../architecture.svg" alt="Los arneses envían OTLP a un collector en la máquina de desarrollo, en un despliegue del equipo o en la organización; los dashboards, el análisis y un servidor MCP leen de ahí">
 
@@ -18,17 +18,17 @@ Por qué: hoy tú y tu agente trabajan a ciegas sobre cuánto cuesta delegar, cu
 
 - **Una persona**: corre en tu máquina, sin servidor. Ves tu propio gasto por repo, modelo y sesión.
 - **Equipos**: un servidor chico propio (Docker Compose en una VM). El gasto por persona es opcional y solo lo ve esa persona; el equipo ve los totales.
-- **Organizaciones**: lo mandas al backend que ya usas (Datadog, Grafana, un collector de OpenTelemetry), agregas login corporativo, asignas personas a equipos y ves la adopción por área y la facturación junto al uso medido.
+- **Organizaciones**: lo mandás al backend que ya usas (Datadog, Grafana, un collector de OpenTelemetry), agregás login corporativo, asignás personas a equipos y ves la adopción por área y la facturación junto al uso medido.
 
-## Pruébalo
+## Probalo
 
-Pega esto en tu agente de código:
+Pegá esto en tu agente de código:
 
 ```
 Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
 ```
 
-Te explica cada paso y te pregunta antes de activar nada. Todo lo que va después de la instalación básica es opcional. Puedes sumarle lo que quieras al prompt, como "solo Claude Code", "mándalo a nuestro Grafana" o "muéstrame solo el último mes".
+Te explica cada paso y te pregunta antes de activar nada. Todo lo que va después de la instalación básica es opcional. Podés sumarle lo que quieras al prompt, como "solo Claude Code", "mandalo a nuestro Grafana" o "mostrame solo el último mes".
 
 No se recolectan prompts ni código. No se recolecta nada antes de que lo actives.
 
@@ -36,7 +36,7 @@ No se recolectan prompts ni código. No se recolecta nada antes de que lo active
 
 Casos medidos de equipos que lo usan, y cómo sumar el tuyo: [reportes de casos](../../use-case-reports/)
 
-## ¿Necesitas ayuda?
+## ¿Necesitás ayuda?
 
-Despliegue, login corporativo o encontrar en qué se van tus tokens: [contáctanos](https://forms.gle/cqjyqVN9qky4gQ5U6)
+Despliegue, login corporativo o encontrar en qué se van tus tokens: [contactanos](https://forms.gle/cqjyqVN9qky4gQ5U6)
 

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" role="img" aria-label="Any harness sends OTLP to the dev machine collector, which syncs to team and organization; analysis reads from any tier, helped by optional decision models, and feeds human dashboards and an agentic MCP server">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" role="img" aria-label="Any harness sends OTLP to the dev machine collector, which syncs to team and organization; analysis reads from any tier, following a customizable methodology, and feeds human dashboards and an agentic MCP server">
 <rect width="960" height="380" rx="12" fill="#eef1ec"/>
 <style>
   text { font:600 14px Inter, system-ui, sans-serif; fill:#1f2a22; text-anchor:middle; dominant-baseline:central }
@@ -37,7 +37,7 @@
 <rect class="grp" x="520" y="24" width="420" height="226" rx="12"/>
 <text class="h" x="730" y="48">READ</text>
 <rect class="box" x="540" y="70" width="210" height="60" rx="8"/><text x="645" y="100">Analysis</text>
-<rect class="opt" x="790" y="70" width="130" height="60" rx="8"/><text x="855" y="92">Decision models</text><text class="s" x="855" y="110">optional</text>
+<rect class="opt" x="790" y="70" width="130" height="60" rx="8"/><text x="855" y="92">Methodology</text><text class="s" x="855" y="110">customizable</text>
 <path class="ln" d="M790,100 L752,100"/>
 <rect class="box" x="540" y="170" width="180" height="60" rx="8"/><text x="630" y="200">Human dashboards</text>
 <rect class="box" x="740" y="170" width="180" height="60" rx="8"/><text x="830" y="200">Agentic MCP server</text>
