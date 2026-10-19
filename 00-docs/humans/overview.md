@@ -2,18 +2,22 @@
 
 ## Root causes
 
-What we think makes agent work inefficient today. It's the premise the project starts from, not a proven result.
+What makes agent work inefficient today, and the premise **Open**Token**Mini** starts from:
 
-On the labs' side:
+1. **Models never saw agentic work.** Their training data predates agentic workflows, so they have no picture of how that work is done, the tools it runs on, or how many turns, tokens or minutes a task takes.
 
-1. **No model of agentic work.** Base models have no internal representation of agentic workflows, the tools they run on, or what those tools can do. They can't estimate how many turns, tokens or minutes a task will take, and harness system prompts tell them not to try.
-2. **Outdated pretraining.** Their pretraining data predates the shift to agentic work, so they have no view of how it is done today.
+**Open**Token**Mini** works on the rest, in dependency order: visibility (4), then the feedback loop (3), then measured workflows put in the agent's context (2).
 
-What OpenTokenMini works on, in dependency order: visibility (5), then the feedback loop (4), then measured topologies injected into the agent's context (3).
+2. **Good workflows are not in context.** Efficient delegation topologies and workflows are not in context. Some may not be known yet, and each operator rediscovers them alone.
+3. **No feedback loop.** No semi-automated feedback loop tells whether a workflow or a delegation actually worked.
+4. **No visibility.** Neither the orchestrating loop nor the human operator has tools to see cost, context and impact.
 
-3. **Good workflows are not in context.** Efficient delegation topologies and workflows are not in context. Some may not be known yet, and each operator rediscovers them alone.
-4. **No feedback loop.** No semi-automated feedback loop tells whether a workflow or a delegation actually worked.
-5. **No visibility.** Neither the orchestrating loop nor the human operator has tools to see cost, context and impact.
+## What you get
+
+1. **Metrics Collection**: every call from every harness, stored where you choose. Everything else builds on it.
+2. **Tools for Your Agent**: an MCP server and similar tools so the agent can optimize its own workflow and measure the impact of a change semi-automatically.
+3. **Workflow Catalog**: ultra-efficient workflows, crowdsourced by everyone who uses the framework, that the agent can pull into its context.
+4. **Interpretability and Automation**: views for the individual operator, the team and the organization, and automation so nobody has to re-explain a workflow to people every time.
 
 ## Architecture
 
