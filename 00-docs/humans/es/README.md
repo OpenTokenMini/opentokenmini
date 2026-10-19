@@ -8,6 +8,8 @@ Sabe cuánto te cuestan tus agentes de IA y qué obtienes a cambio.
 
 Para una persona, un equipo o una empresa entera, con Claude Code, Codex, Gemini CLI o una mezcla: OpenTokenMini registra cuánto cuesta cada llamada, cuánto tarda y dónde falla, lo vincula con los commits y pull requests que produjo, y muestra en qué se va el gasto y qué cambiar. Funciona igual con cualquier agente y cualquier modelo, y es de código abierto: puedes leer todo lo que recolecta.
 
+Por qué: hoy tú y tu agente trabajan a ciegas sobre cuánto cuesta delegar, cuánto contexto consume y qué le hace al código. La delegación suele ser ingenua o cara, y no puedes verla ni dirigirla. OpenTokenMini lo mide y le devuelve esas mediciones al agente en los puntos donde decide qué delegar, así gasta menos tokens y tú tienes menos que seguir. Cada parte está pensada para adaptarse a tu entorno. Las concesiones están escritas y las decisiones importantes quedan en tus manos.
+
 <img src="../architecture.svg" alt="Los arneses envían OTLP a un collector en la máquina de desarrollo, en un despliegue del equipo o en la organización; los dashboards, el análisis y un servidor MCP leen de ahí">
 
 <!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->

@@ -42,10 +42,13 @@ def fix_links(src, body):
         return f'{attr}="{target(src, href)}"'
     return re.sub(r'(href|src)="([^"]+)"', sub, body)
 
+def ignored(path):
+    """Local files the docs name on purpose but git ignores (e.g. 01-deploy/config.json)."""
+    return "todelete" not in path and subprocess.run(["git", "check-ignore", "-q", "--no-index", path]).returncode == 0
+
 def broken(src, text):
     """Relative links and backticked repo paths in src that point at nothing tracked."""
-    known = set(files) | {posixpath.dirname(f) for f in files if "/" in f}
-    known |= {d.rsplit("/", 1)[0] for d in list(known) if "/" in d}
+    known = set(files) | {"/".join(f.split("/")[:i]) for f in files for i in range(1, f.count("/") + 1)}
     refs = re.findall(r"\]\(([^)#\s]+)", text) + re.findall(r'src="([^"#:]+)"', text)
     refs += [r for r in re.findall(r"`([^`\s]+)`", text) if "/" in r and re.match(r"(\.\./)*[0-9]{2}-", r)]
     out = []
@@ -54,7 +57,7 @@ def broken(src, text):
             continue
         path = r.split()[0].rstrip("/")
         here = posixpath.normpath(posixpath.join(posixpath.dirname(src), path))
-        if here not in known and posixpath.normpath(path) not in known:
+        if here not in known and posixpath.normpath(path) not in known and not ignored(path):
             out.append(r)
     return out
 
