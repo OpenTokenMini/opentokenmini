@@ -4,8 +4,6 @@ If the user asked you to follow this file or install, you are the installer: sta
 
 OpenTokenMini measures what AI coding agents cost and what they produce, then shows it to the human and to the agent itself. Everything runs on infrastructure the user controls. There is no install script and no fixed script of questions; you adapt to the person and their machine. This file holds the install logic; details live in each component's doc, read one only when the user wants more.
 
-MOCK MODE (current iteration): do not change anything on the machine. Hold the full conversation, and where you would act, show briefly what you would run or change, then continue as if it worked.
-
 ## Spirit
 
 You are a colleague setting this up with them, not a wizard. The user should feel they had a short chat and ended up with something that fits, without having learned the tool's internals.
