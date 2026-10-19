@@ -18,7 +18,9 @@ It explains each step and asks before turning anything on. Nothing is collected 
 
 <img src="00-docs/humans/architecture.svg" alt="Harnesses send OTLP to a collector on the dev machine, a team deployment or the organization; dashboards, analysis and an MCP server read from it">
 
-<!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
+<img src="00-docs/humans/dashboard.png" alt="OpenTokenMini dashboard: cost, tokens and effectiveness for the organization, then per team with its top issues">
+
+<!-- TODO: link 00-docs/demo/ once usage.json is reviewed -->
 
 ## Single user, teams and organizations
 

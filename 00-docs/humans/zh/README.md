@@ -20,7 +20,9 @@ Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
 
 <img src="../architecture.svg" alt="各类 harness 通过 OTLP 将数据发送到开发机、团队部署或组织级的 collector；仪表盘、分析和 MCP 服务器从中读取">
 
-<!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
+<img src="../dashboard.png" alt="OpenTokenMini 仪表盘：组织的花费、token 和有效性，再按团队列出主要问题">
+
+<!-- TODO: link 00-docs/demo/ once usage.json is reviewed -->
 
 ## 个人、团队和组织
 

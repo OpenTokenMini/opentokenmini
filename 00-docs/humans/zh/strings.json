@@ -8,6 +8,7 @@
  "measures, analyzes and fixes it": "负责度量、分析和修复",
  "Your agent stops guessing": "你的智能体不再靠猜",
  "and so do you": "你也一样",
+ "OpenTokenMini dashboard: cost, tokens and effectiveness for the organization, then per team with its top issues": "OpenTokenMini 仪表盘：组织的花费、token 和有效性，再按团队列出主要问题",
  "Install using your coding agent": "用你的编程智能体安装",
  "Clone https://github.com/OpenTokenMini/opentokenmini and follow AGENTS.md": "克隆 https://github.com/OpenTokenMini/opentokenmini 并按照 AGENTS.md 操作",
  "It explains each step and": "它会解释每一步，",

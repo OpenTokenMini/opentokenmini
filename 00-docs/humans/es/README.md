@@ -20,7 +20,9 @@ Explica cada paso y pregunta antes de activar cualquier cosa. No se recolecta na
 
 <img src="../architecture.svg" alt="Los arneses envían OTLP a un collector en la máquina de desarrollo, en un despliegue del equipo o en la organización; los dashboards, el análisis y un servidor MCP leen de ahí">
 
-<!-- TODO: 00-docs/humans/dashboard.png, then link 00-docs/demo/ once usage.json is reviewed -->
+<img src="../dashboard.png" alt="Dashboard de OpenTokenMini: costo, tokens y efectividad de la organización, y después por equipo con sus problemas principales">
+
+<!-- TODO: link 00-docs/demo/ once usage.json is reviewed -->
 
 ## Una persona, equipos y organizaciones
 

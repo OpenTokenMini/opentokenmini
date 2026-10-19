@@ -25,6 +25,8 @@ The agent's own loop runs one task. The meta loop runs across tasks: measure how
 3. **Workflow Catalog**: ultra-efficient workflows, crowdsourced by everyone who uses the framework, that the agent can pull into its context.
 4. **Interpretability and Automation**: views for the individual operator, the team and the organization, and automation so nobody has to re-explain a workflow to people every time.
 
+<img src="dashboard.png" alt="OpenTokenMini dashboard: cost, tokens and effectiveness for the organization, then per team with its top issues">
+
 ## Architecture
 
 Coding agents report every call over OTLP, the OpenTelemetry protocol most harnesses already speak. A collector stores those records where you choose, and dashboards, analysis and an MCP server for agents read from it.
