@@ -2,7 +2,7 @@
 
 Placeholder. Where records live after the collector receives them.
 
-- Input: raw records from `collector.py`.
+- Input: raw records from `collector/collector.py`.
 - Output: queryable store for `../03-analyze/`.
 - Data it touches: everything measured; this is where retention and deletion apply.
 

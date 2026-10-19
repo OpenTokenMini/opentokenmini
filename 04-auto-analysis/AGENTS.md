@@ -1,6 +1,6 @@
 # auto-analysis
 
-Placeholder. One reader per system a session touches (git, deployments, cloud logs, trackers, billing), each simple and independent. They pull what happened there into records next to `../02-measure/`'s, so `../03-analyze/` can join them with sessions. Each file lists coverage (first, next, long tail), workflow and pitfalls.
+Mostly placeholders; `impact/` (local git) works. One reader per system a session touches (git, deployments, cloud logs, trackers, billing), each simple and independent. They pull what happened there into records next to `../02-measure/`'s, so `../03-analyze/` can join them with sessions. Each file lists coverage (first, next, long tail), workflow and pitfalls.
 
 - Input: the external system's API or local files.
 - Output: records keyed by user, time and repo or project.
@@ -8,6 +8,7 @@ Placeholder. One reader per system a session touches (git, deployments, cloud lo
 
 | File | Systems (first) | Used for |
 |---|---|---|
+| `impact/` | local git | links sessions to commits; cost per kept and reverted commit |
 | `git.md` | GitHub, GitLab | spend per merged change |
 | `deployments.md` | GitHub Actions, GitLab CI | do agent changes pass; headless agent runs |
 | `issue-trackers.md` | Jira, GitHub Issues, Linear | intent and business impact |
@@ -17,5 +18,7 @@ Placeholder. One reader per system a session touches (git, deployments, cloud lo
 | `docs.md` | Confluence, Notion, Google Docs, repos | non-technical users, org visibility |
 | `chat-usage.md` | ChatGPT, Claude, Gemini, M365 Copilot | non-technical users |
 | `quality.md` | linters, scanners, benchmarks | security, performance, usability of agent changes |
+
+Tests for `impact/`: `tests/`.
 
 Corporate login and user to team mapping: `../06-optional/identity.md`.

@@ -2,14 +2,16 @@
 
 One or more views for people: a standalone page, or dashboards inside the monitoring the user already runs (Datadog, Grafana). Each shows metrics, outliers and recommendations from `../03-analyze/` to people. Its agent-facing twin is `../06-optional/mcp-server/`. Metrics are configurable per deployment.
 
-- Input: `../03-analyze/output.md`; raw records from `../02-measure/` until analyze exists.
+- Input: outputs of `../03-analyze/`, `../04-auto-analysis/impact/` and `../06-optional/decide/` in the data dir (contract: `../03-analyze/output.md`).
 - Output: a web page. Human-facing: all text internationalized.
 - Data it touches: read-only.
 
-Today a minimal version is embedded in `../02-measure/collector.py` (`GET /`): raw records and a histogram of `api_request` fields.
+The collector no longer embeds a dashboard; `standalone/` is the current page (DRAFT, to be redesigned: too dense, too granular).
 
 ## Files
 
+- `standalone/` static page and dev server (`serve.py`, port 7840).
+- `tests/` unit tests for `standalone/`.
 - `metrics.md` metric catalog; each deployment picks and edits its own.
 
 ## To do

@@ -1,3 +1,13 @@
+## Root causes
+
+1. Base models have no internal representation of agentic workflows, the tools they run on, or what those tools can do. They can't estimate how many turns, tokens or minutes a task will take, and harness system prompts tell them not to try.
+2. Their pretraining data predates the shift to agentic work, so they have no view of how it is done today.
+3. Efficient delegation topologies and workflows are not in context. Some may not be known yet, and each operator rediscovers them alone.
+4. No semi-automated feedback loop tells whether a workflow or a delegation actually worked.
+5. Neither the orchestrating loop nor the human operator has tools to see cost, context and impact.
+
+1 and 2 are on the labs' side. OpenTokenMini works on 3 to 5, in dependency order: visibility first, then the feedback loop, then measured topologies injected into the agent's context.
+
 # How OpenTokenMini works
 
 Coding agents report every call over OTLP, the OpenTelemetry protocol most harnesses already speak. A collector stores those records where you choose, and dashboards, analysis and an MCP server for agents read from it.

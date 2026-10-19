@@ -4,4 +4,6 @@ Parts only some setups need. Nothing else depends on them; offer each one separa
 
 - `identity.md` corporate login (Okta, Entra ID, Google Workspace) and user to team mapping.
 - `mcp-server/` the analysis as MCP tools, so an agent can ask where spend goes.
-- `decision-models.md` connector to classification models that label events cheaply; the owner picks the vendor or a local model.
+- `decision-models.md` method and vendors for decision models that label events cheaply; the owner picks the vendor or a local model.
+- `decide/` the decision points and vendor connectors: state, question, options -> probabilities. Sends the numeric state to the chosen vendor (jev hosted, d1 local). Replaces `decide.py` (now in `todelete/`).
+- `tests/` unit tests for `decide/` and `mcp-server/`.

@@ -1,0 +1,82 @@
+{
+  "$id": "analysis.schema.json",
+  "title": "Analysis (v=1): analysis.json and analysis.decided.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["v", "generated", "period", "filters", "totals", "coverage", "by", "metrics", "outliers", "recommendations"],
+  "properties": {
+    "v": {"const": 1},
+    "generated": {"$ref": "common.schema.json#/$defs/ts"},
+    "period": {"type": "object", "required": ["from", "to", "days"], "properties": {
+      "from": {"$ref": "common.schema.json#/$defs/ts"}, "to": {"$ref": "common.schema.json#/$defs/ts"},
+      "days": {"type": "number", "minimum": 0}}},
+    "filters": {"type": "object"},
+    "totals": {"type": "object", "additionalProperties": false,
+      "required": ["cost", "tokens", "calls", "sessions", "turns", "projects", "subagent_cost"],
+      "properties": {
+        "cost": {"$ref": "common.schema.json#/$defs/cost"},
+        "tokens": {"$ref": "common.schema.json#/$defs/tokens"},
+        "calls": {"$ref": "common.schema.json#/$defs/count"},
+        "sessions": {"$ref": "common.schema.json#/$defs/count"},
+        "turns": {"$ref": "common.schema.json#/$defs/count"},
+        "projects": {"$ref": "common.schema.json#/$defs/count"},
+        "subagent_cost": {"$ref": "common.schema.json#/$defs/usd"}}},
+    "coverage": {"type": "object", "additionalProperties": {
+      "type": "object",
+      "required": ["events", "sessions", "first_ts", "last_ts", "sources", "cost_basis_share", "unpriced_calls"],
+      "properties": {
+        "events": {"$ref": "common.schema.json#/$defs/count"},
+        "sessions": {"$ref": "common.schema.json#/$defs/count"},
+        "first_ts": {"anyOf": [{"$ref": "common.schema.json#/$defs/ts"}, {"type": "null"}]},
+        "last_ts": {"anyOf": [{"$ref": "common.schema.json#/$defs/ts"}, {"type": "null"}]},
+        "sources": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/source"}},
+        "cost_basis_share": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}},
+        "unpriced_calls": {"$ref": "common.schema.json#/$defs/count"},
+        "reason": {"type": ["string", "null"]}}}},
+    "by": {"type": "object", "required": ["day", "harness", "model", "project", "tool", "mcp"], "properties": {
+      "day": {"type": "array", "items": {"type": "object", "required": ["day"],
+        "properties": {"day": {"$ref": "common.schema.json#/$defs/day"}},
+        "additionalProperties": {"$ref": "common.schema.json#/$defs/usd"}}},
+      "harness": {"type": "array", "items": {"$ref": "#/$defs/row"}},
+      "model": {"type": "array", "items": {"$ref": "#/$defs/row"}},
+      "project": {"type": "array", "items": {"$ref": "#/$defs/row"}},
+      "tool": {"type": "array", "items": {"type": "object", "required": ["name", "cost", "calls"], "properties": {
+        "name": {"type": "string"}, "cost": {"$ref": "common.schema.json#/$defs/usd"}, "calls": {"$ref": "common.schema.json#/$defs/count"}}}},
+      "mcp": {"type": "array", "items": {"type": "object", "required": ["server", "calls", "errors", "error_rate"], "properties": {
+        "server": {"type": "string"}, "calls": {"$ref": "common.schema.json#/$defs/count"},
+        "errors": {"$ref": "common.schema.json#/$defs/count"},
+        "error_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1}}}}}},
+    "metrics": {"type": "array", "items": {"type": "object",
+      "required": ["id", "name", "definition", "value", "unit", "group_by", "group", "n", "session_ids"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^M-[a-z0-9-]+$"},
+        "name": {"type": "string"}, "definition": {"type": "string"},
+        "value": {"type": ["number", "null"]}, "unit": {"type": "string"},
+        "group_by": {"type": ["string", "null"]}, "group": {"type": ["string", "null"]},
+        "n": {"$ref": "common.schema.json#/$defs/count"},
+        "session_ids": {"type": "array", "maxItems": 5, "items": {"type": "string"}}}}},
+    "outliers": {"type": "array", "items": {"type": "object",
+      "required": ["metric", "group", "value", "baseline", "score", "method", "n", "session_ids"],
+      "properties": {
+        "metric": {"type": "string", "pattern": "^M-[a-z0-9-]+$"},
+        "group": {"type": ["string", "null"]}, "session_id": {"type": ["string", "null"]},
+        "value": {"type": "number"}, "baseline": {"type": "number"}, "score": {"type": "number"},
+        "method": {"const": "robust_z"},
+        "n": {"$ref": "common.schema.json#/$defs/count"},
+        "session_ids": {"type": "array", "items": {"type": "string"}},
+        "decision": {"type": ["object", "null"]}}}},
+    "recommendations": {"type": "array", "items": {"type": "object",
+      "required": ["id", "candidate", "evidence", "p_yes", "verdict"],
+      "properties": {
+        "id": {"type": "string"}, "candidate": {"type": "string"},
+        "harness": {"anyOf": [{"$ref": "common.schema.json#/$defs/harness"}, {"type": "null"}]},
+        "evidence": {"type": "array", "items": {"type": "object", "required": ["metric", "value"], "properties": {
+          "metric": {"type": "string"}, "value": {"type": ["number", "string", "null"]}}}},
+        "p_yes": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "verdict": {"enum": ["suggest", "skip", "unsure", null]}}}}
+  },
+  "$defs": {
+    "row": {"type": "object", "required": ["name", "cost", "sessions", "calls"], "properties": {
+      "name": {"type": "string"}, "cost": {"$ref": "common.schema.json#/$defs/usd"},
+      "sessions": {"$ref": "common.schema.json#/$defs/count"}, "calls": {"$ref": "common.schema.json#/$defs/count"}}}
+  }
+}

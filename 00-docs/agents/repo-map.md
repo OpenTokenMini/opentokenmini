@@ -2,7 +2,7 @@
 
 ## Layout
 
-Top-level directories are numbered in install order: `00-docs/`, `01-deploy/`, `02-measure/`, `03-analyze/`, `04-auto-analysis/`, `05-dashboards/`, `06-optional/`. `04-auto-analysis/` holds the readers that pull data from git, deployments, cloud logs and other systems into `02-measure/`'s records, one per system. `06-optional/` holds what only some setups need: corporate login, the MCP server for agents, decision models. Numbers are tentative; renumbering means renaming the directory and fixing links, which the docs build checks. At most two levels. Each directory has an `AGENTS.md` that opens with what it does, its input, its output, and what data it touches; keep it accurate, nothing is hidden or obfuscated. Stages with a method keep it in `METHOD.md`, separate from the implementation. A piece becomes its own directory only when one file gets too big.
+Top-level directories are numbered in install order: `00-docs/`, `01-deploy/`, `02-measure/`, `03-analyze/`, `04-auto-analysis/`, `05-dashboards/`, `06-optional/`. `04-auto-analysis/` holds the readers that pull data from git, deployments, cloud logs and other systems into `02-measure/`'s records, one per system. `06-optional/` holds what only some setups need: corporate login, the MCP server for agents, decision models. Numbers are tentative; renumbering means renaming the directory and fixing links, which the docs build checks. Depth: at most three levels below the root (`<stage>/<component>/<file>`, e.g. `02-measure/collector/collector.py`, `02-measure/tests/fixtures/`). Test fixture trees under `tests/fixtures/` may go deeper (reader fixtures mirror each harness's own log layout). Components are subdirectories of a stage, each with `AGENTS.md` and `METHOD.md`; each stage keeps its tests in `<stage>/tests/`, shared fixtures in `02-measure/tests/fixtures/`. Moved-out files go to `todelete/` next to them, never deleted. Each directory has an `AGENTS.md` that opens with what it does, its input, its output, and what data it touches; keep it accurate, nothing is hidden or obfuscated. Stages with a method keep it in `METHOD.md`, separate from the implementation. A piece becomes its own directory only when one file gets too big.
 
 - `00-docs/agents/` technical notes for agents.
 - `00-docs/humans/` human pages: `landing.html` (served at `/`), logo, flow graph, share image. `<lang>/strings.json` is the phrase table per language (`es`, `zh`); `<lang>/README.md` is generated from it, never edited by hand.
@@ -34,7 +34,7 @@ Used in the checklist and diagrams; the first digit is the directory number.
 
 ## Status
 
-- Working: Claude Code → `02-measure/collector.py` → embedded dashboard; past Claude Code usage via `02-measure/from-transcripts.py`.
-- Draft: `00-docs/demo/` guided walkthrough with real usage data (not published yet).
-- Drafted: other harnesses, token configs, deploy options.
-- Placeholder: transcripts push, storage, all integrations, analyze and its output, decision models, quality checks, metric catalog, standalone dashboard, MCP server, demo, dashboard i18n.
+- Working (unit-tested): collector and normalizer (`02-measure/collector/`, port 6979); transcript readers for Claude Code, Codex, Antigravity, OpenCode and Pi (`02-measure/readers/`); schemas and prices (`02-measure/schemas/`); analyze with metric catalog and outliers (`03-analyze/analyze/`); batch `03-analyze/pipeline.py`; commit impact from local git (`04-auto-analysis/impact/`); decision points with jev (`06-optional/decide/`); MCP server (`06-optional/mcp-server/`).
+- Draft: standalone dashboard (`05-dashboards/standalone/`, to be redesigned: too dense, too granular); `00-docs/demo/` guided walkthrough with real usage data (not published yet).
+- Drafted: OTel telemetry for harnesses other than Claude Code, token configs, deploy options, d1 connector (untested).
+- Placeholder: transcripts push, storage, integrations other than git, other decision-model vendors, quality checks, dashboards inside the user's monitoring, dashboard i18n.

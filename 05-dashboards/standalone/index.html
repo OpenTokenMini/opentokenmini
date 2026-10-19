@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenTokenMini</title>
+<style>
+:root { --bg:#111418; --panel:#181c22; --line:#2a3038; --fg:#d6dbe1; --dim:#8a939e; --acc:#6cb6ff; --bad:#ff7b72; --ok:#7ee787; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.45 system-ui, sans-serif; padding-bottom:40px; }
+header { padding:12px 16px; border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; }
+h1 { font-size:16px; margin:0; font-weight:600; }
+.kpi b { font-size:15px; } .dim { color:var(--dim); }
+#filters { padding:8px 16px; display:flex; gap:6px; flex-wrap:wrap; }
+button { background:var(--panel); color:var(--fg); border:1px solid var(--line); border-radius:4px; padding:3px 9px; font:inherit; cursor:pointer; }
+button.on { border-color:var(--acc); color:#fff; }
+button.off { opacity:.45; }
+main { display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:12px; padding:0 16px 16px; }
+section { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:10px 12px; min-width:0; }
+section.wide { grid-column:1 / -1; }
+section > .cap { color:var(--dim); font-size:11px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+table { width:100%; border-collapse:collapse; } td, th { padding:2px 4px; text-align:left; vertical-align:top; }
+th { color:var(--dim); font-weight:normal; font-size:11px; } td.n, th.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+tr + tr td { border-top:1px solid #20252c; }
+.bar { height:6px; background:var(--acc); border-radius:2px; min-width:1px; }
+.mix { display:flex; height:18px; border-radius:3px; overflow:hidden; margin:4px 0 6px; }
+.item { padding:5px 0; border-top:1px solid #20252c; } .item:first-of-type { border-top:0; }
+.probs { display:flex; height:8px; border-radius:2px; overflow:hidden; margin:3px 0; max-width:280px; }
+.chip { display:inline-block; padding:0 5px; border-radius:3px; background:#232a33; margin-right:4px; font-size:12px; }
+.more { margin-top:6px; font-size:12px; }
+.empty { color:var(--dim); font-style:italic; }
+svg text { fill:var(--dim); font-size:10px; }
+#status { position:fixed; left:0; right:0; bottom:0; background:#0c0e11; border-top:1px solid var(--line); padding:5px 16px; display:flex; gap:14px; align-items:center; font-size:12px; color:var(--dim); }
+#status .miss { color:var(--bad); } #status .got { color:var(--ok); }
+#legend { position:fixed; right:16px; bottom:36px; width:min(460px, 92vw); max-height:70vh; overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:10px 12px; display:none; }
+#legend.open { display:block; } .sw { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+</style>
+</head>
+<body>
+<header id="head"><h1>OpenTokenMini</h1></header>
+<div id="filters"></div>
+<main id="main"></main>
+<div id="legend"></div>
+<div id="status"></div>
+<script>
+"use strict";
+// tunables
+const LIST_MAX = 5;            // rows shown before "view more"
+const CHART_H = 140;           // day chart height px
+const LONG_TASK_MS = 50;       // long tasks above this are reported (dev helper only)
+const SLOW_FRAME_MS = 200;     // frame gaps above this are reported (dev helper only)
+const FILES = { analysis: ["analysis.decided.json", "analysis.json"], impact: ["impact_summary.json"],
+                decisions: ["decisions.jsonl"], sessions: ["sessions.jsonl"] };
+const HARNESS_COLOR = { "claude-code":"#d2a8ff", "codex":"#7ee787", "antigravity":"#ffa657", "opencode":"#6cb6ff", "pi":"#f778ba" };
+const TYPE_COLOR = { input:"#6cb6ff", output:"#d2a8ff", cache_read:"#7ee787", cache_write:"#ffa657" };
+const PROB_COLORS = ["#6cb6ff", "#d2a8ff", "#7ee787", "#ffa657", "#f778ba", "#8a939e"];
+
+const S = {
+  cost: "cost", spend: "spend", linkedOf: "linked cost,", calls: "calls", sessions: "sessions", turns: "turns", projects: "projects",
+  byDay: "Spend by day", mix: "Cost mix", models: "Models", projectsCap: "Projects", tools: "Tools", mcp: "MCP servers",
+  sessionsCap: "Sessions", outliers: "Outliers", recs: "Recommendations", impact: "Impact", coverage: "Coverage",
+  metrics: "Metrics", decisions: "Decisions", legend: "legend", more: "view more", less: "view less",
+  none: "no data", missing: "missing", loaded: "loaded", generated: "generated",
+  input: "input", output: "output", cache_read: "cache read", cache_write: "cache write",
+  baseline: "baseline", score: "z", n: "n", decision: "decision", noDecision: "not decided",
+  unlinked: "unlinked cost", repo: "repo", kept: "kept", reverted: "reverted", lines: "+lines",
+  perCommit: "$/kept commit", per100: "$/100 lines", revert: "revert rate",
+  events: "events", span: "span", sources: "sources", basis: "cost basis", unpriced: "unpriced",
+  errors: "errors", errRate: "error rate", value: "value", group: "group", active: "active min",
+  unfiltered: "all harnesses (not split by harness)", noFetch: "cannot fetch files: serve over http (see dashboard/AGENTS.md)",
+  legendText: [
+    ["cost", "USD; list price unless the harness reported it (see cost basis in Coverage)"],
+    ["cost mix", "share of cost by token type: input (no cache), output (incl. reasoning), cache read, cache write"],
+    ["outlier", "robust z = (value - median) / (1.4826 * MAD) within its group; n = group size"],
+    ["decision", "decision-model probabilities over the listed options; choice is 'unsure' when the lead is small"],
+    ["impact", "sessions linked to git commits; kept = still on default branch and not reverted"],
+    ["filter", "harness toggles filter day chart, harness-split tables, sessions, outliers, recommendations, impact, coverage"],
+    ["src", "?src=DIR/ reads files from DIR (default data/)"],
+  ],
+};
+
+const $ = (s) => document.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const money = (x) => x == null ? "–" : "$" + (Math.abs(x) >= 100 ? x.toFixed(0) : Math.abs(x) >= 1 ? x.toFixed(2) : Math.abs(x) >= 0.01 ? x.toFixed(3) : x.toFixed(5));
+const num = (x) => x == null ? "–" : Number.isInteger(x) ? x.toLocaleString("en") : (Math.abs(x) < 10 ? x.toFixed(3) : x.toFixed(1));
+const pct = (x) => x == null ? "–" : (100 * x).toFixed(1) + "%";
+const color = (h) => HARNESS_COLOR[h] || "#8a939e";
+
+const state = { data: {}, status: {}, on: new Set(), all: [] };
+const src = (() => { const p = new URLSearchParams(location.search).get("src") || "data/"; return p.endsWith("/") ? p : p + "/"; })();
+
+async function fetchOne(names) {
+  for (const n of names) {
+    try {
+      const r = await fetch(src + n, { cache: "no-store" });
+      if (!r.ok) continue;
+      const t = await r.text();
+      const v = n.endsWith(".jsonl") ? t.split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l)) : JSON.parse(t);
+      return { file: n, v };
+    } catch (e) { if (e instanceof SyntaxError) console.warn("bad JSON in " + n + ": " + e.message); }
+  }
+  return null;
+}
+
+async function load() {
+  await Promise.all(Object.entries(FILES).map(async ([k, names]) => {
+    const r = await fetchOne(names);
+    state.status[k] = r ? r.file : null;
+    if (r) state.data[k] = r.v;
+  }));
+  const a = state.data.analysis;
+  const hs = new Set();
+  if (a) { Object.keys(a.coverage || {}).forEach((h) => hs.add(h)); (a.by?.harness || []).forEach((r) => hs.add(r.name)); }
+  (state.data.sessions || []).forEach((s) => hs.add(s.harness));
+  state.all = [...hs].sort();
+  state.on = new Set(state.all);
+  render();
+}
+
+// a list with LIST_MAX rows and a "view more" toggle; rows are HTML strings
+function list(rows, wrap = (x) => x) {
+  if (!rows.length) return `<div class="empty">${S.none}</div>`;
+  const id = "l" + Math.random().toString(36).slice(2);
+  const head = wrap(rows.slice(0, LIST_MAX).join(""));
+  if (rows.length <= LIST_MAX) return head;
+  return `<div data-list="${id}">${head}</div><div data-full="${id}" hidden>${wrap(rows.join(""))}</div>`
+    + `<button class="more" data-toggle="${id}">${S.more} (${rows.length})</button>`;
+}
+function table(cols, rows) {  // cols: [label, isNum]
+  const th = "<tr>" + cols.map(([l, n]) => `<th class="${n ? "n" : ""}">${esc(l)}</th>`).join("") + "</tr>";
+  return list(rows.map((r) => "<tr>" + r.map((c, i) => `<td class="${cols[i][1] ? "n" : ""}">${c}</td>`).join("") + "</tr>"),
+    (body) => `<table>${th}${body}</table>`);
+}
+const bar = (v, max) => `<div class="bar" style="width:${max > 0 ? Math.max(1, 100 * v / max) : 0}%"></div>`;
+const sec = (cap, body, wide) => `<section class="${wide ? "wide" : ""}"><div class="cap">${esc(cap)}</div>${body}</section>`;
+const hOk = (h) => h == null || !state.all.includes(h) || state.on.has(h);
+
+function probs(p) {
+  const e = Object.entries(p || {}).sort((a, b) => b[1] - a[1]);
+  const segs = e.map(([k, v], i) => `<div title="${esc(k)} ${pct(v)}" style="width:${100 * v}%;background:${PROB_COLORS[i % PROB_COLORS.length]}"></div>`).join("");
+  return `<div class="probs">${segs}</div><span class="dim">${e.map(([k, v]) => esc(k) + " " + pct(v)).join(" · ")}</span>`;
+}
+function decisionFor(subjects) {
+  const ds = state.data.decisions || [];
+  for (let i = ds.length - 1; i >= 0; i--) if (subjects.some((s) => s && ds[i].subject === s)) return ds[i];
+  return null;
+}
+const decisionHtml = (d) => d ? `<div>${S.decision}: <b>${esc(d.choice)}</b> <span class="dim">(${esc(d.vendor)})</span>${probs(d.probabilities)}</div>`
+                              : `<div class="dim">${S.noDecision}</div>`;
+
+function dayChart(days) {
+  const hs = state.all.filter((h) => state.on.has(h));
+  if (!days.length || !hs.length) return `<div class="empty">${S.none}</div>`;
+  const tot = days.map((d) => hs.reduce((s, h) => s + (d[h] || 0), 0));
+  const max = Math.max(...tot, 1e-12), W = 600, bw = W / days.length;
+  let g = "";
+  days.forEach((d, i) => {
+    let y = CHART_H;
+    hs.forEach((h) => {
+      const v = d[h] || 0; if (!v) return;
+      const hh = CHART_H * v / max; y -= hh;
+      g += `<rect x="${i * bw + 1}" y="${y}" width="${Math.max(1, bw - 2)}" height="${hh}" fill="${esc(color(h))}"><title>${esc(d.day)} ${esc(h)} ${money(v)}</title></rect>`;
+    });
+  });
+  const lab = (i) => `<text x="${i * bw + bw / 2}" y="${CHART_H + 12}" text-anchor="middle">${esc(days[i].day.slice(5))}</text>`;
+  const ticks = days.length > 1 ? lab(0) + lab(days.length - 1) : lab(0);
+  return `<svg viewBox="0 0 ${W} ${CHART_H + 16}" width="100%" preserveAspectRatio="none" style="height:${CHART_H + 16}px">${g}${ticks}`
+    + `<text x="2" y="10">${money(max)}</text></svg>`;
+}
+
+function render() {
+  const a = state.data.analysis, imp = state.data.impact, ses = state.data.sessions || [], ds = state.data.decisions || [];
+  const filtered = state.on.size < state.all.length;
+  const hrows = (a?.by?.harness || []).filter((r) => hOk(r.name));
+  // header
+  // header: how much (spend), where (top harness), is it worth it ($/kept commit); <= 3 numbers
+  let head = `<h1>OpenTokenMini</h1>`;
+  if (a) {
+    const cost = filtered ? hrows.reduce((s, r) => s + (r.cost || 0), 0) : a.totals?.cost?.total;
+    const top = hrows.slice().sort((x, y) => (y.cost || 0) - (x.cost || 0))[0];
+    head += `<span class="dim">${esc((a.period?.from || "").slice(0, 10))} → ${esc((a.period?.to || "").slice(0, 10))}</span>`
+      + `<span class="kpi"><b>${money(cost)}</b> <span class="dim">${S.spend}</span></span>`
+      + (top ? `<span class="kpi"><b>${money(top.cost)}</b> <span class="dim">${esc(top.name)}</span></span>` : "");
+  }
+  if (imp) {
+    const byH = (imp.by_harness || []).filter((r) => hOk(r.harness));
+    const c = byH.reduce((s, r) => s + (r.cost || 0), 0), k = byH.reduce((s, r) => s + (r.commits_kept || 0), 0);
+    if (k) head += `<span class="kpi" title="${esc(money(c) + " " + S.linkedOf + " " + num(imp.sessions_linked) + "/" + num(imp.sessions_total) + " " + S.sessions)}">`
+      + `<b>${money(c / k)}</b> <span class="dim">${S.perCommit}</span></span>`;
+  }
+  $("#head").innerHTML = head;
+  $("#filters").innerHTML = state.all.map((h) =>
+    `<button data-h="${esc(h)}" class="${state.on.has(h) ? "on" : "off"}"><span class="sw" style="background:${esc(color(h))}"></span>${esc(h)}</button>`).join("");
+
+  const out = [];
+  if (a) {
+    const by = a.by || {};
+    out.push(sec(S.byDay, dayChart(by.day || []), true));
+    const c = a.totals?.cost || {}, ct = ["input", "output", "cache_read", "cache_write"].reduce((s, k) => s + (c[k] || 0), 0);
+    const mix = ct > 0 ? `<div class="mix">${["input", "output", "cache_read", "cache_write"].map((k) =>
+      `<div title="${S[k]} ${money(c[k])}" style="width:${100 * (c[k] || 0) / ct}%;background:${TYPE_COLOR[k]}"></div>`).join("")}</div>`
+      + table([[""], [S.cost, 1], ["%", 1]], ["input", "output", "cache_read", "cache_write"].map((k) =>
+        [`<span class="sw" style="background:${TYPE_COLOR[k]}"></span>${S[k]}`, money(c[k]), pct((c[k] || 0) / ct)]))
+      + (filtered ? `<div class="dim">${S.unfiltered}</div>` : "") : `<div class="empty">${S.none}</div>`;
+    out.push(sec(S.mix, mix));
+    const mx = (rs) => Math.max(0, ...rs.map((r) => r.cost || 0));
+    const m = by.model || [], mm = mx(m);
+    out.push(sec(S.models, table([[""], [S.cost, 1], [S.calls, 1], [""]], m.map((r) => [esc(r.name), money(r.cost), num(r.calls), bar(r.cost, mm)]))));
+    const p = by.project || [], pm = mx(p);
+    out.push(sec(S.projectsCap, table([[""], [S.cost, 1], [S.sessions, 1], [""]], p.map((r) => [esc(r.name), money(r.cost), num(r.sessions), bar(r.cost, pm)]))));
+    const tl = by.tool || [], tm = mx(tl);
+    out.push(sec(S.tools, table([[""], [S.cost, 1], [S.calls, 1], [""]], tl.map((r) => [esc(r.name), money(r.cost), num(r.calls), bar(r.cost, tm)]))));
+    out.push(sec(S.mcp, table([[""], [S.calls, 1], [S.errors, 1], [S.errRate, 1]], (by.mcp || []).map((r) => [esc(r.server), num(r.calls), num(r.errors), pct(r.error_rate)]))));
+  }
+  if (ses.length) {
+    const rs = ses.filter((s) => hOk(s.harness)).sort((x, y) => (y.cost?.total || 0) - (x.cost?.total || 0));
+    out.push(sec(S.sessionsCap, table([[""], [""], [S.cost, 1], [S.calls, 1], [S.active, 1]], rs.map((s) =>
+      [`<span class="sw" style="background:${esc(color(s.harness))}"></span>${esc(s.project)}`, `<span class="dim">${esc((s.start || "").slice(0, 16).replace("T", " "))}</span>`,
+       money(s.cost?.total), num(s.calls), num(s.active_minutes)]))));
+  }
+  if (a) {
+    const ol = (a.outliers || []).filter((o) => hOk(o.group)).sort((x, y) => Math.abs(y.score) - Math.abs(x.score));
+    out.push(sec(S.outliers, list(ol.map((o) => {
+      const d = decisionFor([`${o.metric}:${o.group}:${o.session_id}`, `${o.metric}:${o.group}`, o.session_id]);
+      return `<div class="item"><span class="chip">${esc(o.metric)}</span><span class="chip">${esc(o.group)}</span>`
+        + `${o.session_id ? `<span class="dim">${esc(o.session_id)}</span>` : ""}`
+        + `<div>${S.value} <b>${num(o.value)}</b> · ${S.baseline} ${num(o.baseline)} · ${S.score} ${num(o.score)} · ${S.n} ${num(o.n)}</div>${decisionHtml(d)}</div>`;
+    }))));
+    const rc = (a.recommendations || []).filter((r) => hOk(r.harness));
+    out.push(sec(S.recs, list(rc.map((r) => {
+      const d = decisionFor([r.id, `recommendation:${r.id}`]);
+      const v = r.verdict ? `<b>${esc(r.verdict)}</b>${r.p_yes != null ? " " + pct(r.p_yes) : ""}` : "";
+      return `<div class="item"><b>${esc(r.candidate)}</b> ${r.harness ? `<span class="chip">${esc(r.harness)}</span>` : ""}${v}`
+        + `<div class="dim">${(r.evidence || []).map((e) => esc(e.metric) + " = " + esc(typeof e.value === "number" ? num(e.value) : e.value)).join(" · ")}</div>${decisionHtml(d)}</div>`;
+    }))));
+  }
+  if (imp) {
+    const cols = [[S.repo], [S.cost, 1], [S.kept, 1], [S.reverted, 1], [S.lines, 1], [S.perCommit, 1], [S.per100, 1], [S.revert, 1]];
+    const row = (name, r) => [name, money(r.cost), num(r.commits_kept), num(r.commits_reverted), num(r.lines_added), money(r.cost_per_kept_commit), money(r.cost_per_100_lines), pct(r.revert_rate)];
+    const byH = (imp.by_harness || []).filter((r) => hOk(r.harness));
+    out.push(sec(S.impact, table(cols, (imp.by_repo || []).map((r) => row(esc(r.repo_label), r)))
+      + `<div style="height:8px"></div>` + table([[""], ...cols.slice(1)], byH.map((r) => row(`<span class="sw" style="background:${esc(color(r.harness))}"></span>${esc(r.harness)}`, r)))
+      + `<div class="dim">${S.unlinked} ${money(imp.unlinked_cost)} · ${num(imp.sessions_linked)}/${num(imp.sessions_total)} ${S.sessions}</div>`, true));
+  }
+  if (a) {
+    const cv = Object.entries(a.coverage || {}).filter(([h]) => hOk(h));
+    out.push(sec(S.coverage, table([[""], [S.events, 1], [S.sessions, 1], [S.span], [S.sources], [S.basis], [S.unpriced, 1]], cv.map(([h, c]) =>
+      [`<span class="sw" style="background:${esc(color(h))}"></span>${esc(h)}`, num(c.events), num(c.sessions),
+       c.first_ts ? esc(c.first_ts.slice(0, 10) + " → " + (c.last_ts || "").slice(0, 10)) : `<span class="dim">${esc(c.reason || "–")}</span>`,
+       esc((c.sources || []).join(", ")), esc(Object.entries(c.cost_basis_share || {}).map(([k, v]) => k + " " + pct(v)).join(", ")), num(c.unpriced_calls)])), true));
+    const mt = (a.metrics || []).filter((m) => m.group_by !== "harness" || hOk(m.group));
+    out.push(sec(S.metrics, table([[""], [S.group], [S.value, 1], [S.n, 1]], mt.map((m) =>
+      [`<span title="${esc(m.id + ": " + m.definition)}">${esc(m.name)}</span>`, esc(m.group ?? "all"),
+       m.unit === "ratio" ? pct(m.value) : m.unit === "usd" ? money(m.value) : num(m.value) + " " + esc(m.unit || ""), num(m.n)]))));
+  }
+  if (ds.length) {
+    out.push(sec(S.decisions, list(ds.slice().reverse().map((d) =>
+      `<div class="item"><span class="chip">${esc(d.point)}</span><span class="dim">${esc(d.subject)}</span><div>${esc(d.question)}</div>${decisionHtml(d)}</div>`))));
+  }
+  $("#main").innerHTML = out.join("") || `<section class="wide empty">${location.protocol === "file:" ? S.noFetch : S.none}</section>`;
+  $("#status").innerHTML = Object.keys(FILES).map((k) => state.status[k]
+      ? `<span class="got" title="${esc(src + state.status[k])}">${esc(k)}</span>` : `<span class="miss" title="${S.missing}">${esc(k)}</span>`).join("")
+    + (a ? `<span>${S.generated} ${esc((a.generated || "").slice(0, 16).replace("T", " "))}</span>` : "")
+    + `<span style="flex:1"></span><button id="legendBtn">${S.legend}</button>`;
+}
+
+function renderLegend() {
+  const sw = (c, l) => `<span style="margin-right:10px"><span class="sw" style="background:${c}"></span>${esc(l)}</span>`;
+  $("#legend").innerHTML = `<div>${Object.entries(HARNESS_COLOR).map(([h, c]) => sw(c, h)).join("")}</div>`
+    + `<div style="margin:4px 0 8px">${Object.entries(TYPE_COLOR).map(([k, c]) => sw(c, S[k])).join("")}</div>`
+    + `<table>${S.legendText.map(([k, v]) => `<tr><td><b>${esc(k)}</b></td><td>${esc(v)}</td></tr>`).join("")}</table>`;
+}
+
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.h) { const h = b.dataset.h; state.on.has(h) ? state.on.delete(h) : state.on.add(h); render(); }
+  else if (b.dataset.toggle) {
+    const id = b.dataset.toggle, full = document.querySelector(`[data-full="${id}"]`), head = document.querySelector(`[data-list="${id}"]`);
+    const open = full.hidden; full.hidden = !open; head.hidden = open; b.textContent = open ? S.less : `${S.more} (${b.textContent.match(/\d+/)})`;
+  } else if (b.id === "legendBtn") { renderLegend(); $("#legend").classList.toggle("open"); }
+});
+
+// dev telemetry: events are buffered from the start and sent only when the page is served
+// by dashboard/serve.py (response header X-OTM-Dev); otherwise the buffer is dropped.
+const tel = { buf: [], dev: null };
+const send = (kind, msg, extra) => {
+  const ev = { ts: new Date().toISOString(), kind, msg: String(msg).slice(0, 2000), ...extra };
+  if (tel.dev === null) tel.buf.push(ev);
+  else if (tel.dev) { try { navigator.sendBeacon("console", JSON.stringify(ev)); } catch (e) {} }
+};
+for (const k of ["error", "warn"]) { const o = console[k]; console[k] = (...x) => { send(k, x.map(String).join(" ")); o.apply(console, x); }; }
+addEventListener("error", (e) => send("uncaught", e.message, { src: e.filename, line: e.lineno }));
+addEventListener("unhandledrejection", (e) => send("rejection", e.reason && (e.reason.stack || e.reason)));
+try { new PerformanceObserver((l) => l.getEntries().forEach((t) => t.duration > LONG_TASK_MS && send("longtask", Math.round(t.duration) + "ms"))).observe({ type: "longtask", buffered: true }); } catch (e) {}
+
+const loaded = load().catch((e) => console.error("load failed: " + (e.stack || e)));
+
+(async () => {
+  try { tel.dev = !!(await fetch(location.pathname, { method: "HEAD", cache: "no-store" })).headers.get("X-OTM-Dev"); }
+  catch (e) { tel.dev = false; }
+  const buf = tel.buf; tel.buf = [];
+  if (!tel.dev) return;
+  buf.forEach((ev) => send(ev.kind, ev.msg, ev));
+  let last = performance.now();
+  const tick = (t) => { if (t - last > SLOW_FRAME_MS && !document.hidden) send("slowframe", Math.round(t - last) + "ms"); last = t; requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+  await loaded;
+  send("load", "ok", { src, files: state.status });
+})();
+</script>
+</body>
+</html>

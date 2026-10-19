@@ -1,6 +1,6 @@
 # Observability
 
-Placeholder. Infra and service signals around agent-made changes: deploys, latency, error rates, incidents. Also a possible destination for telemetry instead of `../02-measure/collector.py`.
+Placeholder. Infra and service signals around agent-made changes: deploys, latency, error rates, incidents. Also a possible destination for telemetry instead of `../02-measure/collector/`.
 
 - Reads: deploy events, service metrics and incidents by service and time.
 

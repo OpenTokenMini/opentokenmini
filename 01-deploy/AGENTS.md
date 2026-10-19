@@ -8,7 +8,7 @@ Placeholder. Where the service (`../02-measure/`, `../03-analyze/`, `../05-dashb
 
 ## Coverage (tentative priority)
 
-- Local trial: `python3 ../02-measure/collector.py`.
+- Local trial: `python3 02-measure/collector/collector.py` from the repo root.
 - First team rollout: Docker Compose on one VM.
 - Managed containers: AWS (ECS Fargate), Google Cloud Run, Azure Container Apps.
 - Kubernetes: Helm chart.

@@ -1,0 +1,19 @@
+{
+  "$id": "decision.schema.json",
+  "title": "One decision (v=1): decisions.jsonl, also the decision cache keyed by (point, state_sha)",
+  "type": "object", "additionalProperties": false,
+  "required": ["v", "ts", "point", "subject", "state_sha", "question", "options", "probabilities", "choice", "vendor", "model"],
+  "properties": {
+    "v": {"const": 1},
+    "ts": {"$ref": "common.schema.json#/$defs/ts"},
+    "point": {"enum": ["outlier_explanation", "recommendation", "intent", "commit_link"]},
+    "subject": {"type": "string", "minLength": 1},
+    "state_sha": {"type": "string", "pattern": "^[0-9a-f]{8,64}$"},
+    "question": {"type": "string", "minLength": 1},
+    "options": {"type": "object", "additionalProperties": {"type": ["string", "null"]}},
+    "probabilities": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}},
+    "choice": {"type": "string"},
+    "vendor": {"type": "string"},
+    "model": {"type": ["string", "null"]}
+  }
+}

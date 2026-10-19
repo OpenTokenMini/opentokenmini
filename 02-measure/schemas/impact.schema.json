@@ -1,0 +1,32 @@
+{
+  "$id": "impact.schema.json",
+  "title": "One linked session (v=1): impact.jsonl",
+  "type": "object", "additionalProperties": false,
+  "required": ["v", "session_id", "harness", "repo_label", "link", "link_p", "commits", "added", "deleted", "commits_kept", "commits_reverted"],
+  "properties": {
+    "v": {"const": 1},
+    "session_id": {"type": "string", "minLength": 1},
+    "harness": {"$ref": "common.schema.json#/$defs/harness"},
+    "repo_label": {"type": "string"},
+    "link": {"enum": ["trailer", "window"]},
+    "link_p": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "commits": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sha", "ts", "author", "files", "added", "deleted", "agent_trailer", "on_default_branch", "reverted_by"],
+      "properties": {
+        "sha": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+        "ts": {"$ref": "common.schema.json#/$defs/ts"},
+        "author": {"$ref": "common.schema.json#/$defs/hash12"},
+        "files": {"$ref": "common.schema.json#/$defs/count"},
+        "added": {"$ref": "common.schema.json#/$defs/count"},
+        "deleted": {"$ref": "common.schema.json#/$defs/count"},
+        "agent_trailer": {"type": ["string", "null"]},
+        "on_default_branch": {"type": "boolean"},
+        "reverted_by": {"type": ["string", "null"]}
+      }}},
+    "added": {"$ref": "common.schema.json#/$defs/count"},
+    "deleted": {"$ref": "common.schema.json#/$defs/count"},
+    "commits_kept": {"$ref": "common.schema.json#/$defs/count"},
+    "commits_reverted": {"$ref": "common.schema.json#/$defs/count"}
+  }
+}

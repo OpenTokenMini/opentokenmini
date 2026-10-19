@@ -1,0 +1,33 @@
+{
+  "$id": "raw.schema.json",
+  "title": "Raw OTLP request as written by the collector (v=1), or the legacy line already on disk",
+  "anyOf": [
+    {
+      "type": "object",
+      "required": ["v", "recv_ts", "path", "content_type", "harness_hint"],
+      "properties": {
+        "v": {"const": 1},
+        "recv_ts": {"$ref": "common.schema.json#/$defs/ts"},
+        "path": {"enum": ["/v1/logs", "/v1/metrics", "/v1/traces"]},
+        "content_type": {"type": "string"},
+        "harness_hint": {"type": ["string", "null"]},
+        "data": {"type": "object"},
+        "data_b64": {"type": "string"},
+        "undecoded": {"type": "object", "required": ["bytes", "sha256", "content_type", "reason"],
+                      "properties": {"bytes": {"type": "integer"}, "sha256": {"type": "string"},
+                                     "content_type": {"type": "string"}, "reason": {"type": "string"}}}
+      }
+    },
+    {
+      "type": "object",
+      "required": ["ts", "data"],
+      "properties": {
+        "ts": {"type": ["number", "string"]},
+        "signal": {"enum": ["logs", "metrics", "traces"]},
+        "path": {"type": "string"},
+        "service": {"type": ["string", "null"]},
+        "data": {"type": "object"}
+      }
+    }
+  ]
+}
