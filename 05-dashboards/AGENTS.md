@@ -6,10 +6,11 @@ One or more views for people: a standalone page, or dashboards inside the monito
 - Output: a web page. Human-facing: all text internationalized.
 - Data it touches: read-only.
 
-The collector no longer embeds a dashboard; `standalone/` is the current page (DRAFT, to be redesigned: too dense, too granular).
+The collector no longer embeds a dashboard. `reference/` is the agreed layout (sample data); `standalone/` is the page on real data, to be rebuilt on that layout.
 
 ## Files
 
+- `reference/` reference layout on sample data, its screenshot and dev server (`serve.py`, port 7844).
 - `standalone/` static page and dev server (`serve.py`, port 7840).
 - `tests/` unit tests for `standalone/`.
 - `metrics.md` metric catalog; each deployment picks and edits its own.
