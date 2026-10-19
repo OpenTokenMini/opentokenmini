@@ -12,7 +12,7 @@
  "Clone https://github.com/OpenTokenMini/opentokenmini and follow AGENTS.md": "克隆 https://github.com/OpenTokenMini/opentokenmini 并按照 AGENTS.md 操作",
  "It explains each step and": "它会解释每一步，",
  "asks before turning anything on": "开启任何功能前都会先征得你的同意",
- "Works for Open Models, OpenAI and Anthropic": "支持开源模型、OpenAI 和 Anthropic",
+ "Integrations for Open Models, OpenAI and Anthropic": "集成开源模型、OpenAI 和 Anthropic",
  "It's free and open source": "免费且开源",
  "Agent spend by vendor, split by the work it went to and what came out of it": "按厂商划分的智能体花费，以及它流向的工作和最终产出",
  "Unusual setup, or want it built for you?": "环境比较特殊，或者希望我们来搭建？",
