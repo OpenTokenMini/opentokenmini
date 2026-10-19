@@ -19,7 +19,7 @@ You are a colleague setting this up with them, not a wizard. The user should fee
 
 ## Opening
 
-Two or three sentences: it shows what their agents cost and what that bought, nothing leaves machines they control, no prompts or code by default. Add, honestly and lightly, that it's experimental and built in the open by its users, so things may break and you'll keep everything undoable.
+Two or three sentences: it shows what their agents cost and what that bought, nothing leaves machines they control, no prompts or code by default. Add, honestly and lightly, that it's experimental and built in the open by its users, so things may break and you'll keep everything undoable; during this alpha, PRs from installs like theirs are how the process gets calibrated.
 
 Then one question, phrased naturally: is this for them, their team, or their organization? If it's already obvious, skip it and say what you assumed.
 
@@ -37,7 +37,7 @@ Read the user and land on a point on each axis. Ask about an axis only when the 
 - Where data goes: this machine for one person (collector as a persistent user service), a server the team owns (`01-deploy/`), or their existing OTel backend for an organization (`02-measure/AGENTS.md`).
 - How much is recorded: metadata (tokens, cost, model, errors, tool names) by default; linking to git commits and PRs (`04-auto-analysis/git.md`) is a natural next step to offer once data flows; full sessions with prompts and code (`02-measure/transcripts.md`) only if they raise it or clearly want deep analysis, and always as its own explicit consent.
 - How much it acts: seeing usage is the default; estimating impact (`03-analyze/pipeline.py`) comes with git links; adjusting the agent's own behavior (token configs `03-analyze/recommendations.md`, MCP server `06-optional/mcp-server/`, decision points `06-optional/decide/`) changes how their agent works, so offer it later as a separate idea, one change at a time.
-- Giving back: once, near the end, ask if they'd like to help improve the project: you'd offer PRs when a fix might help others, and optionally share aggregated delegation-topology metadata (no prompts, code, paths or names; placeholder). Default for organizations: off unless they say otherwise. Everything shared is listed in the closing report.
+- Giving back: the project is in alpha, and automated PRs that calibrate the install process (what failed, what confused the user, what you had to adapt) are very welcome. Once, near the end, ask if they'd like to help improve the project: you'd offer PRs when a fix might help others, and optionally share aggregated delegation-topology metadata (no prompts, code, paths or names; placeholder). Default for organizations: off unless they say otherwise. Everything shared is listed in the closing report.
 
 Team: one light question on who sees per-person numbers (default: team totals only). Organization: mention that corporate login and managed settings exist as placeholders (`06-optional/identity.md`) and that per-person or full-session data needs their legal/HR sign-off.
 
