@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OpenTokenMini: see what your AI agents spend, and what you get for it</title>
-<meta name="description" content="An open method and reference implementation to see what AI agents spend, on what work, and what comes out of it.">
+<meta name="description" content="Nobody knows what their AI agents are spending money on. OpenTokenMini collects the data, shows it to the people paying and the people building, and feeds it back to the agent. Free and open source.">
 <link rel="canonical" href="https://opentokenmini.org/">
 <link rel="alternate" hreflang="en" href="https://opentokenmini.org/">
 <link rel="alternate" hreflang="es" href="https://opentokenmini.org/es/">
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="OpenTokenMini">
 <meta property="og:url" content="https://opentokenmini.org/">
 <meta property="og:title" content="OpenTokenMini: see what your AI agents spend, and what you get for it">
-<meta property="og:description" content="Most teams paying for AI agents can't say what the money buys. An open method and reference implementation to find out, across OpenAI, Anthropic and open models.">
+<meta property="og:description" content="Nobody knows what their AI agents are spending money on. OpenTokenMini collects the data, shows it to the people paying and the people building, and feeds it back to the agent. Free and open source.">
 <meta property="og:image" content="https://opentokenmini.org/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -65,8 +65,10 @@
     <a class="go" href="/docs/">Read the docs →</a>
     <a class="go" href="https://github.com/OpenTokenMini/opentokenmini">Get the code →</a>
   </nav>
-  <p class="lead">Most teams paying for AI agents can't say what the money buys.</p>
-  <p>OpenTokenMini is an open method and reference implementation to find out: what each agent spends, on which work, and what came out of it.<br>Across OpenAI, Anthropic and open models.</p>
+  <p class="lead">Nobody knows what their AI agents are spending money on.<br>Not you, not your team, not anyone.</p>
+  <p>Everyone runs agents by brute force: no idea which workflows or delegation patterns are efficient, no measure of what the work does to the product, and the same lessons relearned in every session. The data that would fix this is trivial to collect, and almost nobody collects it.</p>
+  <p>OpenTokenMini collects it, shows it to the people paying and the people building, and feeds it back to the agent so it stops guessing. Share it anonymously if you want, and every user's agents get better from it.</p>
+  <p>Free and open source, across OpenAI, Anthropic and open models.</p>
   <figure>
     <img src="/flow.svg" alt="Agent spend by vendor, split by the work it went to and what came out of it">
   </figure>
@@ -76,7 +78,7 @@
 <script>
   // first visit to the English page: follow the browser language once; any click on the switcher sticks
   document.querySelectorAll(".lang a").forEach(a => a.onclick = () => localStorage.lang = a.hreflang);
-  const want = (navigator.language || "").slice(0, 2);
+  const want = (navigator.languages || [navigator.language || ""]).map(l => l.slice(0, 2)).find(l => ["en", "es", "zh"].includes(l));
   if (location.pathname === "/" && !localStorage.lang && (want === "es" || want === "zh")) location.replace("/" + want + "/");
 </script>
 </body>
