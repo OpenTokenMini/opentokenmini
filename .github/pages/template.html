@@ -24,9 +24,11 @@
   header .brand b { font-weight:800 }
   header .brand b:first-of-type { margin-right:.28em } header .brand b:last-of-type { margin-left:.28em }
   header a { color:var(--green); text-decoration:none }
-  header .go { position:absolute; left:50%; transform:translateX(-50%); color:#fff; background:var(--green); font-weight:500; padding:8px 16px; border-radius:8px }
+  header .acts { position:absolute; left:50%; transform:translateX(-50%); display:flex; gap:10px }
+  header .go { color:#fff; background:var(--green); font-weight:500; padding:8px 16px; border-radius:8px }
+  header .go.help { color:var(--green); background:#fff; box-shadow:0 1px 0 #c5d3c8 }
   header .go:hover { opacity:.88 }
-  @media (max-width:700px) { header .go { position:static; transform:none } }
+  @media (max-width:700px) { header .acts { position:static; transform:none } }
   .wrap { display:flex; gap:40px; justify-content:center; padding:32px 24px 80px }
   main { flex:0 1 760px; min-width:0 }
   .tree { flex:0 0 220px; position:sticky; top:24px; align-self:flex-start; max-height:calc(100vh - 48px); overflow:auto; font-size:14px }
@@ -49,7 +51,7 @@
 <body>
 <header>
   <a class="brand" href="/"><img src="/logo.svg" width="22" height="22" alt=""><span><b>Open</b>Token<b>Mini</b></span></a>
-  <a class="go" href="https://github.com/OpenTokenMini/opentokenmini">Get the code →</a>
+  <div class="acts"><a class="go" href="https://github.com/OpenTokenMini/opentokenmini">Get the code →</a><a class="go help" href="https://forms.gle/cqjyqVN9qky4gQ5U6">Get our help →</a></div>
   <a href="/llms.txt">For agents</a>
 </header>
 <div class="wrap"><main><div class="path">{path} · <a href="{raw}">raw</a> · <a href="{github}">GitHub</a></div><article>

@@ -18,8 +18,6 @@ Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
 
 Explica cada paso y pregunta antes de activar cualquier cosa. No se recolecta nada antes de eso, y por defecto nunca se recolectan prompts ni código. Agregá lo que quieras al prompt, como "solo Claude Code" o "mandalo a nuestro Grafana".
 
-<img src="../architecture.svg" alt="Los arneses envían OTLP a un collector en la máquina de desarrollo, en un despliegue del equipo o en la organización; los dashboards, el análisis y un servidor MCP leen de ahí">
-
 <img src="../dashboard.png" alt="Dashboard de OpenTokenMini: costo, tokens y efectividad de la organización, y después por equipo con sus problemas principales">
 
 <!-- TODO: link 00-docs/demo/ once usage.json is reviewed -->
@@ -29,6 +27,12 @@ Explica cada paso y pregunta antes de activar cualquier cosa. No se recolecta na
 - **Una persona**: corre en tu máquina, sin servidor.
 - **Equipos**: un servidor chico propio (Docker Compose en una VM). El gasto por persona lo ve solo esa persona; el equipo ve los totales.
 - **Organizaciones**: mandalo al backend que ya usan (Datadog, Grafana, un collector de OpenTelemetry), con login corporativo y equipos.
+
+## Arquitectura
+
+Los agentes de código reportan cada llamada por OpenTelemetry, que la mayoría ya habla. Un collector la guarda en tu máquina, en un servidor del equipo o en el backend de tu organización. Los dashboards, el análisis y un servidor MCP para agentes leen de ahí. Detalles: [cómo funciona](../overview.md)
+
+<img src="../architecture.svg" alt="Los arneses envían OTLP a un collector en la máquina de desarrollo, en un despliegue del equipo o en la organización; los dashboards, el análisis y un servidor MCP leen de ahí">
 
 ## Resultados
 

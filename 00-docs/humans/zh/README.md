@@ -18,8 +18,6 @@ Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
 
 它会解释每一步，开启任何功能前都会先征得你的同意。在此之前不收集任何数据，默认也从不收集提示词和代码。可以在提示里加上你的要求，比如“只用 Claude Code”或“发送到我们的 Grafana”。
 
-<img src="../architecture.svg" alt="各类 harness 通过 OTLP 将数据发送到开发机、团队部署或组织级的 collector；仪表盘、分析和 MCP 服务器从中读取">
-
 <img src="../dashboard.png" alt="OpenTokenMini 仪表盘：组织的花费、token 和有效性，再按团队列出主要问题">
 
 <!-- TODO: link 00-docs/demo/ once usage.json is reviewed -->
@@ -29,6 +27,12 @@ Clone https://github.com/OpenTokenMini/opentokenmini and follow its AGENTS.md
 - **个人**：在你的机器上运行，无需服务器。
 - **团队**：一台你自己的小服务器（在虚拟机上用 Docker Compose）。个人花费只有本人可见；团队看到的是总数。
 - **组织**：发送到你们已有的后端（Datadog、Grafana、OpenTelemetry 收集器），支持企业登录和团队划分。
+
+## 架构
+
+编程智能体通过 OpenTelemetry 上报每一次调用，大多数智能体本来就支持这个协议。收集器把数据存在你的机器上、团队服务器上或组织已有的后端里。仪表盘、分析和面向智能体的 MCP 服务器都从这里读取。详情：[工作原理](../overview.md)
+
+<img src="../architecture.svg" alt="各类 harness 通过 OTLP 将数据发送到开发机、团队部署或组织级的 collector；仪表盘、分析和 MCP 服务器从中读取">
 
 ## 成果
 
