@@ -1,6 +1,6 @@
-# How OpenTokenMini works
+# How OpenTokenMini Works
 
-## Root causes
+## Root Causes
 
 What makes agent work inefficient today, and the premise **Open**Token**Mini** starts from:
 
@@ -12,7 +12,13 @@ What makes agent work inefficient today, and the premise **Open**Token**Mini** s
 3. **No feedback loop.** No semi-automated feedback loop tells whether a workflow or a delegation actually worked.
 4. **No visibility.** Neither the orchestrating loop nor the human operator has tools to see cost, context and impact.
 
-## What you get
+## Closing the Agentic Meta Loop
+
+<img src="meta-loop.svg" alt="The agent works, its calls are measured and analyzed, what worked is kept, and it goes back into the agent's context">
+
+The agent's own loop runs one task. The meta loop runs across tasks: measure how the agent worked, check what it produced, keep what worked, and give it back to the agent next time.
+
+## What You Get
 
 1. **Metrics Collection**: every call from every harness, stored where you choose. Everything else builds on it.
 2. **Tools for Your Agent**: an MCP server and similar tools so the agent can optimize its own workflow and measure the impact of a change semi-automatically.
@@ -30,7 +36,7 @@ Coding agents report every call over OTLP, the OpenTelemetry protocol most harne
 - **What is sent**: metadata by default (tokens, cost, time, errors). Prompts and code only if you turn them on ([transcripts](../../02-measure/transcripts.md)).
 - **Read side**: dashboards for people, the analysis, and an MCP server so agents can query the same data.
 
-## Analysis method
+## Analysis Method
 
 From the whole harness down to single commits. Each level adds one data source, joined to sessions by user, time and repo.
 

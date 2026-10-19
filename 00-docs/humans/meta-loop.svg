@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 220" role="img" aria-label="The agent works, its calls are measured and analyzed, what worked is kept, and it goes back into the agent's context">
+<rect width="960" height="220" rx="12" fill="#eef1ec"/>
+<style>
+  text { font:600 15px Inter, system-ui, sans-serif; fill:#1f2a22; text-anchor:middle; dominant-baseline:central }
+  .s { font-weight:400; font-size:12px; fill:#5f6e62 }
+  .w { fill:#fff }
+  .box { fill:#f8faf7; stroke:#1f2a22; stroke-width:1.5 }
+  .key { fill:#2f7a4f }
+  .ln { fill:none; stroke:#2f7a4f; stroke-width:1.5; marker-end:url(#a) }
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#2f7a4f"/></marker></defs>
+<rect class="key" x="40" y="40" width="180" height="56" rx="8"/><text class="w" x="130" y="68">Agent Works</text>
+<rect class="box" x="280" y="40" width="180" height="56" rx="8"/><text x="370" y="68">Measure</text>
+<rect class="box" x="520" y="40" width="180" height="56" rx="8"/><text x="610" y="68">Analyze</text>
+<rect class="box" x="760" y="40" width="180" height="56" rx="8"/><text x="850" y="68">Keep What Works</text>
+<path class="ln" d="M220,68 L277,68"/><path class="ln" d="M460,68 L517,68"/><path class="ln" d="M700,68 L757,68"/>
+<path class="ln" d="M850,96 L850,160 L130,160 L130,99"/>
+<text class="s" x="490" y="180">back into the agent's context</text>
+</svg>
