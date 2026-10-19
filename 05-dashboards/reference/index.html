@@ -85,8 +85,8 @@
   .pair { display:flex; justify-content:space-between; align-items:baseline }
   .pair b { font-size:20px; font-weight:600 }
   .pair .inf { color:var(--impact); font-size:16px }
-  .share { height:4px; background:var(--line); border-radius:2px; overflow:hidden }
-  .share i { display:block; height:100%; background:var(--cost) }
+  .action { font-size:13px; color:#c9ccd1 }
+  .action::before { content:"→"; color:var(--impact); margin-right:8px }
   .issue { font-size:13px; color:#c9ccd1 }
   .issue::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--amber); margin-right:8px; vertical-align:middle }
   .issue .n { color:var(--mute) }
@@ -161,7 +161,12 @@ const effColor = (x) => x < EFF_RED_BELOW ? "var(--red)" : x < EFF_GREEN_FROM ? 
 const ISSUES = ["Long context reread", "Subagent fan-out", "Restarted sessions", "Big files inlined", "Verbose output", "Expensive model for search"];
 const GOOD = ["Small diffs, all kept", "Cheap model for search", "Cache reused well", "Tests ran before commit"];
 const rng = (s) => () => (s = (s * 16807) % 2147483647) / 2147483647;
-function sample(seed, scale, cards) {
+const ACTIONS = {  // savings actions, worded per level: policy (Org), practice (Team), habit (Individual)
+  Individual: ["Start fresh sessions", "Use a digest, not the file", "Small model for search", "Fewer parallel subagents", "Ask for terse replies", "Drop unused tools"],
+  Team: ["Share an AGENTS.md digest", "Cap subagents per task", "Small model for search", "Reset context between tasks", "Prune team tool list", "Agree on short outputs"],
+  Org: ["Default small model for search", "Subagent budget per task", "Shared repo digests", "Context reset policy", "Output length defaults", "Review restart-heavy flows"],
+};
+function sample(seed, scale, cards, actions) {
   const r = rng(seed);
   const cost = Array.from({ length: DAYS }, (_, i) => scale * (300 + 500 * r() + (i % 7 > 4 ? -200 : 0)));
   const vol = cost.map((c, i) => c * TOKENS_PER_DOLLAR * (0.5 + 1.1 * i / DAYS) * (0.85 + 0.3 * r()));  // output grows over the window
@@ -173,12 +178,12 @@ function sample(seed, scale, cards) {
     commits: Math.floor(8 * r()), files: Math.floor(40 * r()), add: Math.floor(1200 * r()), del: Math.floor(500 * r()), kept: 0.4 + 0.6 * r(),
     good: GOOD.slice(k % 2, k % 2 + 2),
     name, sub, cost: total * w[k] / ws, vol: total * w[k] / ws * TOKENS_PER_DOLLAR * (0.7 + 0.6 * r()), share: w[k] / ws, impact: 0.5 + 0.45 * r(),
-    issues: ISSUES.slice(k % 3, k % 3 + 2 + Math.floor(r() * 2)) })) };
+    issues: ISSUES.slice(k % 3, k % 3 + 2 + Math.floor(r() * 2)), actions: actions.slice(k % 3, k % 3 + 2 + Math.floor(r() * 2)) })) };
 }
 const VIEWS = {
-  Individual: sample(7, 0.06, [["know-how", "Oct 19 · 841 calls"], ["projects", "Oct 18 · 1,524 calls"], ["projects", "Oct 17 · 702 calls"], ["typesafe", "Oct 16 · 450 calls"], ["projects", "Oct 14 · 477 calls"], ["know-how", "Oct 12 · 391 calls"], ["swarm", "Oct 9 · 288 calls"], ["scratch", "Oct 3 · 120 calls"], ["typesafe", "Oct 2 · 98 calls"], ["projects", "Sep 30 · 87 calls"], ["know-how", "Sep 26 · 64 calls"], ["swarm", "Sep 22 · 41 calls"]]),
-  Team: sample(11, 0.24, [["Lucía R.", "62 sessions"], ["Tomás A.", "48 sessions"], ["Kenji C.", "55 sessions"], ["Ana P.", "31 sessions"], ["Marco D.", "40 sessions"], ["Sofía L.", "22 sessions"], ["Iván G.", "19 sessions"], ["Rita M.", "12 sessions"], ["Pablo S.", "15 sessions"], ["Elena V.", "9 sessions"], ["Jorge T.", "11 sessions"], ["Mei W.", "6 sessions"]]),
-  Org: sample(23, 1, [["Platform", "14 people"], ["Payments", "9 people"], ["Data", "11 people"], ["Infra", "6 people"], ["Mobile", "8 people"], ["Search", "5 people"], ["Growth", "7 people"], ["Support Ops", "4 people"], ["Security", "5 people"], ["Design", "6 people"], ["Finance", "3 people"], ["Legal", "2 people"]]),
+  Individual: sample(7, 0.06, [["know-how", "Oct 19 · 841 calls"], ["projects", "Oct 18 · 1,524 calls"], ["projects", "Oct 17 · 702 calls"], ["typesafe", "Oct 16 · 450 calls"], ["projects", "Oct 14 · 477 calls"], ["know-how", "Oct 12 · 391 calls"], ["swarm", "Oct 9 · 288 calls"], ["scratch", "Oct 3 · 120 calls"], ["typesafe", "Oct 2 · 98 calls"], ["projects", "Sep 30 · 87 calls"], ["know-how", "Sep 26 · 64 calls"], ["swarm", "Sep 22 · 41 calls"]], ACTIONS.Individual),
+  Team: sample(11, 0.24, [["Lucía R.", "62 sessions"], ["Tomás A.", "48 sessions"], ["Kenji C.", "55 sessions"], ["Ana P.", "31 sessions"], ["Marco D.", "40 sessions"], ["Sofía L.", "22 sessions"], ["Iván G.", "19 sessions"], ["Rita M.", "12 sessions"], ["Pablo S.", "15 sessions"], ["Elena V.", "9 sessions"], ["Jorge T.", "11 sessions"], ["Mei W.", "6 sessions"]], ACTIONS.Team),
+  Org: sample(23, 1, [["Platform", "14 people"], ["Payments", "9 people"], ["Data", "11 people"], ["Infra", "6 people"], ["Mobile", "8 people"], ["Search", "5 people"], ["Growth", "7 people"], ["Support Ops", "4 people"], ["Security", "5 people"], ["Design", "6 people"], ["Finance", "3 people"], ["Legal", "2 people"]], ACTIONS.Org),
 };
 const UNIT = { Individual: "session", Team: "person", Org: "team" };
 
@@ -195,8 +200,7 @@ const card = (c, k) => `<div class="card" data-k="${k}" >
     <b title="volume · sum of tokens, this ${UNIT[view]}">${tok(c.vol)}</b>
     <b class="inf" style="color:${effColor(c.impact)}" title="effectiveness · inferred · method TBD">~${Math.round(c.impact * 100)}%</b>
   </div>
-  <div class="share" title="${Math.round(c.share * 100)}% of total cost"><i style="width:${c.share * 100}%"></i></div>
-  <ul>${c.issues.slice(0, MAX_CARD_ISSUES).map((i) => `<li class="issue">${i}</li>`).join("")}</ul>
+  <ul>${c.actions.slice(0, MAX_CARD_ISSUES).map((a) => `<li class="action">${a}</li>`).join("")}</ul>
   <button class="fix card-fix">Fix</button>
 </div>`;
 
