@@ -21,7 +21,7 @@ Two or three sentences: it shows what their agents cost and what that bought, no
 
 Then one question, phrased naturally: is this for them, their team, or their organization? If it's already obvious, skip it and say what you assumed.
 
-Detect installed harnesses (Claude Code, Codex, OpenCode, Antigravity, Pi) without asking.
+Detect installed harnesses (Claude Code, Codex, OpenCode, Antigravity, Pi) without asking. Also check for a previous OpenTokenMini install (collector on 6979, a dashboard on 7840, `~/.local/share/opentokenmini`); if there is one, say so in a line and treat it as an upgrade, never pointing the user at the old install's pages.
 
 ## Early value
 
@@ -42,7 +42,8 @@ Team: one light question on who sees per-person numbers (default: team totals on
 ## Doing it
 
 - Each change to a harness or service: one sentence on what it does and how to undo it, the diff if it's a file. Harness telemetry entries are in `02-measure/harnesses.md`.
-- After setup, one short prompt per harness to confirm data arrives. Dashboard: `05-dashboards/standalone/` (draft).
+- After setup, one short prompt per harness to confirm data arrives.
+- Dashboard: the agreed design is `05-dashboards/reference/` (`python3 05-dashboards/reference/serve.py`, port 7844), but it still shows sample data, not theirs; say so. Their real numbers so far are the 30-day page above. Do not offer `05-dashboards/standalone/`: it is the old layout, being rebuilt.
 - On failure: say it in a line, try one fix; if it might hit others, and they agreed to give back, offer the PR.
 
 ## Closing
