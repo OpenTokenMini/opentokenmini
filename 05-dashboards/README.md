@@ -11,4 +11,6 @@ Open `reference/index.html` in a browser, or run `python3 reference/serve.py` (h
 - Histogram: one bar per day. Above the axis, token volume colored by effectiveness (red to green); below it, cost.
 - Click a card to inspect it; Fix opens the same inspector with the cursor in the fix box.
 
-`standalone/` is the earlier page wired to real data; it will be rebuilt on this layout.
+`live/` is the dashboard on your own data: `python3 live/serve.py` (http://127.0.0.1:7845/). It reads the last 24 h from the collector's file sink and session titles from local Claude Code transcripts; if the local decision model (:6975) is up it classifies each prompt into Runtime / UI / Infra / Docs.
+
+`standalone/` is the earlier page wired to real data, superseded by `live/`.

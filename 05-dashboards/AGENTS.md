@@ -11,7 +11,8 @@ The collector no longer embeds a dashboard. `reference/` is the agreed layout (s
 ## Files
 
 - `reference/` reference layout on sample data, its screenshot and dev server (`serve.py`, port 7844).
-- `standalone/` static page and dev server (`serve.py`, port 7840).
+- `live/` dashboard on real data (collector file sink + local transcripts), dev server `serve.py`, port 7845.
+- `standalone/` earlier static page and dev server (`serve.py`, port 7840).
 - `tests/` unit tests for `standalone/`.
 - `metrics.md` metric catalog; each deployment picks and edits its own.
 

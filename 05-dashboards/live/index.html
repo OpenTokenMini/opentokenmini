@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OpenTokenMini</title>
+<link rel="icon" href="logo.svg">
+<style>
+  :root { --bg:#121417; --card:#1a1d21; --fg:#e6e7e9; --mute:#878c94; --line:#262a30;
+          --cost:#7d8796; --impact:#3c9a5f; --amber:#e0a526; --red:#e05a4c }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased }
+  main { max-width:1120px; margin:0 auto; padding:0 24px 48px }
+  button { font:inherit; color:inherit; cursor:pointer }
+
+  header { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:18px 0; border-bottom:1px solid var(--line) }
+  .brand { grid-column:2; display:flex; align-items:center; gap:10px; font-size:17px; font-weight:600; letter-spacing:-.01em }
+  .brand img { width:26px }
+  .right { grid-column:3; justify-self:end; display:flex; align-items:center; gap:14px }
+  .fix { background:var(--amber); color:#1a1405; border:0; border-radius:6px; padding:8px 14px; font-weight:600 }
+  header .fix { background:none; color:var(--amber); border:1px solid #5a4a1f; padding:6px 12px; font-weight:500 }
+  header .fix:hover { border-color:var(--amber) }
+
+  .totals { display:grid; grid-template-columns:1fr 1fr 1fr; margin-top:28px }
+  .scale { position:relative; width:140px; height:4px; margin:8px auto 0; border-radius:2px;
+           background:linear-gradient(90deg, var(--red) 0 40%, var(--amber) 40% 65%, var(--impact) 65%) }
+  .scale i { position:absolute; top:-4px; width:2px; height:12px; background:var(--fg); border-radius:1px; transform:translateX(-1px) }
+  .total { padding:16px 0; text-align:center; cursor:pointer }
+  .total + .total { border-left:1px solid var(--line) }
+  .label { color:var(--mute); font-size:12px; text-transform:uppercase; letter-spacing:.06em }
+  .big { font-size:40px; font-weight:600; letter-spacing:-.02em; line-height:1.15; margin:4px 0 }
+  .agg { color:var(--mute); font-size:12px }
+  .swap { background:none; border:0; padding:0; text-align:left }
+  .swap:hover .big { text-decoration:underline dotted var(--mute); text-underline-offset:6px }
+  .inf { font-style:italic }
+
+  .hist { margin-top:24px; height:150px; display:flex; flex-direction:column }
+  .hist .row { flex:1; display:flex; gap:3px }
+  .hist .up { align-items:flex-end; border-bottom:1px solid var(--line) }
+  .hist i { flex:1; border-radius:2px }
+  .up i { background:#3a3f47; display:flex; align-items:flex-end; overflow:hidden }
+  .up i b { width:100%; background:var(--impact) }
+  .hist i.hl { opacity:1; filter:brightness(1.3) }
+  .tip { position:fixed; pointer-events:none; display:none; background:#22262c; border:1px solid #3a3f47; border-radius:6px; padding:6px 10px; font-size:12px; white-space:nowrap }
+  .tip span { color:var(--mute) }
+  .ghost { margin-top:10px; background:none; border:1px solid var(--line); border-radius:6px; padding:5px 12px; color:var(--mute); font-size:13px }
+  .ghost:hover { color:var(--fg); border-color:#3a3f47 }
+  .bar { display:flex; gap:8px; align-items:center; margin:48px 0 12px }
+  .bar .ghost { margin:0 }
+  .filter { background:none; border:1px solid var(--line); border-radius:6px; padding:5px 10px; color:var(--fg); font:inherit; font-size:13px; width:180px }
+  .filter:focus { outline:none; border-color:#3a3f47 }
+  dialog { width:520px; background:var(--card); color:var(--fg); border:1px solid #3a3f47; border-radius:12px; padding:24px }
+  dialog::backdrop { background:rgba(0,0,0,.55) }
+  dialog:focus, dialog:focus-visible { outline:none }
+  dialog h2 { margin:0 0 14px; font-size:16px; font-weight:600 }
+  dialog textarea { width:100%; height:110px; resize:vertical; background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:10px 12px; font:inherit }
+  dialog textarea:focus { outline:none; border-color:#4a505a }
+  dialog .row2 { display:flex; justify-content:space-between; align-items:center; margin-top:16px }
+  dialog .views { justify-self:auto }
+  dialog.wide { width:640px }
+  .ins-head { display:flex; justify-content:space-between; align-items:baseline }
+  .ins-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin:8px 0 18px }
+  .ins-grid div { background:var(--bg); border-radius:8px; padding:10px 12px }
+  .ins-grid b { display:block; font-size:18px; font-weight:600 }
+  .ins-grid span { color:var(--mute); font-size:12px }
+  .ins-sec { color:var(--mute); font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px }
+  .tag { text-transform:none; letter-spacing:0; font-style:italic }
+  .ins-cols { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:18px }
+  .ins-cols ul { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px; font-size:13px }
+  #ins-good li::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--impact); margin-right:8px; vertical-align:middle }
+  .key { display:flex; gap:16px; margin-top:8px; color:var(--mute); font-size:12px }
+  .key b { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:6px }
+  dialog.tl { width:860px; max-height:88vh; padding:20px 24px 12px; display:flex; flex-direction:column }
+  dialog.tl:not([open]) { display:none }
+  .tl-cols { display:flex; color:var(--mute); font-size:12px; text-transform:uppercase; letter-spacing:.06em; border-bottom:1px solid var(--line); padding-bottom:6px }
+  .tl-cols span { text-align:center }
+  .tl-cols .ph { opacity:.45 }
+  .tl-body { overflow-y:auto; overflow-x:hidden; flex:1; min-height:120px; padding-top:6px }
+  .tl-body svg { display:block }
+  .key { flex-wrap:wrap; padding-top:8px; border-top:1px solid var(--line) }
+  .tl-body { cursor:row-resize; user-select:none }
+  .tl-sum { margin-left:auto; color:var(--fg) }
+  .tl-sum span { color:var(--mute) }
+
+  .views { justify-self:start; display:flex; background:var(--card); border:1px solid var(--line); border-radius:7px; padding:2px }
+  .views button { background:none; border:0; border-radius:5px; padding:5px 11px; color:var(--mute); font-size:13px }
+  .views button.on { background:#2a2e35; color:var(--fg) }
+  #cards { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:22px }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:16px }
+  .card { cursor:pointer }
+  .card:hover { border-color:#3a3f47 }
+  .card { position:relative }
+  .card ul { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px }
+  .card .head { display:flex; justify-content:space-between; align-items:baseline; gap:8px }
+  .card .name { font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .card .sub { white-space:nowrap }
+  .trio { display:flex; justify-content:space-between; align-items:baseline; padding:6px 2px }
+  .trio b { font-size:18px; font-weight:600 }
+  .card .sub { color:var(--mute); font-size:12px }
+  .pair { display:flex; justify-content:space-between; align-items:baseline }
+  .pair b { font-size:20px; font-weight:600 }
+  .pair .inf { color:var(--impact); font-size:16px }
+  .action { font-size:13px; color:#c9ccd1 }
+  .action::before { content:"→"; color:var(--impact); margin-right:8px }
+  .issue { font-size:13px; color:#c9ccd1 }
+  .issue::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--amber); margin-right:8px; vertical-align:middle }
+  .issue .n { color:var(--mute) }
+  .adjust { margin-top:auto; background:none; border:1px solid var(--line); border-radius:6px; padding:6px; color:var(--mute); font-size:13px }
+  .adjust:hover { color:var(--fg); border-color:#3a3f47 }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="views" id="views"></div>
+    <div class="brand"><img src="logo.svg" alt="">OpenTokenMini</div>
+    <div class="right">
+      <button class="fix" title="Opens the orchestrating agent, or a prompt if it is not available">Fix an Issue</button>
+    </div>
+  </header>
+
+  <section>
+    <div class="hist" id="hist"><div class="row up" id="h-bars"></div></div>
+    <div class="tip" id="tip"></div>
+  </section>
+  <section class="totals">
+    <div class="total"><div class="label">Cost</div><div class="big" id="cost"></div></div>
+    <div class="total"><div class="label">Volume (tokens)</div><div class="big" id="volume"></div></div>
+    <div class="total">
+      <div class="label">Effectiveness</div>
+      <div class="big inf" id="impact"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="bar">
+      <button class="ghost sort" id="sort" title="Reorder sessions">Sort: price</button>
+      <input class="filter" id="filter" placeholder="Filter sessions" title="Ctrl+R" spellcheck="false">
+    </div>
+    <div id="cards"></div>
+  </section>
+</main>
+<dialog id="inspect" class="tl">
+  <div class="ins-head"><h2 id="ins-name"></h2><span class="sub" id="ins-sub"></span></div>
+  <div class="ins-grid" id="ins-measured"></div>
+  <div class="tl-cols" id="tl-cols"></div>
+  <div class="tl-body" id="tl-body"></div>
+  <div class="key" id="tl-key"></div>
+</dialog>
+<dialog id="fix-dialog">
+  <h2>Fix an Issue</h2>
+  <textarea placeholder="What isn't working?" autofocus></textarea>
+  <div class="row2">
+    <div class="views scope"><button>Everyone</button><button>Company</button><button>Team</button><button class="on">Me</button></div>
+    <button class="fix" onclick="this.closest('dialog').close()">Agentic Fix</button>
+  </div>
+</dialog>
+<script>
+// Browser errors/warnings -> serve.py -> /tmp/otm-dashboards-console.jsonl
+const send = (kind, msg) => fetch("console", { method: "POST", body: JSON.stringify({ t: Date.now(), kind, msg }), keepalive: true }).catch(() => {});
+for (const k of ["error", "warn"]) { const o = console[k]; console[k] = (...x) => { send(k, x.map(String).join(" ")); o.apply(console, x); }; }
+addEventListener("error", (e) => send("error", e.message + " @" + e.lineno));
+addEventListener("unhandledrejection", (e) => send("error", String(e.reason)));
+try { new PerformanceObserver((l) => l.getEntries().forEach((e) => send("longtask", Math.round(e.duration) + "ms"))).observe({ type: "longtask", buffered: true }); } catch (e) {}
+
+// Sample data (reference mockup, no real data)
+let DAYS = 30; const TOKENS_PER_DOLLAR = 24000;
+const EFF_RED_BELOW = 0.4, EFF_GREEN_FROM = 0.65;  // effectiveness color bands
+const effHue = (x) => `hsl(${Math.round(Math.max(0, Math.min(1, (x - 0.2) / 0.7)) * 130 + 4)} 55% 46%)`;  // continuous red -> amber -> green
+const effColor = (x) => x < EFF_RED_BELOW ? "var(--red)" : x < EFF_GREEN_FROM ? "var(--amber)" : "var(--impact)";
+const ISSUES = ["Long context reread", "Subagent fan-out", "Restarted sessions", "Big files inlined", "Verbose output", "Expensive model for search"];
+const GOOD = ["Small diffs, all kept", "Cheap model for search", "Cache reused well", "Tests ran before commit"];
+const rng = (s) => () => (s = (s * 16807) % 2147483647) / 2147483647;
+const ACTIONS = {  // savings actions, worded per level: policy (Org), practice (Team), habit (Individual)
+  Individual: ["Start fresh sessions", "Use a digest, not the file", "Small model for search", "Fewer parallel subagents", "Ask for terse replies", "Drop unused tools"],
+  Team: ["Share an AGENTS.md digest", "Cap subagents per task", "Small model for search", "Reset context between tasks", "Prune team tool list", "Agree on short outputs"],
+  Org: ["Default small model for search", "Subagent budget per task", "Shared repo digests", "Context reset policy", "Output length defaults", "Review restart-heavy flows"],
+};
+function sample(seed, scale, cards, actions) {
+  const r = rng(seed);
+  const cost = Array.from({ length: DAYS }, (_, i) => scale * (300 + 500 * r() + (i % 7 > 4 ? -200 : 0)));
+  const vol = cost.map((c, i) => c * TOKENS_PER_DOLLAR * (0.5 + 1.1 * i / DAYS) * (0.85 + 0.3 * r()));  // output grows over the window
+  const impact = cost.map((_, i) => Math.min(0.95, 0.3 + 0.55 * i / DAYS + 0.15 * (r() - 0.5)));  // trends to green
+  const total = cost.reduce((a, b) => a + b);
+  const w = cards.map((_, k) => 1 / (k + 1.5) + 0.05 * r()), ws = w.reduce((a, b) => a + b);
+  return { cost, vol, impact, total, volTotal: vol.reduce((a, b) => a + b), cards: cards.map(([name, sub], k) => ({
+    mins: Math.round(20 + 200 * r()), subagents: Math.floor(12 * r()), models: 1 + Math.floor(3 * r()),
+    commits: Math.floor(8 * r()), files: Math.floor(40 * r()), add: Math.floor(1200 * r()), del: Math.floor(500 * r()), kept: 0.4 + 0.6 * r(),
+    good: GOOD.slice(k % 2, k % 2 + 2),
+    name, sub, cost: total * w[k] / ws, vol: total * w[k] / ws * TOKENS_PER_DOLLAR * (0.7 + 0.6 * r()), share: w[k] / ws, impact: 0.5 + 0.45 * r(),
+    issues: ISSUES.slice(k % 3, k % 3 + 2 + Math.floor(r() * 2)), actions: actions.slice(k % 3, k % 3 + 2 + Math.floor(r() * 2)) })) };
+}
+const VIEWS = {};
+const MAX_CARDS = 12, NA = "—";  // live: effectiveness and code impact not computed yet
+const hhmm = (t) => new Date(t).toLocaleTimeString("en", { hour: "2-digit", minute: "2-digit", hour12: false });
+function live(d) {
+  DAYS = d.hours.length;
+  const cost = d.hours.map((h) => h.cost), vol = d.hours.map((h) => h.vol);
+  return { day: d.day, hours: d.hours.map((h) => h.h), cost, vol, impact: cost.map(() => null), total: cost.reduce((a, b) => a + b, 0), volTotal: vol.reduce((a, b) => a + b, 0),
+    cards: d.sessions.map((x) => ({ id: x.id, name: x.name, sub: `${hhmm(x.t0)} · ${x.calls} calls`, t1: x.t1, cost: x.cost, vol: x.vol, impact: null,
+      subagents: x.subagents, mins: Math.round((new Date(x.t1) - new Date(x.t0)) / 6e4), actions: [], issues: [], good: [] })) };
+}
+const UNIT = { Individual: "session", Team: "person", Org: "team" };
+
+let view = "Individual", sortBy = "price";  // price | date (last activity)
+const fmt = (usd) => "$" + (usd < 100 ? usd.toFixed(2) : Math.round(usd).toLocaleString());
+const tok = (n) => (n / 1e6).toFixed(1) + "M";
+
+const DRILL = { Org: "Team", Team: "Individual" };
+const MAX_CARD_ISSUES = 3;
+const card = (c, k) => `<div class="card" data-k="${k}" >
+  <div class="head"><span class="name">${c.name}</span><span class="sub">${c.sub}</span></div>
+  <div class="trio">
+    <b title="cost · sum, this ${UNIT[view]}">${fmt(c.cost)}</b>
+    <b title="volume · sum of tokens, this ${UNIT[view]}">${tok(c.vol)}</b>
+    <b class="inf" title="effectiveness · not computed yet">${NA}</b>
+  </div>
+  <ul>${c.actions.slice(0, MAX_CARD_ISSUES).map((a) => `<li class="action">${a}</li>`).join("")}</ul>
+</div>`;
+
+function render() {
+  const v = VIEWS[view];
+  document.getElementById("volume").textContent = tok(v.volTotal);
+  document.getElementById("volume").title = `sum of tokens (input, output, cache read, cache write) · ${v.day}`;
+  document.getElementById("cost").textContent = fmt(v.total);
+  document.getElementById("cost").title = `sum of api_request cost_usd · ${v.day}`;
+  document.getElementById("impact").textContent = NA;
+  document.getElementById("impact").title = "not computed yet";
+  const vmax = Math.max(...v.vol);
+  document.getElementById("h-bars").innerHTML = v.vol.map((c, d) => `<i style="height:${(c / vmax) * 100}%"></i>`).join("");
+  const key = sortBy === "date" ? (c) => -new Date(c.t1 || 0) : (c) => -c.cost;
+  const q = filter.value.trim().toLowerCase();
+  document.getElementById("cards").innerHTML = v.cards.map((c, k) => [c, k]).filter(([c]) => !q || c.name.toLowerCase().includes(q))
+    .sort(([a], [b]) => key(a) - key(b)).slice(0, MAX_CARDS).map(([c, k]) => card(c, k)).join("");
+  if (Object.keys(VIEWS).length > 1) document.getElementById("views").innerHTML = Object.keys(VIEWS).map((k) => `<button class="${k === view ? "on" : ""}">${k}</button>`).join("");
+}
+const filter = document.getElementById("filter");
+filter.value = localStorage.getItem("otm-filter") || "";
+filter.oninput = () => { localStorage.setItem("otm-filter", filter.value); render(); };
+addEventListener("keydown", (e) => {
+  if (!e.ctrlKey || e.key.toLowerCase() !== "r") return;
+  e.preventDefault();
+  document.querySelectorAll("dialog[open]").forEach((x) => x.close());  // an open modal makes the page inert
+  filter.focus(); filter.select();
+}, true);
+document.getElementById("sort").onclick = (e) => { sortBy = sortBy === "price" ? "date" : "price"; e.target.textContent = "Sort: " + sortBy; render(); };
+document.getElementById("views").onclick = (e) => { if (e.target.tagName === "BUTTON") { view = e.target.textContent; render(); } };
+const DAY0 = new Date(2026, 8, 20);
+const tip = document.getElementById("tip"), hist = document.getElementById("hist");
+hist.onmousemove = (e) => {
+  const v = VIEWS[view]; if (!v) return;  // data not loaded yet
+  const r = hist.getBoundingClientRect(), d = Math.min(DAYS - 1, Math.floor((e.clientX - r.left) / r.width * DAYS));
+  hist.querySelectorAll("i.hl").forEach((x) => x.classList.remove("hl"));
+  hist.querySelectorAll(`.row i:nth-child(${d + 1})`).forEach((x) => x.classList.add("hl"));
+  tip.innerHTML = `${String(v.hours[d]).padStart(2, "0")}:00 · ${tok(v.vol[d])} <span>volume</span> · ${fmt(v.cost[d])} <span>cost</span>`;
+  if (tip.parentNode !== hist.parentNode) hist.after(tip);
+  tip.style.display = "block"; tip.style.left = e.clientX + 12 + "px"; tip.style.top = e.clientY + 12 + "px";
+};
+hist.onmouseleave = () => { tip.style.display = "none"; hist.querySelectorAll("i.hl").forEach((x) => x.classList.remove("hl")); };
+
+const fix = document.getElementById("fix-dialog");
+document.querySelector(".fix").onclick = () => fix.showModal();
+fix.onclick = (e) => { if (e.target === fix) fix.close(); };
+document.querySelectorAll(".scope").forEach((g) => g.onclick = (e) => {
+  if (e.target.tagName !== "BUTTON") return;
+  g.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b === e.target));
+});
+const ins = document.getElementById("inspect");
+const cell = (val, label, title) => `<div title="${title}"><b>${val}</b><span>${label}</span></div>`;
+// Session timeline: one row per model call, top to bottom. Context grows right of the axis, prompts and subagents go left.
+const TL = { ROW_H: 4, COMPACT_H: 14, AX: 242, CTX_W: 250, PROMPT_W: 70, SUB_GAP: 12, SUB_ROW_H: 2, SUB_W: 140, COL_W: 72, CTX_HOT: 200000, MISS_FRAC: .2, MISS_MIN: 10000 };  // CTX_HOT: context tokens drawn fully red; a call reading < MISS_FRAC of a context >= MISS_MIN from cache = full cache miss
+const heat = (c) => `hsl(${Math.round(120 * (1 - Math.min(1, c / TL.CTX_HOT)))} 70% 45%)`;  // green → yellow → red
+const TL_COLS = [["Output", true], ["Runtime", true], ["UI", true], ["Infra", true], ["Docs", true]];  // [label, has data]; output repeats in the column d1 assigned to its prompt
+const C = { ctx: "#4a5260", prompt: "#4cc777", sub: "#8f7fd6", out: "#3c9a5f", compact: "#a3e635", miss: "#ff3b3b" };
+const ktok = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1e3 ? Math.round(n / 1e3) + "k" : String(n);
+const esc = (t) => String(t).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+let tlRows = [];
+function timeline(ev) {
+  const T = TL, oW = T.COL_W - 14, mainW = T.AX + T.CTX_W + oW + 8, W = mainW + (TL_COLS.length - 1) * T.COL_W;  // TL_COLS[0] Output is drawn on the curve, not as a column
+  const callsAll = ev.filter((e) => e.k === "call"), subCtx = ev.filter((e) => e.k === "sub").flatMap((e) => e.ctx);
+  // context drawn at its price: cache reads x0.1, writes x1.25/x2, input x1 (seg = [read, write+input] from the server); no telemetry -> raw tokens, grey
+  const wc = (e) => e.seg ? e.seg[0] + e.seg[1] : e.ctx || 0, swc = (e) => e.wctx.map((v, i) => v ?? e.ctx[i]);
+  const cmax = Math.max(1, ...callsAll.map(wc), ...ev.filter((e) => e.k === "sub").flatMap(swc), ...ev.filter((e) => e.k === "compact" && e.seg).map(wc)), omax = Math.max(1, ...callsAll.map((e) => e.out), ...ev.filter((e) => e.k === "sub").map((e) => e.out));
+  const isMiss = (e) => e.seg && e.ctx >= T.MISS_MIN && e.seg[0] * 10 < T.MISS_FRAC * e.ctx;  // seg[0] = cache_read x0.1
+  const ctxBar = (y, e, h, c) => isMiss(e) ? `<rect x="${T.AX}" y="${y}" width="${wc(e) / cmax * T.CTX_W}" height="${h}" fill="${C.miss}"/>` : !e.seg ? `<rect x="${T.AX}" y="${y}" width="${wc(e) / cmax * T.CTX_W}" height="${h}" fill="${C.ctx}"/>`
+    : `<rect x="${T.AX}" y="${y}" width="${e.seg[0] / cmax * T.CTX_W}" height="${h}" fill="${heat(c)}" opacity=".45"/><rect x="${T.AX + e.seg[0] / cmax * T.CTX_W}" y="${y}" width="${e.seg[1] / cmax * T.CTX_W}" height="${h}" fill="${heat(c)}"/>`;
+  const pmax = Math.sqrt(Math.max(1, ...ev.filter((e) => e.k === "user").map((e) => e.chars)));
+  const outX = (i) => mainW + (i - 1) * T.COL_W;
+  let y = 0, last = null, svg = "", subBottom = 0, col = 0, plan = false, planOut = 0, planCost = 0; tlRows = []; const colOut = TL_COLS.map(() => 0), colCost = TL_COLS.map(() => 0);
+  for (const e of ev) {
+    if (e.k === "sub") {  // subagent: its own context curve hanging left, from the call that launched it
+      const y0 = last ? last.y : y, x0 = T.AX - T.SUB_GAP;
+      svg += `<line x1="${T.AX}" y1="${y0 + 1}" x2="${x0}" y2="${y0 + 1}" stroke="${C.sub}"/><circle cx="${x0}" cy="${y0 + 1}" r="2.5" fill="${C.sub}"/>`;
+      swc(e).forEach((c, i) => { const w = c / cmax * T.SUB_W; svg += `<rect x="${x0 - w}" y="${y0 + 3 + i * T.SUB_ROW_H}" width="${w}" height="${T.SUB_ROW_H - .3}" fill="${C.sub}" opacity=".55"/>`; });
+      const ow = e.out / omax * oW, ly = y0 + 3 + (e.ctx.length - 1) * T.SUB_ROW_H, lw = (swc(e).at(-1) || 0) / cmax * T.SUB_W;  // output continues the subagent's last context bar
+      svg += `<rect x="${x0 - lw - ow}" y="${ly}" width="${ow}" height="${T.SUB_ROW_H - .3}" fill="${C.sub}"/>`;
+      if (col) svg += `<rect x="${outX(col) + 7}" y="${y0}" width="${ow}" height="${T.ROW_H - .5}" fill="${C.sub}"/>`;
+      for (const i of new Set([0, col])) { colOut[i] += e.out; colCost[i] += e.cost || 0; }
+      if (plan) { svg += `<rect x="7" y="${y0}" width="${ow}" height="${T.ROW_H - .5}" fill="${C.sub}"/>`; planOut += e.out; planCost += e.cost || 0; }
+      if (last) (last.subs = last.subs || []).push(e);
+      subBottom = Math.max(subBottom, y0 + 3 + e.ctx.length * T.SUB_ROW_H);
+      continue;
+    }
+    e.y = y; tlRows.push(e); last = e;
+    if (e.k === "call") {
+      svg += ctxBar(y, e, T.ROW_H - .5, e.ctx);
+      svg += `<rect x="${T.AX + wc(e) / cmax * T.CTX_W}" y="${y}" width="${e.out / omax * oW}" height="${T.ROW_H - .5}" fill="${C.out}"/>`;  // output continues its call's context
+      if (col) svg += `<rect x="${outX(col) + 7}" y="${y}" width="${e.out / omax * oW}" height="${T.ROW_H - .5}" fill="${C.out}"/>`;
+      e.cat = col ? TL_COLS[col][0] : plan ? "Planning" : null;
+      if (plan) { svg += `<rect x="7" y="${y}" width="${e.out / omax * oW}" height="${T.ROW_H - .5}" fill="${C.out}"/>`; planOut += e.out; planCost += e.cost || 0; }
+      for (const i of new Set([0, col])) { colOut[i] += e.out; colCost[i] += e.cost || 0; }
+      y += T.ROW_H;
+    } else if (e.k === "user") {
+      col = Math.max(0, TL_COLS.findIndex(([l]) => l === e.cat));  // 0 = no edits or unclassified: stays only in Output
+      plan = e.cat === "Planning";  // turn without edits that d1 judged as planning: its output also goes to the left column
+      const w = Math.max(3, Math.sqrt(e.chars) / pmax * T.PROMPT_W);
+      svg += `<rect x="${T.AX - w}" y="${y}" width="${w}" height="${T.ROW_H}" fill="${C.prompt}"/><circle cx="${T.AX}" cy="${y + T.ROW_H / 2}" r="3" fill="${C.prompt}"/>`;
+      y += T.ROW_H + 2;
+    } else if (e.k === "compact") {
+      const m = y + T.COMPACT_H / 2;
+      svg += `<line x1="4" y1="${m}" x2="${W - 4}" y2="${m}" stroke="${C.compact}" stroke-dasharray="4 3"/>`
+        + `<text x="${T.AX + T.CTX_W + 26}" y="${m - 3}" text-anchor="end" fill="${C.compact}" font-size="10">compact ${ktok(e.pre || 0)} → ${ktok(e.post || 0)}</text>`;
+      if (e.cost != null) { const c = e.read + e.fresh;  // the summarizing call's context, same scale and heat as call bars
+        svg += ctxBar(m - T.ROW_H / 2, e, T.ROW_H, c); }
+      y += T.COMPACT_H;
+    }
+  }
+  const H = Math.max(y, subBottom) + 16;
+  let bg = `<line x1="${T.AX}" y1="0" x2="${T.AX}" y2="${H - 6}" stroke="#5a616c"/><path d="M${T.AX - 4} ${H - 10} L${T.AX} ${H - 3} L${T.AX + 4} ${H - 10}" fill="none" stroke="#5a616c"/>`;
+  TL_COLS.forEach(([, has], i) => { if (i && !has) bg += `<line x1="${outX(i) + T.COL_W / 2}" y1="0" x2="${outX(i) + T.COL_W / 2}" y2="${H}" stroke="#3a3f47" stroke-dasharray="2 4"/>`; });
+  bg += `<line x1="${T.COL_W}" y1="0" x2="${T.COL_W}" y2="${H}" stroke="#262a30"/>`;
+  TL_COLS.forEach((_, i) => { if (i) bg += `<line x1="${outX(i)}" y1="0" x2="${outX(i)}" y2="${H}" stroke="${"#262a30"}"/>`; });
+  const head = (l, out, cost, why) => `<span style="width:${T.COL_W}px" title="${ktok(out)} output tokens · ${fmt(cost)} · ${why}">${l}<br><b style="font-weight:400;text-transform:none;color:var(--fg)">${out ? fmt(cost) : "–"}</b></span>`;
+  document.getElementById("tl-cols").innerHTML = head("Planning", planOut, planCost, "output of prompts without edits that d1 judged as planning")
+    + `<span style="width:${mainW - T.COL_W}px" title="context per call drawn at its price: dim = cache reads (x0.1), bright = cache writes (x1.25 5m, x2 1h) + uncached input (x1); color = real context size; red = full cache miss (most of the context re-sent uncached); grey = no telemetry, raw tokens; green = that call's output tokens, own scale">Context → <span style="color:${C.out}">output</span><br><b style="font-weight:400;text-transform:none;color:var(--fg)">${fmt(ev.filter((e) => e.k === "call" || e.k === "sub").reduce((s, e) => s + (e.cost || 0) - (e.ccost || 0), 0))} <span style="color:var(--mute)">out</span></b></span>`
+    + TL_COLS.map(([l, has], i) => !i ? "" : `<span class="${has ? "" : "ph"}" style="width:${T.COL_W}px" title="${ktok(colOut[i])} output tokens · ${fmt(colCost[i])} · ${has ? (l === "Output" ? "output tokens per call, raw" : "output of prompts whose edits d1 classified as " + l) : "not computed yet"}">${l}<br><b style="font-weight:400;text-transform:none;color:var(--fg)">${colOut[i] ? fmt(colCost[i]) : "–"}</b></span>`).join("");
+  document.getElementById("tl-body").innerHTML = `<svg id="tl-svg" width="${W}" height="${H}">${bg}${svg}<rect id="tl-sel" x="0" width="${W}" height="0" fill="#e6e7e9" opacity=".08" stroke="#e6e7e9" stroke-opacity=".35"/><text id="tl-sel-lbl" x="${W - 8}" text-anchor="end" font-size="13" font-weight="600" fill="#e6e7e9" paint-order="stroke" stroke="#111214" stroke-width="4"></text></svg>`;
+  document.getElementById("tl-key").innerHTML = [["heat", "context 0→200k"], ["miss", "cache miss"], ["prompt", "your prompt"], ["sub", "subagent"], ["out", "output"], ["compact", "compaction"]]
+    .map(([k, l]) => `<span><b style="background:${k === "heat" ? "linear-gradient(90deg," + heat(0) + "," + heat(TL.CTX_HOT) + ")" : C[k]}"></b>${l}</span>`).join("") + `<span class="tl-sum" id="tl-sum">drag to sum</span>`;
+}
+function tlTip(e) {
+  const r = e.currentTarget.getBoundingClientRect(), y = e.clientY - r.top;
+  const row = tlRows.findLast((x) => x.y <= y);
+  if (!row) return (tip.style.display = "none");
+  const at = row.t ? hhmm(row.t) + " · " : "";
+  tip.innerHTML = row.k === "call" ? `${at}${row.cost == null ? "" : fmt(row.cost) + ` (${fmt(row.ccost || 0)} <span>ctx</span>) · `}${ktok(row.ctx)} <span>context</span> · ${ktok(row.out)} <span>output</span>${row.cat ? " → " + row.cat : ""} · ${esc(row.model || "")}`
+      + (row.subs || []).map((s) => `<br><span>subagent</span> ${esc(s.desc || "")} · ${s.ctx.length} <span>calls</span> · ${ktok(Math.max(0, ...s.ctx))} <span>peak</span> · ${esc(s.model || "")}`).join("")
+    : row.k === "user" ? `${at}${row.chars} <span>chars</span>${row.cat ? ` · ${row.cat} <span>${row.catp}</span>` : row.cat === null ? " · <span>no edits</span>" : ""} · ${esc(row.text)}${row.chars > row.text.length ? "…" : ""}`
+    : `${at}<span>compaction (${esc(row.trigger || "")})</span> ${ktok(row.pre || 0)} → ${ktok(row.post || 0)}${row.cost == null ? "" : ` · ${fmt(row.cost)} · ${ktok(row.read)} <span>cached</span> · ${ktok(row.fresh)} <span>uncached</span>`}`;
+  if (tip.parentNode !== ins) ins.append(tip);  // modal dialog sits in the top layer; the tip must live inside it
+  tip.style.whiteSpace = "normal"; tip.style.maxWidth = "420px";
+  tip.style.display = "block"; tip.style.left = e.clientX + 12 + "px"; tip.style.top = e.clientY + 12 + "px";
+}
+// Drag up or down over the timeline: sums cost, calls, output and time of the rows in the band (subagents count with the call that launched them)
+let tlDrag = null;
+const tlY = (e) => e.clientY - document.getElementById("tl-svg").getBoundingClientRect().top;
+function tlSum(a, b) {
+  const [y0, y1] = [Math.min(a, b), Math.max(a, b)], rows = tlRows.filter((r) => r.y + TL.ROW_H > y0 && r.y < y1);
+  const sel = document.getElementById("tl-sel"); sel.setAttribute("y", y0); sel.setAttribute("height", y1 - y0);
+  const lbl = document.getElementById("tl-sel-lbl");
+  if (!rows.length) return (lbl.textContent = "");
+  const calls = rows.filter((r) => r.k === "call"), subs = calls.flatMap((r) => r.subs || []);
+  const cost = calls.reduce((s, r) => s + (r.cost || 0), 0) + subs.reduce((s, x) => s + x.cost, 0) + rows.reduce((s, r) => s + (r.k === "compact" ? r.cost || 0 : 0), 0);
+  const missing = calls.filter((r) => r.cost == null).length + subs.reduce((s, x) => s + x.missing, 0);
+  const out = calls.reduce((s, r) => s + r.out, 0) + subs.reduce((s, x) => s + x.out, 0);
+  const toks = calls.reduce((s, r) => s + r.ctx + r.out, 0) + subs.reduce((s, x) => s + x.ctx.reduce((a, b) => a + b, 0) + x.out, 0);  // tokens processed: context read per call + output
+  lbl.setAttribute("y", Math.max(14, y0 + 16)); lbl.textContent = y1 - y0 > 4 ? `${fmt(cost)}${missing ? " +?" : ""} · ${ktok(toks)} tok` : "";
+  const ts = rows.map((r) => r.t).filter(Boolean), mins = ts.length ? Math.round((new Date(ts[ts.length - 1]) - new Date(ts[0])) / 6e4) : 0;
+  document.getElementById("tl-sum").innerHTML = `${fmt(cost)}${missing ? `<span title="${missing} calls without telemetry cost"> +?</span>` : ""} · ${calls.length} <span>calls</span>`
+    + `${subs.length ? ` · ${subs.length} <span>subagents</span>` : ""} · ${ktok(out)} <span>output</span> · ${rows.filter((r) => r.k === "user").length} <span>prompts</span> · ${mins} <span>min</span>`;
+}
+const tlBody = document.getElementById("tl-body");
+tlBody.onmousedown = (e) => { if (!e.target.closest("svg")) return; tlDrag = tlY(e); tlSum(tlDrag, tlDrag + 1); e.preventDefault(); };
+addEventListener("mouseup", () => { tlDrag = null; });
+tlBody.onmousemove = (e) => {
+  if (!e.target.closest("svg")) return;
+  if (tlDrag != null) {
+    tlSum(tlDrag, tlY(e));
+    const r = tlBody.getBoundingClientRect();  // autoscroll near the edges while dragging
+    if (e.clientY > r.bottom - 20) tlBody.scrollTop += 12; else if (e.clientY < r.top + 20) tlBody.scrollTop -= 12;
+  }
+  tlTip({ currentTarget: document.getElementById("tl-svg"), clientX: e.clientX, clientY: e.clientY });
+};
+document.getElementById("tl-body").onmouseleave = () => { tip.style.display = "none"; tip.style.whiteSpace = ""; tip.style.maxWidth = ""; };
+function inspect(c) {
+  document.getElementById("ins-name").textContent = c.name;
+  document.getElementById("ins-sub").textContent = c.sub;
+  document.getElementById("ins-measured").innerHTML = cell(fmt(c.cost), "cost", "sum of api_request cost_usd") + cell(tok(c.vol), "tokens", "sum")
+    + cell(c.mins + " min", "duration", "wall clock, first to last event") + cell(c.subagents, "subagents", "count");
+  document.getElementById("tl-cols").innerHTML = ""; document.getElementById("tl-key").innerHTML = "";
+  document.getElementById("tl-body").innerHTML = `<div class="agg">loading…</div>`;
+  ins.showModal(); ins.focus();
+  fetch(`session.json?id=${encodeURIComponent(c.id)}`).then((r) => r.json()).then((d) => d.events.length ? timeline(d.events)
+    : (document.getElementById("tl-body").innerHTML = `<div class="agg">No transcript for this session on this machine.</div>`));
+}
+ins.onclick = (e) => { if (e.target === ins) ins.close(); };
+document.getElementById("cards").onclick = (e) => {
+  const el = e.target.closest(".card"); if (!el) return;
+  inspect(VIEWS[view].cards[+el.dataset.k]);
+};
+fetch("data.json").then((r) => r.json()).then((d) => { VIEWS.Individual = live(d); render(); });
+</script>
+</body>
+</html>
