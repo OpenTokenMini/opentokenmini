@@ -13,7 +13,7 @@ OUT = pathlib.Path(sys.argv[1])
 HOME = "00-docs/humans/overview.md"  # served at /docs/
 NAV_LABEL = {HOME: "How it works", "README.md": "README", "AGENTS.md": "For agents"}
 NAV_HIDE = ("00-docs/humans/es/", "00-docs/humans/zh/")  # generated translations, reached from the language links instead
-ASSETS = ["logo.svg", "flow.svg", "og.png", "dashboard.png"]  # from 00-docs/humans/, served at the root for the landing
+ASSETS = ["logo.svg", "flow.svg", "og.png", "dashboard.png", "session-timeline.png"]  # from 00-docs/humans/, served at the root for the landing
 
 files = [f for f in subprocess.check_output(["git", "ls-files"], text=True).split() if not f.startswith(".github/")]
 docs = [f for f in files if f.endswith(".md")]
