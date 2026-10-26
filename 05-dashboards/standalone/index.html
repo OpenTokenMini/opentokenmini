@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenTokenMini</title>
+<style>
+:root { --bg:#0f1216; --panel:#171b21; --line:#262c34; --fg:#d6dbe1; --dim:#8a939e; --acc:#6cb6ff; --bad:#ff7b72; --ok:#7ee787; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 system-ui, sans-serif; padding-bottom:44px; }
+header { padding:14px 20px 4px; }
+.top { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin-bottom:14px; }
+h1 { font-size:17px; margin:0; font-weight:600; } .dim { color:var(--dim); }
+#filters { display:flex; gap:6px; flex-wrap:wrap; margin-left:auto; }
+button { background:var(--panel); color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:3px 10px; font:inherit; cursor:pointer; }
+button.on { border-color:var(--acc); } button.off { opacity:.4; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:12px; }
+.card { text-align:left; padding:14px 16px; border-radius:10px; }
+.card b { display:block; font-size:26px; font-weight:600; } .card small { display:block; color:var(--dim); font-size:12px; }
+.card span { color:var(--dim); font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+main { display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:12px; padding:12px 20px; }
+section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; min-width:0; }
+section.wide { grid-column:1 / -1; }
+section > .cap { color:var(--dim); font-size:11px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
+table { width:100%; border-collapse:collapse; } td, th { padding:3px 4px; text-align:left; vertical-align:top; }
+th { color:var(--dim); font-weight:normal; font-size:11px; } .n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+tr + tr td, .item + .item { border-top:1px solid #20252c; }
+.bar { height:6px; background:var(--acc); border-radius:3px; min-width:1px; }
+.mix { display:flex; height:14px; border-radius:4px; overflow:hidden; margin-bottom:8px; }
+.item { padding:6px 0; }
+.chip { display:inline-block; padding:0 6px; border-radius:4px; background:#232a33; margin-right:4px; font-size:12px; }
+.more { margin-top:8px; font-size:12px; } .empty { color:var(--dim); font-style:italic; }
+svg text { fill:var(--dim); font-size:10px; }
+#status { position:fixed; left:0; right:0; bottom:0; background:#0a0c0f; border-top:1px solid var(--line); padding:6px 20px; display:flex; flex-wrap:wrap; gap:4px 14px; align-items:center; font-size:12px; color:var(--dim); }
+#status .miss, .stale { color:var(--bad); } #status .got { color:var(--ok); } #status .wait { color:var(--dim); }
+#legend { position:fixed; left:0; right:0; bottom:30px; background:#0a0c0f; border-top:1px solid var(--line); padding:8px 20px; font-size:12px; color:var(--dim); }
+#legend div + div { margin-top:2px; } #status button { padding:0 8px; font-size:12px; }
+.kv { display:flex; justify-content:space-between; gap:8px; } .kv + .kv { border-top:1px solid #20252c; } .kv span:first-child { color:var(--dim); }
+.sw { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:4px; }
+</style>
+</head>
+<body>
+<header><div class="top"><h1>OpenTokenMini</h1><span class="dim" id="period"></span><span id="filters"></span></div><div class="cards" id="head"></div></header>
+<main id="main"></main>
+<div id="legend" hidden></div>
+<div id="status"></div>
+<script>
+"use strict";
+// tunables
+const LIST_MAX = 5;            // rows shown before "view more"
+const CHART_H = 140;           // day chart height px
+const LONG_TASK_MS = 50;       // long tasks above this are reported (dev helper only)
+const SLOW_FRAME_MS = 200;     // frame gaps above this are reported (dev helper only)
+const STALE_H = 24;           // data older than this many hours is flagged red
+const FILES = { analysis: ["analysis.decided.json", "analysis.json"], impact: ["impact_summary.json"],
+                decisions: ["decisions.jsonl"], sessions: ["sessions.jsonl"],
+                readout: ["readout.json"], types: ["issues_summary.json"] };
+const OPTIONAL = ["readout", "types"];  // shown in the status bar only when found
+const DEFERRED = ["sessions", "decisions"];  // large, only used in details: fetched after the first render
+const READOUT_KNOWN = ["v", "generated", "deployments", "issues"];  // other readout sections render as generic cards
+const HARNESS_COLOR = { "claude-code":"#d2a8ff", "codex":"#7ee787", "antigravity":"#ffa657", "opencode":"#6cb6ff", "pi":"#f778ba" };
+const TYPE_COLOR = { input:"#6cb6ff", output:"#d2a8ff", cache_read:"#7ee787", cache_write:"#ffa657" };
+const TYPES = Object.keys(TYPE_COLOR);
+
+// UI strings (labels <= 3 words); notes only appear as tooltips in the status bar
+const S = {
+  spend: "spend", perCommit: "$/kept commit", sessions: "sessions", review: "to review", sources: "sources",
+  byDay: "Spend by day", mix: "Cost mix", models: "Models", projects: "Projects", tools: "Tools", mcp: "MCP servers",
+  outliers: "Outliers", recs: "Recommendations", byRepo: "Impact by repo", byHarness: "Impact by harness",
+  coverage: "Coverage", metrics: "Metrics", decisions: "Decisions", more: "view more", less: "view less",
+  none: "no data", cost: "cost", calls: "calls", errRate: "error rate", kept: "kept", revert: "revert rate",
+  span: "span", unpriced: "unpriced", value: "value", vs: "vs", generated: "generated", notes: "notes",
+  linked: "linked", delivery: "delivery", ci: "CI failure rate", ciFail: "CI fail", agent: "agent", baseline: "baseline",
+  runs: "runs", prs: "Pull requests", prsLinked: "PRs linked", merged: "merged", ticketless: "ticketless", costLinked: "$ linked",
+  closedNoPr: "closed, no PR", byType: "By ticket type", unlinked: "unlinked", noDecision: "not decided", unfiltered: "not filtered",
+  input: "input", output: "output", cache_read: "cache read", cache_write: "cache write",
+  noFetch: "cannot fetch files over file://: serve over http (see standalone/AGENTS.md)",
+  noData: "no pipeline output found: run python3 03-analyze/pipeline.py, then reload",
+  ago: "ago", updated: "updated", linkedShort: "linked", loading: "loading",
+  legendText: [
+    "cost: USD; list price unless the harness reported it (cost basis in Coverage)",
+    "outlier: robust z = (value - median) / (1.4826 * MAD) within its group",
+    "decision: decision-model choice and its probability; hover for all options",
+    "delivery: CI failure rate of agent-linked runs vs the rest; PRs linked to sessions through commits",
+    "impact: sessions linked to git commits; kept = on default branch, not reverted",
+    "filter: harness toggles; cost mix, models, projects, tools are not split by harness",
+    "src: ?src=DIR/ reads files from DIR (default data/)",
+  ],
+};
+
+const $ = (s) => document.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const money = (x) => x == null ? "–" : "$" + (Math.abs(x) >= 100 ? x.toFixed(0) : Math.abs(x) >= 1 ? x.toFixed(2) : Math.abs(x) >= 0.01 ? x.toFixed(3) : x.toFixed(5));
+const num = (x) => x == null ? "–" : Number.isInteger(x) ? x.toLocaleString("en") : (Math.abs(x) < 10 ? x.toFixed(3) : x.toFixed(1));
+const pct = (x) => x == null ? "–" : (100 * x).toFixed(1) + "%";
+const age = (iso) => { const h = (Date.now() - Date.parse(iso)) / 36e5; if (!(h >= 0)) return null;
+  return { h, txt: h < 1 ? Math.max(1, Math.round(h * 60)) + "m" : h < 48 ? Math.round(h) + "h" : Math.round(h / 24) + "d" }; };
+// metric id -> name/unit from analysis.metrics; session-level outlier ids (M-session-x) fall back to M-x
+const metricInfo = (id) => { const ms = state.data.analysis?.metrics || [], f = (k) => ms.find((m) => m.id === k);
+  const m = f(id) || f(String(id).replace(/^M-session-/, "M-")); return { name: m?.name || String(id).replace(/^M-(session-)?/, "").replace(/-/g, " "), unit: m?.unit || "" }; };
+const fmtUnit = (v, unit) => /^ratio$/i.test(unit) ? pct(v) : /^usd$/i.test(unit) ? money(v) : num(v);
+// generic readout value: key name decides the format (rate/share -> %, cost -> $), lists show LIST_MAX
+const fmtKey = (k, v) => typeof v !== "number" ? esc(v) : /rate|share/.test(k) ? pct(v) : /cost|usd/.test(k) ? money(v) : num(v);
+const label = (k) => String(k).replace(/_/g, " ").split(" ").slice(0, 3).join(" ");
+const color = (h) => HARNESS_COLOR[h] || "#8a939e";
+const sw = (c) => `<span class="sw" style="background:${esc(c)}"></span>`;
+const sum = (rs, f) => rs.reduce((s, r) => s + (f(r) || 0), 0);
+
+const state = { data: {}, status: {}, on: new Set(), all: [], open: null, bytes: {}, renderMs: [] };
+const src = (() => { const p = new URLSearchParams(location.search).get("src") || "data/"; return p.endsWith("/") ? p : p + "/"; })();
+
+async function fetchOne(names) {
+  for (const n of names) {
+    try {
+      const r = await fetch(src + n, { cache: "no-store" });
+      if (!r.ok) continue;
+      const t = await r.text(); state.bytes[n] = t.length;
+      const v = n.endsWith(".jsonl") ? t.split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l)) : JSON.parse(t);
+      return { file: n, v };
+    } catch (e) { if (e instanceof SyntaxError) console.warn("bad JSON in " + n + ": " + e.message); }
+  }
+  return null;
+}
+
+async function fetchSet(keys) {
+  await Promise.all(keys.map(async (k) => {
+    const r = await fetchOne(FILES[k]);
+    state.status[k] = r ? r.file : null;
+    if (r) state.data[k] = r.v;
+  }));
+}
+async function load() {
+  await fetchSet(Object.keys(FILES).filter((k) => !DEFERRED.includes(k)));
+  harnesses(); timed(render);
+  await fetchSet(DEFERRED);
+  const before = state.all.join(); harnesses(); if (state.all.join() !== before) state.on = new Set(state.all);
+  timed(render);
+}
+const timed = (f) => { const t = performance.now(); f(); state.renderMs.push(Math.round(performance.now() - t)); };
+function harnesses() {
+  const a = state.data.analysis;
+  const hs = new Set();
+  if (a) { Object.keys(a.coverage || {}).forEach((h) => hs.add(h)); (a.by?.harness || []).forEach((r) => hs.add(r.name)); }
+  (state.data.sessions || []).forEach((s) => hs.add(s.harness));
+  state.all = [...hs].sort();
+  if (!state.on.size) state.on = new Set(state.all);
+}
+
+// a list with LIST_MAX rows and a "view more" toggle; rows are HTML strings
+// the full list is built only when "view more" is clicked (sessions and decisions run to thousands of rows)
+const LISTS = new Map();
+function list(rows, wrap = (x) => x) {
+  if (!rows.length) return `<div class="empty">${S.none}</div>`;
+  const id = "l" + Math.random().toString(36).slice(2);
+  const head = wrap(rows.slice(0, LIST_MAX).join(""));
+  if (rows.length <= LIST_MAX) return head;
+  LISTS.set(id, () => wrap(rows.join("")));
+  return `<div data-list="${id}">${head}</div><div data-full="${id}" hidden></div>`
+    + `<button class="more" data-toggle="${id}" data-n="${rows.length}">${S.more} (${rows.length})</button>`;
+}
+function table(cols, rows) {  // cols: [label, isNum]
+  const th = "<tr>" + cols.map(([l, n]) => `<th class="${n ? "n" : ""}">${esc(l)}</th>`).join("") + "</tr>";
+  return list(rows.map((r) => "<tr>" + r.map((c, i) => `<td class="${cols[i][1] ? "n" : ""}">${c}</td>`).join("") + "</tr>"),
+    (body) => `<table>${th}${body}</table>`);
+}
+const bar = (v, max) => `<div class="bar" style="width:${max > 0 ? Math.max(1, 100 * v / max) : 0}%"></div>`;
+const sec = (cap, body, wide) => `<section class="${wide ? "wide" : ""}"><div class="cap">${esc(cap)}</div>${body}</section>`;
+const hOk = (h) => h == null || !state.all.includes(h) || state.on.has(h);
+const costTable = (rs) => { const m = Math.max(0, ...rs.map((r) => r.cost || 0)); return table([[""], [S.cost, 1], [""]], rs.map((r) => [esc(r.name), money(r.cost), bar(r.cost, m)])); };
+
+// delivery inputs (optional): sections of readout.json (03-analyze/output.md); skipped or absent -> hidden; other keys ignored
+const section = (k) => { const v = state.data.readout?.[k]; return v && typeof v === "object" && !("skipped" in v) ? v : null; };
+const deploys = () => section("deployments");
+const issues = () => section("issues");
+const ciRate = (d, k) => d?.[k] ? { rate: d[k].failure_rate, n: d[k].n } : null;  // {failure_rate, n}
+const byType = () => state.data.types?.by_type || [];  // issues_summary.json: only ticket types, not in the readout
+
+function decisionFor(subjects) {
+  const ds = state.data.decisions || [];
+  for (let i = ds.length - 1; i >= 0; i--) if (subjects.some((s) => s && ds[i].subject === s)) return ds[i];
+  return null;
+}
+const decisionHtml = (d) => d ? `<div title="${esc(d.vendor + ": " + Object.entries(d.probabilities || {}).map(([k, v]) => k + " " + pct(v)).join(", "))}">`
+  + `→ <b>${esc(d.choice)}</b> <span class="dim">${pct(d.probabilities?.[d.choice])}</span></div>` : `<div class="dim">${S.noDecision}</div>`;
+
+function dayChart(days) {
+  const hs = state.all.filter((h) => state.on.has(h));
+  if (!days.length || !hs.length) return `<div class="empty">${S.none}</div>`;
+  const tot = days.map((d) => hs.reduce((s, h) => s + (d[h] || 0), 0));
+  const max = Math.max(...tot, 1e-12), W = 600, bw = W / days.length;
+  let g = "";
+  days.forEach((d, i) => {
+    let y = CHART_H;
+    hs.forEach((h) => {
+      const v = d[h] || 0; if (!v) return;
+      const hh = CHART_H * v / max; y -= hh;
+      g += `<rect x="${i * bw + 1}" y="${y}" width="${Math.max(1, bw - 2)}" height="${hh}" rx="2" fill="${esc(color(h))}"><title>${esc(d.day)} ${esc(h)} ${money(v)}</title></rect>`;
+    });
+  });
+  const lab = (i) => `<text x="${i * bw + bw / 2}" y="${CHART_H + 12}" text-anchor="middle">${esc(days[i].day.slice(5))}</text>`;
+  const ticks = days.length > 1 ? lab(0) + lab(days.length - 1) : lab(0);
+  return `<svg viewBox="0 0 ${W} ${CHART_H + 16}" width="100%" preserveAspectRatio="none" style="height:${CHART_H + 16}px">${g}${ticks}`
+    + `<text x="2" y="10">${money(max)}</text></svg>`;
+}
+
+// detail panels, one per card; each returns section HTML
+const DETAIL = {
+  spend: (a) => {
+    if (!a) return "";
+    const c = a.totals?.cost || {}, ct = sum(TYPES, (k) => c[k]), by = a.by || {};
+    const mix = ct > 0 ? `<div class="mix">${TYPES.map((k) => `<div title="${S[k]} ${money(c[k])}" style="width:${100 * (c[k] || 0) / ct}%;background:${TYPE_COLOR[k]}"></div>`).join("")}</div>`
+      + table([[""], [S.cost, 1], ["%", 1]], TYPES.map((k) => [sw(TYPE_COLOR[k]) + S[k], money(c[k]), pct((c[k] || 0) / ct)])) : `<div class="empty">${S.none}</div>`;
+    const nf = state.on.size < state.all.length ? `<div class="dim">${S.unfiltered}</div>` : "";
+    return sec(S.byDay, dayChart(by.day || []), true) + sec(S.mix, mix + nf) + sec(S.models, costTable(by.model || []) + nf) + sec(S.projects, costTable(by.project || []) + nf);
+  },
+  impact: (a, imp) => {
+    const d = deploys(), is = issues(), nf = state.on.size < state.all.length ? `<div class="dim">${S.unfiltered}</div>` : "";
+    const ci = d ? sec(S.ci, table([[""], [S.ciFail, 1], [S.runs, 1]], ["agent", "baseline"].map((k) => [S[k], pct(ciRate(d, k)?.rate), num(ciRate(d, k)?.n)])) + nf) : "";
+    const pr = is ? sec(S.prs, table([[""], ["", 1]], [[S.prsLinked, `${num(is.prs_linked)}/${num(is.prs)}`], [S.merged, num(is.prs_merged)],
+        [S.ticketless, pct(is.ticketless_share)], [S.costLinked, money(is.cost_linked)], [S.closedNoPr, num(is.issues_closed_without_pr)]]) + nf)
+      + (byType().length ? sec(S.byType, table([[""], [S.prs, 1], [S.cost, 1]], byType().slice().sort((x, y) => (y.cost || 0) - (x.cost || 0)).map((r) => [esc(r.type), num(r.prs), money(r.cost)]))) : "") : "";
+    if (!imp) return ci + pr;
+    const cols = [[""], [S.cost, 1], [S.kept, 1], [S.perCommit, 1], [S.revert, 1]];
+    const row = (name, r) => [name, money(r.cost), num(r.commits_kept), money(r.cost_per_kept_commit), pct(r.revert_rate)];
+    return sec(S.byRepo, table(cols, (imp.by_repo || []).map((r) => row(esc(r.repo_label), r))))
+      + sec(S.byHarness, table(cols, (imp.by_harness || []).filter((r) => hOk(r.harness)).map((r) => row(sw(color(r.harness)) + esc(r.harness), r)))
+      + `<div class="dim">${S.unlinked} ${money(imp.unlinked_cost)} · ${S.linked} ${num(imp.sessions_linked)}/${num(imp.sessions_total)}</div>`) + ci + pr;
+  },
+  work: (a) => {
+    const ses = (state.data.sessions || []).filter((s) => hOk(s.harness)).sort((x, y) => (y.cost?.total || 0) - (x.cost?.total || 0));
+    const by = a?.by || {};
+    return (state.data.sessions ? sec(S.sessions, table([[""], [""], [S.cost, 1]], ses.map((s) =>
+        [sw(color(s.harness)) + esc(s.project), `<span class="dim">${esc((s.start || "").slice(0, 16).replace("T", " "))}</span>`, money(s.cost?.total)]))) : "")
+      + (a ? sec(S.tools, costTable(by.tool || [])) + sec(S.mcp, table([[""], [S.calls, 1], [S.errRate, 1]], (by.mcp || []).map((r) => [esc(r.server), num(r.calls), pct(r.error_rate)]))) : "");
+  },
+  review: (a) => {
+    const ds = state.data.decisions || [];
+    const ol = (a?.outliers || []).filter((o) => hOk(o.group)).sort((x, y) => Math.abs(y.score) - Math.abs(x.score));
+    const rc = (a?.recommendations || []).filter((r) => hOk(r.harness));
+    return (a ? sec(S.outliers, list(ol.map((o) => `<div class="item" title="z ${num(o.score)} · n ${num(o.n)}${o.session_id ? " · " + esc(o.session_id) : ""}">`
+        + `<span class="chip" title="${esc(o.metric)}">${esc(metricInfo(o.metric).name)}</span><span class="chip">${esc(o.group)}</span> <b>${fmtUnit(o.value, metricInfo(o.metric).unit)}</b> <span class="dim">${S.vs} ${fmtUnit(o.baseline, metricInfo(o.metric).unit)}</span>`
+        + decisionHtml(decisionFor([`${o.metric}:${o.group}:${o.session_id}`, `${o.metric}:${o.group}`, o.session_id])) + `</div>`)))
+      + sec(S.recs, list(rc.map((r) => `<div class="item" title="${esc((r.evidence || []).map((e) => e.metric + " = " + (typeof e.value === "number" ? num(e.value) : e.value)).join(" · "))}">`
+        + `<b>${esc(r.candidate)}</b> ${r.harness ? `<span class="chip">${esc(r.harness)}</span>` : ""}${r.verdict ? esc(r.verdict) + (r.p_yes != null ? " " + pct(r.p_yes) : "") : ""}`
+        + decisionHtml(decisionFor([r.id, `recommendation:${r.id}`])) + `</div>`))) : "")
+      + (ds.length ? sec(S.decisions, list(ds.slice().reverse().map((d) => `<div class="item" title="${esc(d.subject)}"><span class="chip">${esc(d.point)}</span>${esc(d.question)}${decisionHtml(d)}</div>`))) : "");
+  },
+  sources: (a) => {
+    if (!a) return "";
+    const cv = Object.entries(a.coverage || {}).filter(([h]) => hOk(h));
+    const mt = (a.metrics || []).filter((m) => m.group_by !== "harness" || hOk(m.group));
+    return sec(S.coverage, table([[""], [S.sessions, 1], [S.span], [S.unpriced, 1]], cv.map(([h, c]) =>
+        [`<span title="${esc((c.sources || []).join(", ") + " · " + Object.entries(c.cost_basis_share || {}).map(([k, v]) => k + " " + pct(v)).join(", "))}">${sw(color(h)) + esc(h)}</span>`, num(c.sessions),
+         c.first_ts ? esc(c.first_ts.slice(0, 10) + " → " + (c.last_ts || "").slice(0, 10)) : `<span class="dim">${esc(c.reason || "–")}</span>`, num(c.unpriced_calls)])))
+      + sec(S.metrics, table([[""], [S.value, 1]], mt.map((m) => [`<span title="${esc(m.id + ": " + m.definition + " · n " + m.n)}">${esc(m.name)}</span> <span class="dim">${esc(m.group ?? "")}</span>`,
+         /^(ratio|usd)$/i.test(m.unit || "") ? fmtUnit(m.value, m.unit) : num(m.value) + " " + esc(m.unit || "")])));
+  },
+};
+
+// readout sections this page has no panel for (quality, mcp, context, ...): one small card each, keys as labels
+function extraSections() {
+  const ro = state.data.readout || {};
+  return Object.keys(ro).filter((k) => !READOUT_KNOWN.includes(k) && section(k)).map((k) => {
+    const rows = Object.entries(section(k)).filter(([, v]) => v != null && !(Array.isArray(v) && !v.length)).map(([kk, v]) => {
+      let val;
+      if (Array.isArray(v)) val = v.every((x) => typeof x !== "object") ? `<span title="${esc(v.join(", "))}">${num(v.length)}</span>`
+        : `<span title="${esc(v.map((x) => Object.values(x).join(" ")).join("\n"))}">${num(v.length)}</span>`;
+      else if (typeof v === "object") val = `<span title="${esc(Object.entries(v).map(([a, b]) => a + " " + b).join(", "))}">${Object.entries(v).slice(0, 3).map(([a, b]) => esc(a) + " " + fmtKey(a, b)).join(" · ")}</span>`;
+      else val = fmtKey(kk, v);
+      return `<div class="kv" title="${esc(k + "." + kk)}"><span>${esc(label(kk))}</span><span class="n">${val}</span></div>`;
+    });
+    return sec(label(k), list(rows));
+  }).join("");
+}
+
+function render() {
+  LISTS.clear();
+  const a = state.data.analysis, imp = state.data.impact;
+  const hrows = (a?.by?.harness || []).filter((r) => hOk(r.name)), filtered = state.on.size < state.all.length;
+  // header: one row (title, period, harness filter) and at most 5 cards; a card opens its detail below
+  const cards = [], d = deploys(), is = issues(), ag = ciRate(d, "agent");
+  if (a) cards.push(["spend", money(filtered ? sum(hrows, (r) => r.cost) : a.totals?.cost?.total), S.spend]);
+  // delivery card: $/kept commit when impact exists, else CI or PR outcome; CI and PRs as one dim line
+  const sub = [ag ? `${S.ciFail} ${pct(ag.rate)} ${S.vs} ${pct(ciRate(d, "baseline")?.rate)}` : "", is ? `PRs ${num(is.prs_linked)}/${num(is.prs)}` : ""].filter(Boolean).join(" · ");
+  if (imp) {
+    const byH = (imp.by_harness || []).filter((r) => hOk(r.harness)), k = sum(byH, (r) => r.commits_kept);
+    // the headline only covers linked sessions: say how many, first
+    const ln = `${S.linkedShort} ${num(imp.sessions_linked)}/${num(imp.sessions_total)}`;
+    cards.push(["impact", k ? money(sum(byH, (r) => r.cost) / k) : "–", S.perCommit, [ln, sub].filter(Boolean).join(" · ")]);
+  } else if (d || is) cards.push(["impact", ag ? pct(ag.rate) : `${num(is?.prs_linked)}/${num(is?.prs)}`, ag ? S.ciFail : S.prsLinked, sub]);
+  if (a || state.data.sessions) cards.push(["work", num(a ? (filtered ? sum(hrows, (r) => r.sessions) : a.totals?.sessions) : state.data.sessions.filter((s) => hOk(s.harness)).length), S.sessions]);
+  if (a) {
+    cards.push(["review", num((a.outliers || []).filter((o) => hOk(o.group)).length + (a.recommendations || []).filter((r) => hOk(r.harness)).length), S.review]);
+    const cv = Object.entries(a.coverage || {}).filter(([h]) => hOk(h));
+    cards.push(["sources", `${cv.filter(([, c]) => c.events).length}/${cv.length}`, S.sources]);
+  }
+  const gen = a?.generated || state.data.readout?.generated || imp?.generated, ag2 = gen && age(gen);
+  const fresh = ag2 ? ` · <span class="${ag2.h > STALE_H ? "stale" : ""}" title="${esc(S.generated + " " + gen)}">${S.updated} ${ag2.txt} ${S.ago}</span>` : "";
+  $("#period").innerHTML = (a ? esc((a.period?.from || "").slice(0, 10) + " → " + (a.period?.to || "").slice(0, 10)) : "") + fresh;
+  $("#filters").innerHTML = state.all.map((h) => `<button data-h="${esc(h)}" class="${state.on.has(h) ? "on" : "off"}">${sw(color(h)) + esc(h)}</button>`).join("");
+  $("#head").innerHTML = cards.map(([k, v, l, sb]) => `<button class="card ${state.open === k ? "on" : ""}" data-open="${k}"><b>${v}</b><span>${esc(l)}</span>${sb ? `<small>${esc(sb)}</small>` : ""}</button>`).join("");
+  const body = state.open ? DETAIL[state.open](a, imp) : (a ? sec(S.byDay, dayChart(a.by?.day || []), true) : "") + extraSections();
+  $("#main").innerHTML = body || `<section class="wide empty">${location.protocol === "file:" ? S.noFetch : Object.keys(state.status).length ? S.noData : S.loading}</section>`;
+  // status bar: files, freshness, legends
+  const st = (k) => state.status[k] === undefined ? ["wait", S.loading] : state.status[k] ? ["got", src + state.status[k] + " " + num(state.bytes[state.status[k]]) + " B"] : ["miss", "missing"];
+  $("#status").innerHTML = Object.keys(FILES).filter((k) => state.status[k] || !OPTIONAL.includes(k)).map((k) => `<span class="${st(k)[0]}" title="${esc(st(k)[1])}">${esc(k)}</span>`).join("")
+    + (a ? `<span>${S.generated} ${esc((a.generated || "").slice(0, 16).replace("T", " "))}</span>` : "") + `<span style="flex:1"></span>`
+    + state.all.map((h) => `<span>${sw(color(h)) + esc(h)}</span>`).join("") + TYPES.map((k) => `<span>${sw(TYPE_COLOR[k]) + S[k]}</span>`).join("")
+    + `<button data-legend="1" title="${esc(S.legendText.join("\n"))}">${S.notes} ⓘ</button>`;
+  $("#legend").innerHTML = S.legendText.map((t) => `<div>${esc(t)}</div>`).join("");
+}
+
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.h) { const h = b.dataset.h; state.on.has(h) ? state.on.delete(h) : state.on.add(h); render(); }
+  else if (b.dataset.legend) $("#legend").hidden = !$("#legend").hidden;
+  else if (b.dataset.open) { state.open = state.open === b.dataset.open ? null : b.dataset.open; render(); }
+  else if (b.dataset.toggle) {
+    const id = b.dataset.toggle, full = document.querySelector(`[data-full="${id}"]`), head = document.querySelector(`[data-list="${id}"]`);
+    const open = full.hidden; if (open && !full.innerHTML && LISTS.has(id)) full.innerHTML = LISTS.get(id)(); full.hidden = !open; head.hidden = open; b.textContent = open ? S.less : `${S.more} (${b.dataset.n})`;
+  }
+});
+
+document.addEventListener("keydown", (e) => {  // Esc closes the open detail and the notes
+  if (e.key !== "Escape") return;
+  $("#legend").hidden = true; if (state.open) { state.open = null; render(); }
+});
+
+// dev telemetry: events are buffered from the start and sent only when the page is served
+// by dashboard/serve.py (response header X-OTM-Dev); otherwise the buffer is dropped.
+const tel = { buf: [], dev: null };
+const send = (kind, msg, extra) => {
+  const ev = { ts: new Date().toISOString(), kind, msg: String(msg).slice(0, 2000), ...extra };
+  if (tel.dev === null) tel.buf.push(ev);
+  else if (tel.dev) { try { navigator.sendBeacon("console", JSON.stringify(ev)); } catch (e) {} }
+};
+for (const k of ["error", "warn"]) { const o = console[k]; console[k] = (...x) => { send(k, x.map(String).join(" ")); o.apply(console, x); }; }
+addEventListener("error", (e) => send("uncaught", e.message, { src: e.filename, line: e.lineno }));
+addEventListener("unhandledrejection", (e) => send("rejection", e.reason && (e.reason.stack || e.reason)));
+try { new PerformanceObserver((l) => l.getEntries().forEach((t) => t.duration > LONG_TASK_MS && send("longtask", Math.round(t.duration) + "ms"))).observe({ type: "longtask", buffered: true }); } catch (e) {}
+
+const loaded = load().catch((e) => console.error("load failed: " + (e.stack || e)));
+
+(async () => {
+  try { tel.dev = !!(await fetch(location.pathname, { method: "HEAD", cache: "no-store" })).headers.get("X-OTM-Dev"); }
+  catch (e) { tel.dev = false; }
+  const buf = tel.buf; tel.buf = [];
+  if (!tel.dev) return;
+  buf.forEach((ev) => send(ev.kind, ev.msg, ev));
+  let last = performance.now();
+  const tick = (t) => { if (t - last > SLOW_FRAME_MS && !document.hidden) send("slowframe", Math.round(t - last) + "ms"); last = t; requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+  await loaded;
+  send("load", "ok", { src, files: state.status, bytes: state.bytes, render_ms: state.renderMs, total_ms: Math.round(performance.now()) });
+})();
+</script>
+</body>
+</html>

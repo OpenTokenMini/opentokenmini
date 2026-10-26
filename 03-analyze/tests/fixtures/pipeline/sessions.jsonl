@@ -1,0 +1,2 @@
+{"session_id": "s-1", "harness": "claude-code", "repo": "{home}/app", "cost": {"total": 2.0}}
+{"session_id": "s-2", "harness": "codex", "repo": "{repo}/sub", "cost": {"total": 1.0}}

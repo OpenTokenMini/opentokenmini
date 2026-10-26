@@ -1,0 +1,6 @@
+__pycache__/
+.pytest_cache/
+todelete/
+# real prompts: local only
+04-auto-analysis/orch-ux/tests/data/
+.claude/worktrees/

@@ -1,0 +1,197 @@
+{
+ "v": 1,
+ "generated": "2026-10-02T09:00:00Z",
+ "period": {
+  "from": "2026-09-02T00:00:00Z",
+  "to": "2026-10-02T00:00:00Z",
+  "days": 30
+ },
+ "filters": {},
+ "totals": {
+  "cost": {
+   "input": 0.003125,
+   "output": 0.00375,
+   "cache_read": 0.003,
+   "cache_write": 0.0075,
+   "total": 0.017375
+  },
+  "tokens": {
+   "input": 1100,
+   "output": 200,
+   "cache_read": 10000,
+   "cache_write": 2000,
+   "reasoning": 50
+  },
+  "calls": 2,
+  "sessions": 2,
+  "turns": 1,
+  "projects": 1,
+  "subagent_cost": 0.0
+ },
+ "coverage": {
+  "claude-code": {
+   "events": 3,
+   "sessions": 1,
+   "first_ts": "2026-10-01T10:00:00Z",
+   "last_ts": "2026-10-01T10:00:06Z",
+   "sources": [
+    "otel"
+   ],
+   "cost_basis_share": {
+    "list_price": 1.0
+   },
+   "unpriced_calls": 0
+  },
+  "codex": {
+   "events": 1,
+   "sessions": 1,
+   "first_ts": "2026-10-01T11:00:00Z",
+   "last_ts": "2026-10-01T11:00:00Z",
+   "sources": [
+    "transcript"
+   ],
+   "cost_basis_share": {
+    "list_price": 1.0
+   },
+   "unpriced_calls": 0
+  },
+  "antigravity": {
+   "events": 0,
+   "sessions": 0,
+   "first_ts": null,
+   "last_ts": null,
+   "sources": [],
+   "cost_basis_share": {},
+   "unpriced_calls": 0,
+   "reason": "no stdlib parser"
+  }
+ },
+ "by": {
+  "day": [
+   {
+    "day": "2026-10-01",
+    "claude-code": 0.01725,
+    "codex": 0.000125
+   }
+  ],
+  "harness": [
+   {
+    "name": "claude-code",
+    "cost": 0.01725,
+    "sessions": 1,
+    "calls": 1
+   },
+   {
+    "name": "codex",
+    "cost": 0.000125,
+    "sessions": 1,
+    "calls": 1
+   }
+  ],
+  "model": [
+   {
+    "name": "claude-sonnet-4",
+    "cost": 0.01725,
+    "sessions": 1,
+    "calls": 1
+   },
+   {
+    "name": "gpt-5.5",
+    "cost": 0.000125,
+    "sessions": 1,
+    "calls": 1
+   }
+  ],
+  "project": [
+   {
+    "name": "demo/app",
+    "cost": 0.017375,
+    "sessions": 2,
+    "calls": 2
+   }
+  ],
+  "tool": [
+   {
+    "name": "Bash",
+    "cost": 0.008625,
+    "calls": 1
+   },
+   {
+    "name": "mcp__git__log",
+    "cost": 0.008625,
+    "calls": 1
+   },
+   {
+    "name": "(reply)",
+    "cost": 0.000125,
+    "calls": 1
+   }
+  ],
+  "mcp": [
+   {
+    "server": "git",
+    "calls": 1,
+    "errors": 0,
+    "error_rate": 0.0
+   }
+  ]
+ },
+ "metrics": [
+  {
+   "id": "M-cache-hit-rate",
+   "name": "Cache hit rate",
+   "definition": "cache_read / (input + cache_read + cache_write)",
+   "value": 0.763359,
+   "unit": "ratio",
+   "group_by": "harness",
+   "group": "claude-code",
+   "n": 1,
+   "session_ids": [
+    "s-0001"
+   ]
+  },
+  {
+   "id": "M-cost-per-call",
+   "name": "Cost per call",
+   "definition": "cost.total / api_calls",
+   "value": 0.01725,
+   "unit": "USD",
+   "group_by": "harness",
+   "group": "claude-code",
+   "n": 1,
+   "session_ids": [
+    "s-0001"
+   ]
+  }
+ ],
+ "outliers": [
+  {
+   "metric": "M-cost-per-call",
+   "group": "claude-code",
+   "session_id": "s-0001",
+   "value": 0.01725,
+   "baseline": 0.002,
+   "score": 4.1,
+   "method": "robust_z",
+   "n": 12,
+   "session_ids": [
+    "s-0001"
+   ]
+  }
+ ],
+ "recommendations": [
+  {
+   "id": "R1",
+   "candidate": "enable prompt caching",
+   "harness": "codex",
+   "evidence": [
+    {
+     "metric": "M-cache-hit-rate",
+     "value": 0.0
+    }
+   ],
+   "p_yes": null,
+   "verdict": null
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+{
+  "$id": "quality.schema.json",
+  "title": "One quality record (v=1): quality.jsonl, kind session or commit. Proposed; lives in tests until 02-measure/schemas adopts it.",
+  "anyOf": [{"$ref": "#/$defs/session"}, {"$ref": "#/$defs/commit"}],
+  "$defs": {
+    "ts": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/ts"},
+    "count": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/count"},
+    "rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "test": {"enum": ["pass", "fail", null]},
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "session": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "harness", "session_id", "repo_label", "start", "end", "tool_calls", "tool_errors",
+                   "tool_error_rate", "test_runs", "test_failed", "last_test", "risky", "files_edited", "files_reworked", "commits"],
+      "properties": {
+        "v": {"const": 1}, "kind": {"const": "session"},
+        "harness": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/harness"},
+        "session_id": {"type": "string", "minLength": 1}, "repo_label": {"type": ["string", "null"]},
+        "start": {"$ref": "#/$defs/ts"}, "end": {"$ref": "#/$defs/ts"},
+        "tool_calls": {"$ref": "#/$defs/count"}, "tool_errors": {"$ref": "#/$defs/count"}, "tool_error_rate": {"$ref": "#/$defs/rate"},
+        "test_runs": {"$ref": "#/$defs/count"}, "test_failed": {"$ref": "#/$defs/count"}, "last_test": {"$ref": "#/$defs/test"},
+        "risky": {"type": "object", "additionalProperties": false, "required": ["destructive", "exfiltration", "secrets"],
+                  "properties": {"destructive": {"$ref": "#/$defs/count"}, "exfiltration": {"$ref": "#/$defs/count"},
+                                 "secrets": {"$ref": "#/$defs/count"}}},
+        "files_edited": {"$ref": "#/$defs/count"}, "files_reworked": {"$ref": "#/$defs/count"},
+        "commits": {"type": "array", "items": {"$ref": "#/$defs/sha"}}
+      }
+    },
+    "commit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "harness", "session_id", "repo_label", "sha", "ts", "last_test", "reworked_by", "reverted_by"],
+      "properties": {
+        "v": {"const": 1}, "kind": {"const": "commit"},
+        "harness": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/harness"},
+        "session_id": {"type": "string", "minLength": 1}, "repo_label": {"type": "string"},
+        "sha": {"$ref": "#/$defs/sha"}, "ts": {"$ref": "#/$defs/ts"}, "last_test": {"$ref": "#/$defs/test"},
+        "reworked_by": {"type": ["array", "null"], "items": {"$ref": "#/$defs/sha"}},
+        "reverted_by": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}
+      }
+    }
+  }
+}

@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OpenTokenMini</title>
+<link rel="icon" href="logo.svg">
+<style>
+  :root { --bg:#121417; --card:#1a1d21; --fg:#e6e7e9; --mute:#878c94; --line:#262a30;
+          --cost:#7d8796; --impact:#3c9a5f; --amber:#e0a526; --red:#e05a4c }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased }
+  main { max-width:1120px; margin:0 auto; padding:0 24px 48px }
+  button { font:inherit; color:inherit; cursor:pointer }
+
+  header { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:18px 0; border-bottom:1px solid var(--line) }
+  .brand { grid-column:2; display:flex; align-items:center; gap:10px; font-size:17px; font-weight:600; letter-spacing:-.01em }
+  .brand img { width:26px }
+  .right { grid-column:3; justify-self:end; display:flex; align-items:center; gap:14px }
+  .fix { background:var(--amber); color:#1a1405; border:0; border-radius:6px; padding:8px 14px; font-weight:600 }
+  header .fix { background:none; color:var(--amber); border:1px solid #5a4a1f; padding:6px 12px; font-weight:500 }
+  header .fix:hover { border-color:var(--amber) }
+
+  .totals { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; margin-top:28px }
+  .total[hidden] { display:none }
+  .scale { position:relative; width:140px; height:4px; margin:8px auto 0; border-radius:2px;
+           background:linear-gradient(90deg, var(--red) 0 40%, var(--amber) 40% 65%, var(--impact) 65%) }
+  .scale i { position:absolute; top:-4px; width:2px; height:12px; background:var(--fg); border-radius:1px; transform:translateX(-1px) }
+  .total { padding:16px 0; text-align:center; cursor:pointer }
+  .total + .total { border-left:1px solid var(--line) }
+  .label { color:var(--mute); font-size:12px; text-transform:uppercase; letter-spacing:.06em }
+  .big { font-size:40px; font-weight:600; letter-spacing:-.02em; line-height:1.15; margin:4px 0 }
+  .agg { color:var(--mute); font-size:12px }
+  .swap { background:none; border:0; padding:0; text-align:left }
+  .swap:hover .big { text-decoration:underline dotted var(--mute); text-underline-offset:6px }
+  .inf { font-style:italic }
+
+  .hist { margin-top:24px; height:150px; display:flex; flex-direction:column }
+  .hist .row { flex:1; display:flex; gap:3px }
+  .hist .up { align-items:flex-end; border-bottom:1px solid var(--line) }
+  .hist i { flex:1; border-radius:2px }
+  .up i { background:#3a3f47; display:flex; align-items:flex-end; overflow:hidden }
+  .up i b { width:100%; background:var(--impact) }
+  .hist i.hl { opacity:1; filter:brightness(1.3) }
+  .tip { position:fixed; pointer-events:none; display:none; background:#22262c; border:1px solid #3a3f47; border-radius:6px; padding:6px 10px; font-size:12px; white-space:nowrap }
+  .tip span { color:var(--mute) }
+  .ghost { margin-top:10px; background:none; border:1px solid var(--line); border-radius:6px; padding:5px 12px; color:var(--mute); font-size:13px }
+  .ghost:hover { color:var(--fg); border-color:#3a3f47 }
+  .bar { display:flex; gap:8px; align-items:center; margin:48px 0 12px }
+  .bar .ghost { margin:0 }
+  .filter { background:none; border:1px solid var(--line); border-radius:6px; padding:5px 10px; color:var(--fg); font:inherit; font-size:13px; width:180px }
+  .filter:focus { outline:none; border-color:#3a3f47 }
+  dialog { width:520px; background:var(--card); color:var(--fg); border:1px solid #3a3f47; border-radius:12px; padding:24px }
+  dialog::backdrop { background:rgba(0,0,0,.55) }
+  dialog:focus, dialog:focus-visible { outline:none }
+  dialog h2 { margin:0 0 14px; font-size:16px; font-weight:600 }
+  dialog textarea { width:100%; height:110px; resize:vertical; background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:10px 12px; font:inherit }
+  dialog textarea:focus { outline:none; border-color:#4a505a }
+  dialog .row2 { display:flex; justify-content:space-between; align-items:center; margin-top:16px }
+  dialog .views { justify-self:auto }
+  dialog.wide { width:640px }
+  .ins-head { display:flex; justify-content:space-between; align-items:baseline }
+  .ins-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin:8px 0 18px }
+  .ins-grid div { background:var(--bg); border-radius:8px; padding:10px 12px }
+  .ins-grid b { display:block; font-size:18px; font-weight:600 }
+  .ins-grid span { color:var(--mute); font-size:12px }
+  .ins-sec { color:var(--mute); font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px }
+  .tag { text-transform:none; letter-spacing:0; font-style:italic }
+  .ins-cols { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:18px }
+  .ins-cols ul { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px; font-size:13px }
+  #ins-good li::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--impact); margin-right:8px; vertical-align:middle }
+  .key { display:flex; gap:16px; margin-top:8px; color:var(--mute); font-size:12px }
+  .key b { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:6px }
+  dialog.tl { width:860px; max-height:88vh; padding:20px 24px 12px; display:flex; flex-direction:column }
+  dialog.tl:not([open]) { display:none }
+  .tl-cols { display:flex; color:var(--mute); font-size:12px; text-transform:uppercase; letter-spacing:.06em; border-bottom:1px solid var(--line); padding-bottom:6px }
+  .tl-cols span { text-align:center }
+  .tl-cols .ph { opacity:.45 }
+  .tl-body { overflow-y:auto; overflow-x:hidden; flex:1; min-height:120px; padding-top:6px }
+  .tl-body svg { display:block }
+  .key { flex-wrap:wrap; padding-top:8px; border-top:1px solid var(--line) }
+  .tl-body { cursor:row-resize; user-select:none }
+  .tl-sum { margin-left:auto; color:var(--fg) }
+  .tl-sum span { color:var(--mute) }
+
+  .views { justify-self:start; display:flex; background:var(--card); border:1px solid var(--line); border-radius:7px; padding:2px }
+  .views button { background:none; border:0; border-radius:5px; padding:5px 11px; color:var(--mute); font-size:13px }
+  .views button.on { background:#2a2e35; color:var(--fg) }
+  #cards { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:22px }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:16px }
+  .card { cursor:pointer }
+  .card:hover { border-color:#3a3f47 }
+  .card { position:relative }
+  .card ul { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px }
+  .card .head { display:flex; justify-content:space-between; align-items:baseline; gap:8px }
+  .card .name { font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .card .sub { white-space:nowrap }
+  .trio { display:grid; grid-template-columns:repeat(3, 1fr); align-items:baseline; padding:6px 2px }
+  .trio b { font-size:18px; font-weight:600 }
+  .trio span { display:flex; flex-direction:column; gap:2px }
+  .trio small { color:var(--mute); font-size:11px }
+  .card .sub { color:var(--mute); font-size:12px }
+  .pair { display:flex; justify-content:space-between; align-items:baseline }
+  .pair b { font-size:20px; font-weight:600 }
+  .pair .inf { color:var(--impact); font-size:16px }
+  .action { font-size:13px; color:#c9ccd1 }
+  .action::before { content:"→"; color:var(--impact); margin-right:8px }
+  .issue { font-size:13px; color:#c9ccd1 }
+  .issue::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--amber); margin-right:8px; vertical-align:middle }
+  .issue .n { color:var(--mute) }
+  .adjust { margin-top:auto; background:none; border:1px solid var(--line); border-radius:6px; padding:6px; color:var(--mute); font-size:13px }
+  .adjust:hover { color:var(--fg); border-color:#3a3f47 }
+
+  /* Live page: what runs now */
+  .page-live #usage { display:none }
+  body:not(.page-live) #live, body:not(.page-live) #status { display:none }
+  .page-live main { padding-bottom:72px }
+  #live { margin-top:28px }
+  .quota { display:grid; grid-template-columns:1fr 1fr; gap:22px }
+  .q-bar { height:6px; background:#2a2e35; border-radius:3px; margin:8px 0 6px; overflow:hidden }
+  .q-bar b { display:block; height:100% }
+  .q-head { display:flex; justify-content:space-between; align-items:baseline }
+  .q-head b { font-size:22px; font-weight:600 }
+  .lv-sec { margin-top:36px }
+  .lv-sec > .label { margin-bottom:8px }
+  .lv-row { display:grid; grid-template-columns:14px minmax(0, 1fr) 80px 70px 70px; gap:10px; align-items:center; padding:9px 10px; border-bottom:1px solid var(--line); cursor:pointer }
+  .lv-row:hover, .lv-row.on { background:var(--card) }
+  .lv-inl { display:grid; grid-template-columns:14px minmax(0, 1fr) 80px 70px 70px; gap:10px; padding:2px 10px; font-size:12px; color:var(--mute); cursor:pointer }
+  .lv-inl span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; grid-column:2; padding-left:14px }
+  .lv-inl:last-of-type { padding-bottom:8px }
+  .lv-hd .num, .lv-sub .num { text-align:right; font-variant-numeric:tabular-nums }
+  .lv-warn.info::before { background:var(--mute) }
+  .lv-hd { display:grid; grid-template-columns:14px minmax(0, 1fr) 80px 70px 70px; gap:10px; color:var(--mute); font-size:12px; padding:4px 10px; border-bottom:1px solid var(--line) }
+  .badge { font-size:11px; border:1px solid #2f5a3d; color:var(--impact); border-radius:4px; padding:0 5px; margin-left:8px; vertical-align:1px }
+  .badge.cur { background:#1d3326 }
+  .lv-inl .num, .lv-ag .num { text-align:right; font-variant-numeric:tabular-nums }
+  .lv-inl .dot, .lv-ag .dot { display:inline-block; margin-right:6px; vertical-align:1px; width:7px; height:7px }
+  .chip { font-size:10px; border:1px solid currentColor; border-radius:4px; padding:0 4px; margin-left:6px; vertical-align:1px }
+  .lv-inl .dur, .lv-ag .dur { margin-left:6px }
+  .ctx { display:flex; align-items:center; justify-content:flex-end; gap:5px }
+  .ctx i { display:inline-block; width:28px; height:4px; background:#2a2f36; border-radius:2px; overflow:hidden }
+  .ctx i b { display:block; height:100% }
+  .lv-inl[data-wk]:hover, .lv-inl .lv-vm:hover { color:var(--fg) }
+  .lv-res { margin:0 10px 4px 48px; padding:4px 8px; font-size:12px; color:var(--fg); background:var(--card); border-left:2px solid var(--line); white-space:pre-wrap }
+  .lv-row .num { text-align:right; font-variant-numeric:tabular-nums }
+  .lv-row .name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .dot { width:8px; height:8px; border-radius:50% }
+  .lv-detail { background:var(--card); border:1px solid var(--line); border-top:0; border-radius:0 0 10px 10px; padding:14px 16px 16px; margin-bottom:8px }
+  .lv-goal { color:#c9ccd1; font-size:13px; margin-bottom:12px }
+  .lv-sub { display:grid; grid-template-columns:minmax(0, 1fr) 90px 56px 56px 44px 90px 70px; gap:8px; padding:6px 4px; font-size:13px; border-bottom:1px solid var(--line); cursor:pointer }
+  .lv-sub.hd { color:var(--mute); font-size:12px; cursor:default }
+  .lv-sub:not(.hd):hover, .lv-sub.on { background:#22262c }
+  .lv-sub span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .lv-node { background:var(--bg); border-radius:8px; padding:10px 12px; margin:6px 0 10px; font-size:13px }
+  .lv-node pre { white-space:pre-wrap; color:#c9ccd1; font-size:13px; line-height:1.5; font-family:inherit; margin:8px 0 0; max-height:220px; overflow:auto }
+  .lv-files { list-style:none; margin:0; padding:0; font-size:13px; display:flex; flex-direction:column; gap:4px }
+  .lv-files li { display:flex; gap:10px }
+  .lv-files .path { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; direction:rtl; text-align:left }
+  .lv-line { font:12px/1.6 ui-monospace, monospace; color:#c9ccd1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .lv-need { font-size:14px; margin:4px 0 10px }
+  .lv-warn { font-size:13px; color:#c9ccd1; margin:8px 0 }
+  .lv-warn::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--amber); margin-right:8px; vertical-align:middle }
+  .more { margin-top:8px; background:none; border:0; padding:2px 0; color:var(--mute); font-size:13px }
+  .more:hover { color:var(--fg) }
+  .lv-ag { display:grid; grid-template-columns:minmax(0, 1fr) 80px 70px 70px; gap:10px; align-items:center; padding:5px 4px; font-size:13px; border-bottom:1px solid var(--line) }
+  .lv-ag:hover, .lv-ag.on { background:#22262c }
+  .lv-ag span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .lv-ag .num { text-align:right; font-variant-numeric:tabular-nums }
+  .lv-track { position:relative; height:8px; background:#22262c; border-radius:2px }
+  .lv-track b { position:absolute; top:0; height:100%; min-width:2px; border-radius:2px }
+  .lv-track b.stuck { outline:1px dashed var(--amber); outline-offset:1px }
+  .lv-flag { font-size:11px; margin-left:6px }
+  #status { position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--line); padding:8px 24px; display:flex; gap:16px; align-items:center; color:var(--mute); font-size:12px }
+  #status .dot { display:inline-block; margin-right:6px; vertical-align:middle }
+  #status .err { color:var(--red) }
+  #status .lnk { background:none; border:0; padding:0; color:var(--mute); font-size:12px }
+  #status .lnk:hover { color:var(--fg) }
+  .stale { color:var(--amber) }
+  .lv-2col { display:grid; grid-template-columns:1fr 1fr; gap:22px }
+  .lv-health { font-size:13px; margin-bottom:8px }
+  .lv-health b { font-weight:600 }
+  .lv-t { display:grid; grid-template-columns:minmax(0, 1fr) 56px 56px 64px 64px; gap:8px; padding:4px 4px; font-size:13px; border-bottom:1px solid var(--line) }
+  .lv-t.hd { color:var(--mute); font-size:12px }
+  .lv-t span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .lv-t .num { text-align:right; font-variant-numeric:tabular-nums }
+  .lv-strip { position:relative; display:flex; align-items:flex-end; gap:2px; height:44px; margin:8px 0 4px; border-bottom:1px solid var(--line) }
+  .lv-strip i { flex:0 0 7px; border-radius:2px 2px 0 0; min-height:3px; cursor:pointer }
+  .lv-strip i.on { outline:1px solid var(--fg); outline-offset:1px }
+  .lv-axis { display:flex; justify-content:space-between; font-size:11px; color:var(--mute); margin-bottom:4px }
+  .lv-turn { font-size:12px; background:var(--card); border-left:2px solid var(--line); padding:6px 10px; margin:4px 0 8px; max-width:820px }
+  .lv-turn div { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--mute) }
+  .lv-strip i:hover { filter:brightness(1.4) }
+  .lv-tgt { position:absolute; left:0; right:0; border-top:1px dashed var(--mute); pointer-events:none }
+  .verdict { font-size:13px; margin-bottom:6px }
+  .lv-unav { color:var(--mute); font-size:13px }
+  #legend .k { flex:0 0 96px; display:flex }
+  #legend .row { display:flex; gap:10px; align-items:center; font-size:13px; margin:5px 0 }
+  #legend .dot, #legend .sw { display:inline-block; flex:0 0 auto }
+  #legend .sw { width:10px; height:10px; border-radius:2px }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="views" id="views"></div>
+    <div class="brand"><img src="logo.svg" alt="">OpenTokenMini</div>
+    <div class="right">
+      <button class="fix" title="Opens the orchestrating agent, or a prompt if it is not available">Fix an Issue</button>
+    </div>
+  </header>
+
+  <div id="usage">
+  <section>
+    <div class="hist" id="hist"><div class="row up" id="h-bars"></div></div>
+    <div class="lv-axis" id="h-axis" style="margin-top:4px"></div>
+    <div class="tip" id="tip"></div>
+  </section>
+  <section class="totals">
+    <div class="total"><div class="label">Cost</div><div class="big" id="cost"></div></div>
+    <div class="total"><div class="label">Volume (tokens)</div><div class="big" id="volume"></div></div>
+    <div class="total" id="eff-total">
+      <div class="label">Effectiveness</div>
+      <div class="big inf" id="impact"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="bar">
+      <button class="ghost sort" id="sort" title="Reorder sessions">Sort: price</button>
+      <input class="filter" id="filter" placeholder="Filter sessions" title="Ctrl+R" spellcheck="false">
+    </div>
+    <div id="cards"></div>
+  </section>
+  </div>
+  <div id="live"></div>
+</main>
+<footer id="status"></footer>
+<dialog id="inspect" class="tl">
+  <div class="ins-head"><h2 id="ins-name"></h2><span class="sub" id="ins-sub"></span></div>
+  <div class="ins-grid" id="ins-measured"></div>
+  <div class="tl-cols" id="tl-cols"></div>
+  <div class="tl-body" id="tl-body"></div>
+  <div class="key" id="tl-key"></div>
+</dialog>
+<dialog id="legend"><h2>Legend</h2><div id="legend-body"></div></dialog>
+<dialog id="fix-dialog">
+  <h2>Fix an Issue</h2>
+  <textarea placeholder="What isn't working?" autofocus></textarea>
+  <div class="row2">
+    <div class="views scope"><button>Everyone</button><button>Company</button><button>Team</button><button class="on">Me</button></div>
+    <button class="fix" onclick="this.closest('dialog').close()">Agentic Fix</button>
+  </div>
+</dialog>
+<script>
+// Browser errors/warnings -> serve.py -> /tmp/otm-dashboards-console.jsonl
+const send = (kind, msg) => fetch("console", { method: "POST", body: JSON.stringify({ t: Date.now(), kind, msg }), keepalive: true }).catch(() => {});
+for (const k of ["error", "warn"]) { const o = console[k]; console[k] = (...x) => { send(k, x.map(String).join(" ")); o.apply(console, x); }; }
+addEventListener("error", (e) => send("error", e.message + " @" + e.lineno));
+addEventListener("unhandledrejection", (e) => send("error", String(e.reason)));
+const LONG_TASK_MS = 50;    // long tasks at or above this are logged
+const SLOW_FRAME_MS = 100;  // animation frames at or above this are logged (long-animation-frame, Chromium)
+try { new PerformanceObserver((l) => l.getEntries().forEach((e) => e.duration >= LONG_TASK_MS && send("longtask", Math.round(e.duration) + "ms " + location.hash))).observe({ type: "longtask", buffered: true }); } catch (e) {}
+try { new PerformanceObserver((l) => l.getEntries().forEach((e) => e.duration >= SLOW_FRAME_MS && send("slowframe", Math.round(e.duration) + "ms block " + Math.round(e.blockingDuration) + "ms " + location.hash))).observe({ type: "long-animation-frame", buffered: true }); } catch (e) {}
+
+// Sample data (reference mockup, no real data)
+let DAYS = 30; const TOKENS_PER_DOLLAR = 24000;
+const EFF_RED_BELOW = 0.4, EFF_GREEN_FROM = 0.65;  // effectiveness color bands
+const effHue = (x) => `hsl(${Math.round(Math.max(0, Math.min(1, (x - 0.2) / 0.7)) * 130 + 4)} 55% 46%)`;  // continuous red -> amber -> green
+const effColor = (x) => x < EFF_RED_BELOW ? "var(--red)" : x < EFF_GREEN_FROM ? "var(--amber)" : "var(--impact)";
+const ISSUES = ["Long context reread", "Subagent fan-out", "Restarted sessions", "Big files inlined", "Verbose output", "Expensive model for search"];
+const GOOD = ["Small diffs, all kept", "Cheap model for search", "Cache reused well", "Tests ran before commit"];
+const rng = (s) => () => (s = (s * 16807) % 2147483647) / 2147483647;
+const ACTIONS = {  // savings actions, worded per level: policy (Org), practice (Team), habit (Individual)
+  Individual: ["Start fresh sessions", "Use a digest, not the file", "Small model for search", "Fewer parallel subagents", "Ask for terse replies", "Drop unused tools"],
+  Team: ["Share an AGENTS.md digest", "Cap subagents per task", "Small model for search", "Reset context between tasks", "Prune team tool list", "Agree on short outputs"],
+  Org: ["Default small model for search", "Subagent budget per task", "Shared repo digests", "Context reset policy", "Output length defaults", "Review restart-heavy flows"],
+};
+function sample(seed, scale, cards, actions) {
+  const r = rng(seed);
+  const cost = Array.from({ length: DAYS }, (_, i) => scale * (300 + 500 * r() + (i % 7 > 4 ? -200 : 0)));
+  const vol = cost.map((c, i) => c * TOKENS_PER_DOLLAR * (0.5 + 1.1 * i / DAYS) * (0.85 + 0.3 * r()));  // output grows over the window
+  const impact = cost.map((_, i) => Math.min(0.95, 0.3 + 0.55 * i / DAYS + 0.15 * (r() - 0.5)));  // trends to green
+  const total = cost.reduce((a, b) => a + b);
+  const w = cards.map((_, k) => 1 / (k + 1.5) + 0.05 * r()), ws = w.reduce((a, b) => a + b);
+  return { cost, vol, impact, total, volTotal: vol.reduce((a, b) => a + b), cards: cards.map(([name, sub], k) => ({
+    mins: Math.round(20 + 200 * r()), subagents: Math.floor(12 * r()), models: 1 + Math.floor(3 * r()),
+    commits: Math.floor(8 * r()), files: Math.floor(40 * r()), add: Math.floor(1200 * r()), del: Math.floor(500 * r()), kept: 0.4 + 0.6 * r(),
+    good: GOOD.slice(k % 2, k % 2 + 2),
+    name, sub, cost: total * w[k] / ws, vol: total * w[k] / ws * TOKENS_PER_DOLLAR * (0.7 + 0.6 * r()), share: w[k] / ws, impact: 0.5 + 0.45 * r(),
+    issues: ISSUES.slice(k % 3, k % 3 + 2 + Math.floor(r() * 2)), actions: actions.slice(k % 3, k % 3 + 2 + Math.floor(r() * 2)) })) };
+}
+const VIEWS = {};
+const MAX_CARDS = 12, NA = "—";  // live: effectiveness and code impact not computed yet
+const hhmm = (t) => new Date(t).toLocaleTimeString("en", { hour: "2-digit", minute: "2-digit", hour12: false });
+function live(d) {
+  DAYS = d.hours.length;
+  const cost = d.hours.map((h) => h.cost), vol = d.hours.map((h) => h.vol);
+  return { day: d.day, hours: d.hours.map((h) => h.h), cost, vol, impact: cost.map(() => null), total: cost.reduce((a, b) => a + b, 0), volTotal: vol.reduce((a, b) => a + b, 0),
+    cards: d.sessions.map((x) => ({ id: x.id, name: x.name, sub: `${hhmm(x.t0)} · ${x.calls} calls`, t1: x.t1, cost: x.cost, vol: x.vol, impact: null,
+      subagents: x.subagents, mins: Math.round((new Date(x.t1) - new Date(x.t0)) / 6e4), actions: [], issues: [], good: [] })) };
+}
+const UNIT = { Individual: "session", Team: "person", Org: "team" };
+
+let livePage = location.hash === "#live";  // header nav: usage views | Live
+let view = "Individual", sortBy = "price";  // price | date (last activity)
+const fmt = (usd) => "$" + (usd < 100 ? usd.toFixed(2) : Math.round(usd).toLocaleString());
+const tok = (n) => (n / 1e6).toFixed(1) + "M";
+
+const DRILL = { Org: "Team", Team: "Individual" };
+const MAX_CARD_ISSUES = 3;
+const card = (c, k) => `<div class="card" data-k="${k}" >
+  <div class="head"><span class="name">${c.name}</span><span class="sub">${c.sub}</span></div>
+  <div class="trio">
+    <span><b title="cost · sum, this ${UNIT[view]}">${fmt(c.cost)}</b><small>cost</small></span>
+    <span><b title="volume · sum of tokens, this ${UNIT[view]}">${tok(c.vol)}</b><small>tokens</small></span>
+    ${c.impact == null ? "" : `<span><b class="inf" style="color:${effColor(c.impact)}" title="effectiveness · inferred">${Math.round(c.impact * 100)}%</b><small>effectiveness</small></span>`}
+  </div>
+  <ul>${c.actions.slice(0, MAX_CARD_ISSUES).map((a) => `<li class="action">${a}</li>`).join("")}</ul>
+</div>`;
+
+function render() {
+  const v = VIEWS[view];
+  document.getElementById("volume").textContent = tok(v.volTotal);
+  document.getElementById("volume").title = `sum of tokens (input, output, cache read, cache write) · ${v.day}`;
+  document.getElementById("cost").textContent = fmt(v.total);
+  document.getElementById("cost").title = `sum of api_request cost_usd · ${v.day}`;
+  const effs = v.cards.map((c) => c.impact).filter((x) => x != null);  // live data has no effectiveness field yet: hide the total
+  document.getElementById("eff-total").hidden = !effs.length;
+  if (effs.length) { const e = effs.reduce((a, b) => a + b) / effs.length; Object.assign(document.getElementById("impact"), { textContent: Math.round(e * 100) + "%", title: "mean effectiveness of the cards, inferred" }); }
+  document.getElementById("h-axis").innerHTML = `<span>tokens per hour</span><span>${v.day || ""}</span>`;
+  const vmax = Math.max(...v.vol);
+  document.getElementById("h-bars").innerHTML = v.vol.map((c, d) => `<i style="height:${(c / vmax) * 100}%"></i>`).join("");
+  const key = sortBy === "date" ? (c) => -new Date(c.t1 || 0) : (c) => -c.cost;
+  const q = filter.value.trim().toLowerCase();
+  document.getElementById("cards").innerHTML = v.cards.map((c, k) => [c, k]).filter(([c]) => !q || c.name.toLowerCase().includes(q))
+    .sort(([a], [b]) => key(a) - key(b)).slice(0, MAX_CARDS).map(([c, k]) => card(c, k)).join("");
+  renderNav();
+}
+const renderNav = () => document.getElementById("views").innerHTML = [...new Set([view, ...Object.keys(VIEWS)]), "Live"]
+  .map((k) => `<button class="${k === (livePage ? "Live" : view) ? "on" : ""}">${k}</button>`).join("");
+const filter = document.getElementById("filter");
+filter.value = localStorage.getItem("otm-filter") || "";
+filter.oninput = () => { localStorage.setItem("otm-filter", filter.value); render(); };
+addEventListener("keydown", (e) => {
+  if (!e.ctrlKey || e.key.toLowerCase() !== "r") return;
+  e.preventDefault();
+  document.querySelectorAll("dialog[open]").forEach((x) => x.close());  // an open modal makes the page inert
+  filter.focus(); filter.select();
+}, true);
+document.getElementById("sort").onclick = (e) => { sortBy = sortBy === "price" ? "date" : "price"; e.target.textContent = "Sort: " + sortBy; render(); };
+document.getElementById("views").onclick = (e) => {
+  if (e.target.tagName !== "BUTTON") return;
+  livePage = e.target.textContent === "Live"; if (!livePage) view = e.target.textContent;
+  showPage(); if (VIEWS[view]) render();
+};
+const DAY0 = new Date(2026, 8, 20);
+const tip = document.getElementById("tip"), hist = document.getElementById("hist");
+hist.onmousemove = (e) => {
+  const v = VIEWS[view]; if (!v) return;  // data not loaded yet
+  const r = hist.getBoundingClientRect(), d = Math.min(DAYS - 1, Math.floor((e.clientX - r.left) / r.width * DAYS));
+  hist.querySelectorAll("i.hl").forEach((x) => x.classList.remove("hl"));
+  hist.querySelectorAll(`.row i:nth-child(${d + 1})`).forEach((x) => x.classList.add("hl"));
+  tip.innerHTML = `${String(v.hours[d]).padStart(2, "0")}:00 · ${tok(v.vol[d])} <span>volume</span> · ${fmt(v.cost[d])} <span>cost</span>`;
+  if (tip.parentNode !== hist.parentNode) hist.after(tip);
+  tip.style.display = "block"; tip.style.left = e.clientX + 12 + "px"; tip.style.top = e.clientY + 12 + "px";
+};
+hist.onmouseleave = () => { tip.style.display = "none"; hist.querySelectorAll("i.hl").forEach((x) => x.classList.remove("hl")); };
+
+const fix = document.getElementById("fix-dialog");
+document.querySelector(".fix").onclick = () => fix.showModal();
+fix.onclick = (e) => { if (e.target === fix) fix.close(); };
+document.querySelectorAll(".scope").forEach((g) => g.onclick = (e) => {
+  if (e.target.tagName !== "BUTTON") return;
+  g.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b === e.target));
+});
+const ins = document.getElementById("inspect");
+const cell = (val, label, title) => `<div title="${title}"><b>${val}</b><span>${label}</span></div>`;
+// Session timeline: one row per model call, top to bottom. Context grows right of the axis, prompts and subagents go left.
+const TL = { ROW_H: 4, COMPACT_H: 14, AX: 242, CTX_W: 250, PROMPT_W: 70, SUB_GAP: 12, SUB_ROW_H: 2, SUB_W: 140, COL_W: 72, CTX_HOT: 200000, MISS_FRAC: .2, MISS_MIN: 10000 };  // CTX_HOT: context tokens drawn fully red; a call reading < MISS_FRAC of a context >= MISS_MIN from cache = full cache miss
+const heat = (c) => `hsl(${Math.round(120 * (1 - Math.min(1, c / TL.CTX_HOT)))} 70% 45%)`;  // green → yellow → red
+const TL_COLS = [["Output", true], ["Runtime", true], ["UI", true], ["Infra", true], ["Docs", true]];  // [label, has data]; output repeats in the column d1 assigned to its prompt
+const C = { ctx: "#4a5260", prompt: "#4cc777", sub: "#8f7fd6", out: "#3c9a5f", compact: "#a3e635", miss: "#ff3b3b" };
+const ktok = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1e3 ? Math.round(n / 1e3) + "k" : String(n);
+const esc = (t) => String(t).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+let tlRows = [];
+function timeline(ev) {
+  const T = TL, oW = T.COL_W - 14, mainW = T.AX + T.CTX_W + oW + 8, W = mainW + (TL_COLS.length - 1) * T.COL_W;  // TL_COLS[0] Output is drawn on the curve, not as a column
+  const callsAll = ev.filter((e) => e.k === "call"), subCtx = ev.filter((e) => e.k === "sub").flatMap((e) => e.ctx);
+  // context drawn at its price: cache reads x0.1, writes x1.25/x2, input x1 (seg = [read, write+input] from the server); no telemetry -> raw tokens, grey
+  const wc = (e) => e.seg ? e.seg[0] + e.seg[1] : e.ctx || 0, swc = (e) => e.wctx.map((v, i) => v ?? e.ctx[i]);
+  const cmax = Math.max(1, ...callsAll.map(wc), ...ev.filter((e) => e.k === "sub").flatMap(swc), ...ev.filter((e) => e.k === "compact" && e.seg).map(wc)), omax = Math.max(1, ...callsAll.map((e) => e.out), ...ev.filter((e) => e.k === "sub").map((e) => e.out));
+  const isMiss = (e) => e.seg && e.ctx >= T.MISS_MIN && e.seg[0] * 10 < T.MISS_FRAC * e.ctx;  // seg[0] = cache_read x0.1
+  const ctxBar = (y, e, h, c) => isMiss(e) ? `<rect x="${T.AX}" y="${y}" width="${wc(e) / cmax * T.CTX_W}" height="${h}" fill="${C.miss}"/>` : !e.seg ? `<rect x="${T.AX}" y="${y}" width="${wc(e) / cmax * T.CTX_W}" height="${h}" fill="${C.ctx}"/>`
+    : `<rect x="${T.AX}" y="${y}" width="${e.seg[0] / cmax * T.CTX_W}" height="${h}" fill="${heat(c)}" opacity=".45"/><rect x="${T.AX + e.seg[0] / cmax * T.CTX_W}" y="${y}" width="${e.seg[1] / cmax * T.CTX_W}" height="${h}" fill="${heat(c)}"/>`;
+  const pmax = Math.sqrt(Math.max(1, ...ev.filter((e) => e.k === "user").map((e) => e.chars)));
+  const outX = (i) => mainW + (i - 1) * T.COL_W;
+  let y = 0, last = null, svg = "", subBottom = 0, col = 0, plan = false, planOut = 0, planCost = 0; tlRows = []; const colOut = TL_COLS.map(() => 0), colCost = TL_COLS.map(() => 0);
+  for (const e of ev) {
+    if (e.k === "sub") {  // subagent: its own context curve hanging left, from the call that launched it
+      const y0 = last ? last.y : y, x0 = T.AX - T.SUB_GAP;
+      svg += `<line x1="${T.AX}" y1="${y0 + 1}" x2="${x0}" y2="${y0 + 1}" stroke="${C.sub}"/><circle cx="${x0}" cy="${y0 + 1}" r="2.5" fill="${C.sub}"/>`;
+      swc(e).forEach((c, i) => { const w = c / cmax * T.SUB_W; svg += `<rect x="${x0 - w}" y="${y0 + 3 + i * T.SUB_ROW_H}" width="${w}" height="${T.SUB_ROW_H - .3}" fill="${C.sub}" opacity=".55"/>`; });
+      const ow = e.out / omax * oW, ly = y0 + 3 + (e.ctx.length - 1) * T.SUB_ROW_H, lw = (swc(e).at(-1) || 0) / cmax * T.SUB_W;  // output continues the subagent's last context bar
+      svg += `<rect x="${x0 - lw - ow}" y="${ly}" width="${ow}" height="${T.SUB_ROW_H - .3}" fill="${C.sub}"/>`;
+      if (col) svg += `<rect x="${outX(col) + 7}" y="${y0}" width="${ow}" height="${T.ROW_H - .5}" fill="${C.sub}"/>`;
+      for (const i of new Set([0, col])) { colOut[i] += e.out; colCost[i] += e.cost || 0; }
+      if (plan) { svg += `<rect x="7" y="${y0}" width="${ow}" height="${T.ROW_H - .5}" fill="${C.sub}"/>`; planOut += e.out; planCost += e.cost || 0; }
+      if (last) (last.subs = last.subs || []).push(e);
+      subBottom = Math.max(subBottom, y0 + 3 + e.ctx.length * T.SUB_ROW_H);
+      continue;
+    }
+    e.y = y; tlRows.push(e); last = e;
+    if (e.k === "call") {
+      svg += ctxBar(y, e, T.ROW_H - .5, e.ctx);
+      svg += `<rect x="${T.AX + wc(e) / cmax * T.CTX_W}" y="${y}" width="${e.out / omax * oW}" height="${T.ROW_H - .5}" fill="${C.out}"/>`;  // output continues its call's context
+      if (col) svg += `<rect x="${outX(col) + 7}" y="${y}" width="${e.out / omax * oW}" height="${T.ROW_H - .5}" fill="${C.out}"/>`;
+      e.cat = col ? TL_COLS[col][0] : plan ? "Planning" : null;
+      if (plan) { svg += `<rect x="7" y="${y}" width="${e.out / omax * oW}" height="${T.ROW_H - .5}" fill="${C.out}"/>`; planOut += e.out; planCost += e.cost || 0; }
+      for (const i of new Set([0, col])) { colOut[i] += e.out; colCost[i] += e.cost || 0; }
+      y += T.ROW_H;
+    } else if (e.k === "user") {
+      col = Math.max(0, TL_COLS.findIndex(([l]) => l === e.cat));  // 0 = no edits or unclassified: stays only in Output
+      plan = e.cat === "Planning";  // turn without edits that d1 judged as planning: its output also goes to the left column
+      const w = Math.max(3, Math.sqrt(e.chars) / pmax * T.PROMPT_W);
+      svg += `<rect x="${T.AX - w}" y="${y}" width="${w}" height="${T.ROW_H}" fill="${C.prompt}"/><circle cx="${T.AX}" cy="${y + T.ROW_H / 2}" r="3" fill="${C.prompt}"/>`;
+      y += T.ROW_H + 2;
+    } else if (e.k === "compact") {
+      const m = y + T.COMPACT_H / 2;
+      svg += `<line x1="4" y1="${m}" x2="${W - 4}" y2="${m}" stroke="${C.compact}" stroke-dasharray="4 3"/>`
+        + `<text x="${T.AX + T.CTX_W + 26}" y="${m - 3}" text-anchor="end" fill="${C.compact}" font-size="10">compact ${ktok(e.pre || 0)} → ${ktok(e.post || 0)}</text>`;
+      if (e.cost != null) { const c = e.read + e.fresh;  // the summarizing call's context, same scale and heat as call bars
+        svg += ctxBar(m - T.ROW_H / 2, e, T.ROW_H, c); }
+      y += T.COMPACT_H;
+    }
+  }
+  const H = Math.max(y, subBottom) + 16;
+  let bg = `<line x1="${T.AX}" y1="0" x2="${T.AX}" y2="${H - 6}" stroke="#5a616c"/><path d="M${T.AX - 4} ${H - 10} L${T.AX} ${H - 3} L${T.AX + 4} ${H - 10}" fill="none" stroke="#5a616c"/>`;
+  TL_COLS.forEach(([, has], i) => { if (i && !has) bg += `<line x1="${outX(i) + T.COL_W / 2}" y1="0" x2="${outX(i) + T.COL_W / 2}" y2="${H}" stroke="#3a3f47" stroke-dasharray="2 4"/>`; });
+  bg += `<line x1="${T.COL_W}" y1="0" x2="${T.COL_W}" y2="${H}" stroke="#262a30"/>`;
+  TL_COLS.forEach((_, i) => { if (i) bg += `<line x1="${outX(i)}" y1="0" x2="${outX(i)}" y2="${H}" stroke="${"#262a30"}"/>`; });
+  const head = (l, out, cost, why) => `<span style="width:${T.COL_W}px" title="${ktok(out)} output tokens · ${fmt(cost)} · ${why}">${l}<br><b style="font-weight:400;text-transform:none;color:var(--fg)">${out ? fmt(cost) : "–"}</b></span>`;
+  document.getElementById("tl-cols").innerHTML = head("Planning", planOut, planCost, "output of prompts without edits that d1 judged as planning")
+    + `<span style="width:${mainW - T.COL_W}px" title="context per call drawn at its price: dim = cache reads (x0.1), bright = cache writes (x1.25 5m, x2 1h) + uncached input (x1); color = real context size; red = full cache miss (most of the context re-sent uncached); grey = no telemetry, raw tokens; green = that call's output tokens, own scale">Context → <span style="color:${C.out}">output</span><br><b style="font-weight:400;text-transform:none;color:var(--fg)">${fmt(ev.filter((e) => e.k === "call" || e.k === "sub").reduce((s, e) => s + (e.cost || 0) - (e.ccost || 0), 0))} <span style="color:var(--mute)">out</span></b></span>`
+    + TL_COLS.map(([l, has], i) => !i ? "" : `<span class="${has ? "" : "ph"}" style="width:${T.COL_W}px" title="${ktok(colOut[i])} output tokens · ${fmt(colCost[i])} · ${has ? (l === "Output" ? "output tokens per call, raw" : "output of prompts whose edits d1 classified as " + l) : "not computed yet"}">${l}<br><b style="font-weight:400;text-transform:none;color:var(--fg)">${colOut[i] ? fmt(colCost[i]) : "–"}</b></span>`).join("");
+  document.getElementById("tl-body").innerHTML = `<svg id="tl-svg" width="${W}" height="${H}">${bg}${svg}<rect id="tl-sel" x="0" width="${W}" height="0" fill="#e6e7e9" opacity=".08" stroke="#e6e7e9" stroke-opacity=".35"/><text id="tl-sel-lbl" x="${W - 8}" text-anchor="end" font-size="13" font-weight="600" fill="#e6e7e9" paint-order="stroke" stroke="#111214" stroke-width="4"></text></svg>`;
+  document.getElementById("tl-key").innerHTML = [["heat", "context 0→200k"], ["miss", "cache miss"], ["prompt", "your prompt"], ["sub", "subagent"], ["out", "output"], ["compact", "compaction"]]
+    .map(([k, l]) => `<span><b style="background:${k === "heat" ? "linear-gradient(90deg," + heat(0) + "," + heat(TL.CTX_HOT) + ")" : C[k]}"></b>${l}</span>`).join("") + `<span class="tl-sum" id="tl-sum">drag to sum</span>`;
+}
+function tlTip(e) {
+  const r = e.currentTarget.getBoundingClientRect(), y = e.clientY - r.top;
+  const row = tlRows.findLast((x) => x.y <= y);
+  if (!row) return (tip.style.display = "none");
+  const at = row.t ? hhmm(row.t) + " · " : "";
+  tip.innerHTML = row.k === "call" ? `${at}${row.cost == null ? "" : fmt(row.cost) + ` (${fmt(row.ccost || 0)} <span>ctx</span>) · `}${ktok(row.ctx)} <span>context</span> · ${ktok(row.out)} <span>output</span>${row.cat ? " → " + row.cat : ""} · ${esc(row.model || "")}`
+      + (row.subs || []).map((s) => `<br><span>subagent</span> ${esc(s.desc || "")} · ${s.ctx.length} <span>calls</span> · ${ktok(Math.max(0, ...s.ctx))} <span>peak</span> · ${esc(s.model || "")}`).join("")
+    : row.k === "user" ? `${at}${row.chars} <span>chars</span>${row.cat ? ` · ${row.cat} <span>${row.catp}</span>` : row.cat === null ? " · <span>no edits</span>" : ""} · ${esc(row.text)}${row.chars > row.text.length ? "…" : ""}`
+    : `${at}<span>compaction (${esc(row.trigger || "")})</span> ${ktok(row.pre || 0)} → ${ktok(row.post || 0)}${row.cost == null ? "" : ` · ${fmt(row.cost)} · ${ktok(row.read)} <span>cached</span> · ${ktok(row.fresh)} <span>uncached</span>`}`;
+  if (tip.parentNode !== ins) ins.append(tip);  // modal dialog sits in the top layer; the tip must live inside it
+  tip.style.whiteSpace = "normal"; tip.style.maxWidth = "420px";
+  tip.style.display = "block"; tip.style.left = e.clientX + 12 + "px"; tip.style.top = e.clientY + 12 + "px";
+}
+// Drag up or down over the timeline: sums cost, calls, output and time of the rows in the band (subagents count with the call that launched them)
+let tlDrag = null;
+const tlY = (e) => e.clientY - document.getElementById("tl-svg").getBoundingClientRect().top;
+function tlSum(a, b) {
+  const [y0, y1] = [Math.min(a, b), Math.max(a, b)], rows = tlRows.filter((r) => r.y + TL.ROW_H > y0 && r.y < y1);
+  const sel = document.getElementById("tl-sel"); sel.setAttribute("y", y0); sel.setAttribute("height", y1 - y0);
+  const lbl = document.getElementById("tl-sel-lbl");
+  if (!rows.length) return (lbl.textContent = "");
+  const calls = rows.filter((r) => r.k === "call"), subs = calls.flatMap((r) => r.subs || []);
+  const cost = calls.reduce((s, r) => s + (r.cost || 0), 0) + subs.reduce((s, x) => s + x.cost, 0) + rows.reduce((s, r) => s + (r.k === "compact" ? r.cost || 0 : 0), 0);
+  const missing = calls.filter((r) => r.cost == null).length + subs.reduce((s, x) => s + x.missing, 0);
+  const out = calls.reduce((s, r) => s + r.out, 0) + subs.reduce((s, x) => s + x.out, 0);
+  const toks = calls.reduce((s, r) => s + r.ctx + r.out, 0) + subs.reduce((s, x) => s + x.ctx.reduce((a, b) => a + b, 0) + x.out, 0);  // tokens processed: context read per call + output
+  lbl.setAttribute("y", Math.max(14, y0 + 16)); lbl.textContent = y1 - y0 > 4 ? `${fmt(cost)}${missing ? " +?" : ""} · ${ktok(toks)} tok` : "";
+  const ts = rows.map((r) => r.t).filter(Boolean), mins = ts.length ? Math.round((new Date(ts[ts.length - 1]) - new Date(ts[0])) / 6e4) : 0;
+  document.getElementById("tl-sum").innerHTML = `${fmt(cost)}${missing ? `<span title="${missing} calls without telemetry cost"> +?</span>` : ""} · ${calls.length} <span>calls</span>`
+    + `${subs.length ? ` · ${subs.length} <span>subagents</span>` : ""} · ${ktok(out)} <span>output</span> · ${rows.filter((r) => r.k === "user").length} <span>prompts</span> · ${mins} <span>min</span>`;
+}
+const tlBody = document.getElementById("tl-body");
+tlBody.onmousedown = (e) => { if (!e.target.closest("svg")) return; tlDrag = tlY(e); tlSum(tlDrag, tlDrag + 1); e.preventDefault(); };
+addEventListener("mouseup", () => { tlDrag = null; });
+tlBody.onmousemove = (e) => {
+  if (!e.target.closest("svg")) return;
+  if (tlDrag != null) {
+    tlSum(tlDrag, tlY(e));
+    const r = tlBody.getBoundingClientRect();  // autoscroll near the edges while dragging
+    if (e.clientY > r.bottom - 20) tlBody.scrollTop += 12; else if (e.clientY < r.top + 20) tlBody.scrollTop -= 12;
+  }
+  tlTip({ currentTarget: document.getElementById("tl-svg"), clientX: e.clientX, clientY: e.clientY });
+};
+document.getElementById("tl-body").onmouseleave = () => { tip.style.display = "none"; tip.style.whiteSpace = ""; tip.style.maxWidth = ""; };
+function inspect(c) {
+  document.getElementById("ins-name").textContent = c.name;
+  document.getElementById("ins-sub").textContent = c.sub;
+  document.getElementById("ins-measured").innerHTML = cell(fmt(c.cost), "cost", "sum of api_request cost_usd") + cell(tok(c.vol), "tokens", "sum")
+    + cell(c.mins + " min", "duration", "wall clock, first to last event") + cell(c.subagents, "subagents", "count");
+  document.getElementById("tl-cols").innerHTML = ""; document.getElementById("tl-key").innerHTML = "";
+  document.getElementById("tl-body").innerHTML = `<div class="agg">loading…</div>`;
+  ins.showModal(); ins.focus();
+  fetch(`session.json?id=${encodeURIComponent(c.id)}`).then((r) => r.json()).then((d) => d.events.length ? timeline(d.events)
+    : (document.getElementById("tl-body").innerHTML = `<div class="agg">No transcript for this session on this machine.</div>`));
+}
+ins.onclick = (e) => { if (e.target === ins) ins.close(); };
+document.getElementById("cards").onclick = (e) => {
+  const el = e.target.closest(".card"); if (!el) return;
+  inspect(VIEWS[view].cards[+el.dataset.k]);
+};
+fetch("data.json").then((r) => r.json()).then((d) => { VIEWS.Individual = live(d); render(); });
+
+// Live page: what runs now, from /api/<tool> (06-optional/mcp-server/live.py). Polls overview with a per-browser delta cursor.
+const LV_POLL_MS = 10000;       // overview poll period
+const LV_FULL_EVERY = 6;        // every N polls ask for the full list instead of the delta (self-heals missed changes)
+const LV_LIST = 5;              // rows per list before "View more"
+const LV_QUOTA_AMBER = 70, LV_QUOTA_RED = 90;  // quota bar color bands, % used
+const LV_STATE = { working: ["var(--impact)", "working"], waiting_user: ["var(--amber)", "waiting"], idle: ["var(--cost)", "idle"], dead: ["#3a3f47", "ended"] };
+const LV_ORDER = ["working", "waiting_user", "idle", "dead"];
+const LV_SUB_DESC = 40;          // inline subagent: desc cut to N chars
+const LV_CTX_BUDGET_K = 60;       // worker context budget, k tokens: inline bar is full here, red above
+const LV_CTX_AMBER_K = 50;        // inline ctx bar amber above this
+const LV_CHIP = { running: ["var(--impact)", "running", "worker running now"], partial: ["var(--amber)", "partial", "worker reported a partial result"], error: ["var(--red)", "error", "worker failed"],
+                  done: ["var(--mute)", "done", "finished"], to_merge: ["#5b8def", "to merge", "commits ahead of main, not merged"],
+                  merged: ["var(--mute)", "merged", "branch merged into main"], dirty: ["var(--amber)", "dirty", "uncommitted changes in its worktree"],
+                  merge: ["#5b8def", "to merge", "next: merge its branch"], resume: ["var(--amber)", "to resume", "next: resume from its handoff"], inspect: ["var(--amber)", "to inspect", "next: read its result"],
+                  stale: ["var(--mute)", "stale", "old inspect/resume the orchestrator moved past; not counted in Needs you"] };  // state chip per worker line, plus to_merge when its branch is ahead
+const LV_NEXT_ORDER = ["merge", "resume", "inspect"];  // worker "next" from live.py, most urgent first; rows sort running, then by next, then newest
+const LV_INLINE_TIP = "foreground subagent: the parent waited for it (requestShape in meta.json)";
+const LV_INLINE_SUBS = 3;  // subagents shown under each closed session row (running first), rest as +N
+const LV_BLOAT_K = 150;           // worker ctx_k above this = context bloat
+const LV_STUCK_MIN = 10;          // running worker with no activity for N min = stuck
+const LV_AG_STATE = { running: ["var(--impact)", "running"], done: ["var(--cost)", "done"], error: ["var(--red)", "error"] };  // other states: LV_STATE, else grey
+const LV_DEV = new URLSearchParams(location.search).has("dev");  // ?dev#live: /api/agents 404 -> agents-fixture.json, times shifted to now
+const LV_FIXTURE = "agents-fixture.json";
+const LV_FIX = { mcp_status: "mcp-fixture.json", orch_ux: "orch-ux-fixture.json" };  // ?dev: 404 -> these, times shifted to now
+const LV_STALE_POLLS = 3;         // status bar: data older than N polls shows amber
+const LV_STRIP = 120;             // orchestrator UX: newest turns drawn in the strip
+const LV_NEXT = { correction: ["var(--amber)", "correction"], interrupt: ["#d0764a", "interrupt"], reject: ["var(--red)", "rejected"],
+                  more: ["#5b8def", "asked for more"], neutral: ["#4a505a", "neutral"], null: ["#2a2e35", "no reply yet"] };  // turn colour by what the user did next
+const LV_Q = new URLSearchParams(location.search);  // deep link: ?open=<sid>&node=<id>&more=agents,subs&legend#live
+const LV_CALLER = localStorage.getItem("otm-live-caller") || "panel-" + Math.random().toString(36).slice(2, 10);
+localStorage.setItem("otm-live-caller", LV_CALLER);  // stable per browser: one cursor in <data dir>/live/cursors.json, not one per reload
+const lv = { sessions: new Map(), quota: null, ledger: [], inferred: [], delta: [], polls: 0, at: null, err: null,
+             open: LV_Q.get("open"), detail: {}, nodeOpen: null, node: {}, more: {}, agents: {}, mcp: undefined, ux: undefined, auxAt: null, legend: LV_Q.has("legend") };
+if (lv.open && LV_Q.get("node")) lv.nodeOpen = lv.open + "/" + LV_Q.get("node");
+for (const k of (LV_Q.get("more") || "").split(",").filter(Boolean)) lv.more[k] = true;
+function lvSync() {  // page state -> URL, so any view is shareable and screenshotable
+  const q = new URLSearchParams(location.search);
+  for (const k of ["open", "node", "more", "legend"]) q.delete(k);
+  if (lv.open) q.set("open", lv.open);
+  if (lv.nodeOpen) q.set("node", lv.nodeOpen.slice(lv.nodeOpen.indexOf("/") + 1));
+  const m = Object.keys(lv.more).filter((k) => lv.more[k]); if (m.length) q.set("more", m.join(","));
+  if (lv.legend) q.set("legend", "");
+  const qs = q.toString().replace(/=(?=&|$)/g, "");
+  history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + "#live");
+}
+const ago = (t) => { const m = Math.round((Date.now() - new Date(t)) / 6e4); return !t ? NA : m < 1 ? "now" : m < 60 ? m + "m ago" : m < 2880 ? Math.round(m / 60) + "h ago" : Math.round(m / 1440) + "d ago"; };
+const api = (tool, args) => fetch(`api/${tool}?` + new URLSearchParams(args)).then(async (r) => {
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(`api/${tool} ${r.status}: ${d.error || ""}`), { status: r.status });
+  return d;
+});
+const lvFail = (e) => { lv.err = String(e.message || e); console.error("live:", lv.err); lvRender(); };  // console.error -> /console log
+const more = (key, n) => n > LV_LIST ? `<button class="more" data-more="${key}">${lv.more[key] ? "Show less" : `View more (${n - LV_LIST})`}</button>` : "";
+const cut = (key, xs) => lv.more[key] ? xs : xs.slice(0, LV_LIST);
+
+function lvPoll() {
+  if (!livePage || document.hidden) return;
+  const full = lv.polls++ % LV_FULL_EVERY === 0;
+  api("overview", { caller: LV_CALLER, ...(full ? { full: "true" } : {}) }).then((d) => {
+    const rows = d.measured.sessions;
+    if (full) lv.sessions.clear();
+    for (const s of rows) lv.sessions.set(s.sid, s);
+    for (const line of d.delta || []) if (line.endsWith(": left window"))  // gone sessions only appear in the delta text
+      for (const [k, s] of lv.sessions) if (line === `${s.name}: left window`) lv.sessions.delete(k);
+    if (full) { lvAux(); for (const s of lvSorted().slice(0, LV_LIST)) if (s.sid !== lv.open && (s.subagents || []).some(parseSub)) lvAgents(s.sid, false); }
+    Object.assign(lv, { quota: d.quota, ledger: d.ledger || [], inferred: d.inferred || [], delta: d.delta || [], at: Date.now(), err: null });
+    if (lv.open && lv.sessions.has(lv.open) && lv.polls > 1) {  // first poll: showPage/click already fetched the open session
+      lvAgents(lv.open, full);  // workers every poll; the full list only on full polls, else the cheap trimmed one merged in
+      if (full || rows.some((s) => s.sid === lv.open)) return lvSession(lv.open);  // files and nodes: only when the session changed
+    }
+    lvRender();
+  }).catch(lvFail);
+}
+function lvSession(sid) {
+  return api("session", { id_or_name: sid }).then((d) => { lv.detail[sid] = d; lv.err = null; lvRender(); }).catch(lvFail);
+}
+function lvNode(sid, node) {
+  return api("node", { session: sid, node }).then((d) => { lv.node[sid + "/" + node] = d; lvRender(); }).catch(lvFail);
+}
+// Delegation view: main agent + subagents from /api/agents?session= (undefined = loading, null = 404, no data)
+const shiftNow = (d) => {  // dev fixture: move all times so the newest activity is now
+  const ms = Date.now() - Math.max(...d.agents.map((a) => +new Date(a.last)));
+  for (const a of d.agents) for (const k of ["started", "last"]) a[k] = new Date(+new Date(a[k]) + ms).toISOString();
+  return d;
+};
+function lvAgents(sid, all = true) {  // all=true: every worker (~7x bigger); else main + running + newest, merged into the last full list by id
+  return api("agents", { session: sid, ...(all ? { all: true } : {}) }).catch((e) => e.status === 400 ? api("agents", { session: sid }) : Promise.reject(e))  // live.py without "all" yet
+  .catch((e) => {
+    if (e.status !== 404) throw e;
+    return LV_DEV ? fetch(LV_FIXTURE).then((r) => r.json()).then(shiftNow) : null;
+  }).then((d) => {
+    const prev = lv.agents[sid];  // at answer time: a trimmed reply that overlapped a full one must merge into it, not replace it
+    if (d && d.omitted) all = false;  // 400 fallback: trimmed even though all was asked
+    if (!all && d && prev && prev.full) { const m = new Map(prev.agents.map((a) => [a.id, a])); for (const a of d.agents) m.set(a.id, a); d = { ...d, agents: [...m.values()], full: true }; }
+    else if (d) d.full = all;
+    lv.agents[sid] = d; lvRender();
+  }).catch(lvFail);
+}
+function workerRows(s) {  // one list per session: /api/agents workers + session nodes it lacks (by id) + overview lines for ctx; running first, then newest
+  const all = (lv.agents[s.sid] || {}).agents || [], main = all[0] && all[0].id, ag = all.slice(1), d = lv.detail[s.sid], lines = (s.subagents || []).map(parseSub).filter(Boolean);
+  const name = Object.fromEntries(ag.map((a) => [a.id, a.desc || a.id])), ids = new Set(ag.map((a) => a.id)), low = new Set(lv.inferred.filter((x) => x.issue === "low_return").map((x) => x.node));
+  const line = (desc) => lines.find((l) => l.desc === desc.slice(0, LV_SUB_DESC)) || {};
+  const nodes = d ? d.measured.nodes.filter((n) => !ids.has(n.node)).map((n) => { const l = line(n.desc || ""); return { id: n.node, desc: n.desc || n.node.slice(0, 8), dur: durTxt(n.dur_s), last: n.last,
+      state: n.status === "completed" ? "done" : n.status === "failed" ? "error" : n.status, cost: n.cost == null ? l.cost || NA : fmt(n.cost), ctx: parseFloat(l.ctx), model: n.model || l.model, tool: l.tool }; })
+    : ag.length ? [] : lines.map((l) => ({ state: l.status, desc: l.desc, dur: l.min, ctx: parseFloat(l.ctx), cost: l.cost, model: l.model, tool: l.tool }));  // before /api/session answers: overview lines
+  const rows = ag.map((a) => ({ ...agRow(a), parent: a.parent !== main && name[a.parent] })).concat(nodes);
+  for (const r of rows) r.low = low.has(r.id);
+  return rows.sort(byNeed);
+}
+const wtOf = (r) => r.wt && typeof r.wt === "object" ? r.wt : null;
+const wtOpen = (w) => w && (w.dirty > 0 || !w.merged && w.ahead > 0);  // worktree still needs the orchestrator: uncommitted or unmerged commits
+function need(r) { const w = wtOf(r); return r.state === "running" ? 0 : r.next ? 1 + Math.max(0, LV_NEXT_ORDER.indexOf(r.next)) : wtOpen(w) ? 5 : r.state === "error" ? 9 : w && w.merged ? 11 : 10; }
+function byNeed(a, b) { return need(a) - need(b) || (b.last || "").localeCompare(a.last || ""); }
+const nextTxt = (t) => Object.entries((t && t.next) || {}).map(([k, v]) => `${v} to ${k}`).join(" · ");
+function workersHtml(s) {
+  const d = lv.agents[s.sid], t = d && d.totals, rows = workerRows(s);
+  const shown = cut("agents", rows), pin = rows.find((r) => r.id && lv.nodeOpen === s.sid + "/" + r.id);
+  if (pin && !shown.includes(pin)) shown.push(pin);  // deep-linked worker beyond the first rows stays visible
+  const html = shown.map((r) => {
+    const k = s.sid + "/" + r.id, on = r.id && lv.nodeOpen === k, idle = r.last ? (Date.now() - new Date(r.last)) / 6e4 : 0, wt = r.wt && typeof r.wt === "object" ? r.wt : null;
+    const pre = (r.low ? `<span class="lv-flag" style="color:var(--amber)" title="burned much, returned little">low return</span>` : "") + (r.ctx > LV_BLOAT_K ? `<span class="lv-flag" style="color:var(--red)">bloat</span>` : "")
+      + (r.state === "running" && idle > LV_STUCK_MIN ? `<span class="lv-flag" style="color:var(--amber)">stuck ${Math.round(idle)}m</span>` : "");
+    const head = (r.handoff ? `<div class="agg">handoff <span class="path" data-copy="${esc(r.handoff)}" style="cursor:copy" title="click to copy">${esc(r.handoff)}</span></div>` : "") + (wt ? `<div class="agg">${esc(wt.branch || "")} · ${wt.ahead ?? 0} ahead · ${wt.dirty ?? 0} dirty${wt.merged ? " · merged" : ""} · ${esc(wt.path || "")}</div>` : "") + (r.result && !(lv.node[k] || {}).excerpt ? `<div class="lv-res" style="margin:6px 0">${esc(r.result)}</div>` : "");
+    return `<div class="lv-ag${on ? " on" : ""}"${r.id ? ` data-node="${esc(r.id)}" style="cursor:pointer"` : ""} title="${esc([r.desc, r.model && r.model.replace("claude-", ""), r.parent && "from " + r.parent, r.tool && r.tool !== NA && "last tool " + r.tool].filter(Boolean).join(" · "))}">${lineCells(r, "", pre)}</div>`
+      + (on ? lv.node[k] ? nodeHtml(lv.node[k], head) : `<div class="lv-node">${head}<div class="agg">loading…</div></div>` : "");
+  }).join("");
+  const grid = t ? `<div class="ins-grid" style="grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:1fr">${cell(fmt(t.orch_cost || 0), "orchestrator", "main agent cost")}${cell(fmt(t.workers_cost || 0), "workers", `${t.workers ?? 0} subagents, cost`)}`
+    + `${cell(t.running ?? 0, "running", "workers running now")}${cell((t.median_ctx_k ?? NA) + "k", "median ctx", "median worker context, k tokens")}${t.next && Object.keys(t.next).length ? Object.entries(t.next).map(([k, v]) => cell(v, "to " + k, `workers whose next step is ${k}`)).join("") : t.to_merge != null ? cell(t.to_merge, "to merge", "worker worktrees with commits not merged into main") : ""}</div>` : "";
+  return grid + (rows.length ? html + more("agents", rows.length + (d && !d.full && d.omitted || 0)) : `<div class="agg">${d === undefined || !lv.detail[s.sid] ? "loading…" : "no workers"}</div>`);
+}
+
+const quotaBar =(label, q) => {
+  const pct = q ? q.pct : null, c = pct >= LV_QUOTA_RED ? "var(--red)" : pct >= LV_QUOTA_AMBER ? "var(--amber)" : "var(--impact)";
+  return `<div><div class="q-head"><span class="label">${label} quota</span><b title="${label} quota used · Claude Code rate-limit headers${lv.quota && lv.quota.age_min != null ? ", " + lv.quota.age_min + " min old" : ""}">${q && q.reset ? "reset" : pct == null ? NA : Math.round(pct) + "%"}</b></div>
+    <div class="q-bar"><b style="width:${pct || 0}%;background:${c}"></b></div><div class="agg">${q ? (q.reset ? "reset since " : "resets ") + esc(q.resets) + (lv.quota.stale ? " · stale" : "") : "no quota data"}</div></div>`;
+};
+// overview subagent line: "desc | model | ctx 41k | $0.26 | 1m | Bash | running"
+const parseSub = (l) => { const p = l.split(" | "); if (p.length < 7) return null; const t = p.splice(-6); return { desc: p.join(" | "), model: t[0], ctx: t[1].replace("ctx ", ""), cost: t[2], min: t[3], tool: t[4], status: t[5] }; };
+// result excerpt arrives raw and cut at a fixed length: drop markdown marks, end at a word with an ellipsis
+const prose = (x) => { const t = x.replace(/\*\*|`/g, "").replace(/^#+\s*/gm, "").replace(/\n{3,}/g, "\n\n"); return /[.!?)\]]\s*$/.test(t) ? t : t.replace(/\s+\S*$/, "") + "…"; };
+function nodeHtml(n, head = "") {
+  const t = n.tok || {}, tools = Object.entries(n.tools || {}).sort((a, b) => b[1] - a[1]).slice(0, LV_LIST).map(([k, v]) => `${esc(k)} ${v}`).join(" · ");
+  return `<div class="lv-node">${head}<div class="ins-grid">${cell(ktok((t.in || 0) + (t.cw || 0) + (t.cr || 0)), "input", "input + cache write + cache read tokens")
+    + cell(ktok(t.out || 0), "output", "output tokens") + cell(n.turns ?? NA, n.turns === 1 ? "turn" : "turns", "turns in this subagent") + cell(ktok(n.returned || 0), "chars returned", "chars returned to the parent")}</div>
+    <div class="agg">${esc(n.type || "")} · ${esc((n.models || [n.model]).join(", "))} · ${n.dur_s == null ? NA : Math.round(n.dur_s / 60) + " min"}${tools ? " · " + tools : ""}</div>
+    ${n.excerpt ? `<pre>${esc(prose(n.excerpt))}</pre>` : ""}</div>`;
+}
+function outChip(r) {  // state chip (running/done/partial/error) + branch short name and its tag: dirty / to merge / merged
+  const wt = wtOf(r), chip = (k, x = "") => { const [c, l, t] = LV_CHIP[k]; return `<span class="chip" style="color:${c}" title="${esc(t + x)}">${l}</span>`; };
+  const k = r.state === "running" ? "running" : r.outcome === "partial" ? "partial" : r.outcome === "failed" || r.state === "error" ? "error" : "done";
+  const x = wt ? ` · ${wt.branch || ""} · ${wt.ahead ?? 0} ahead · ${wt.dirty ?? 0} dirty · ${wt.path || "worktree gone"}` : "";
+  const br = wt && wt.branch ? `<span class="lv-flag agg" title="branch ${esc(wt.branch)}">${esc(wt.branch.replace(/^.*\//, ""))}</span>` : "";
+  const tags = !wt ? "" : (wt.dirty > 0 ? chip("dirty", x) : "") + (!wt.merged && wt.ahead > 0 ? (r.next === "merge" ? "" : chip("to_merge", x)) : wt.merged && !(wt.dirty > 0) ? chip("merged", x) : "");
+  const st = k === "done" && tags ? "" : chip(k);  // a wt tag (merged / to merge / dirty) already says it finished
+  if (r.next && LV_CHIP[r.next]) return st + chip(r.next, r.handoff ? " · " + r.handoff : "") + br + tags;
+  if (r.stale) return st + chip("stale", " · was to " + r.stale) + br + tags;
+  return st + br + tags;
+}
+function agRow(a) { return { id: a.id, state: a.state === "working" ? "running" : a.state, next: a.next, stale: a.stale, handoff: a.handoff, desc: a.desc || a.id, dur: durTxt(a.duration_s), ctx: a.ctx_k, cost: a.cost == null ? NA : fmt(a.cost), wt: a.wt, outcome: a.outcome, result: a.result, last: a.last, model: a.model, inline: a.inline }; }
+function lineCells(r, pre = "", tags = "") {  // tags: low return / bloat / stuck flags, after the chips  // one worker line: dot, desc, chip, run time | cost | ctx bar | last activity (inline subs and delegation view)
+  const [c, l] = LV_AG_STATE[r.state] || LV_STATE[r.state] || ["#3a3f47", r.state || "?"], d = r.desc.length > LV_SUB_DESC ? r.desc.slice(0, LV_SUB_DESC - 1) + "…" : r.desc;
+  return `<span>${pre}<i class="dot" style="background:${c}" title="${esc(l)}"></i>${esc(d)}${outChip(r)}${r.inline ? `<span class="chip" style="color:var(--mute)" title="${LV_INLINE_TIP}">inline</span>` : ""}${tags}<span class="agg dur" title="run time">${esc(r.dur ?? NA)}</span></span>`
+    + `<span class="num" title="cost, USD">${esc(r.cost)}</span>${ctxBar(r.ctx)}<span class="num agg" title="last activity ${esc(r.last || "")}">${r.last ? ago(r.last) : NA}</span>`;
+}
+const durTxt = (sec) => sec == null ? NA : sec < 60 ? Math.round(sec) + "s" : sec < 3600 ? Math.round(sec / 60) + "m" : Math.floor(sec / 3600) + "h " + Math.round(sec % 3600 / 60) + "m";
+function ctxBar(k) {
+  if (k == null || isNaN(k)) return `<span class="num ctx">${NA}</span>`;
+  const c = k > LV_CTX_BUDGET_K ? "var(--red)" : k > LV_CTX_AMBER_K ? "var(--amber)" : "var(--impact)";
+  return `<span class="num ctx" title="context on the last call: ${k}k of a ${LV_CTX_BUDGET_K}k worker budget · green ≤${LV_CTX_AMBER_K}k, amber >${LV_CTX_AMBER_K}k, red >${LV_CTX_BUDGET_K}k"><i><b style="width:${Math.min(100, k / LV_CTX_BUDGET_K * 100).toFixed(0)}%;background:${c}"></b></i>${k}k</span>`;
+}
+function inlineSubs(s) {  // under each session row: one line per subagent, running first; /api/agents fields when loaded, else the overview lines
+  const ag = ((lv.agents[s.sid] || {}).agents || []).slice(1);
+  const subs = ag.length
+    ? ag.map(agRow)
+    : (s.subagents || []).map(parseSub).filter(Boolean).map((r) => ({ state: r.status, desc: r.desc, dur: r.min, ctx: parseFloat(r.ctx), cost: r.cost, model: r.model, tool: r.tool }));
+  if (!subs.length) return "";
+  subs.sort(byNeed);
+  const x = lv.more["inl:" + s.sid], n = LV_INLINE_SUBS + (x === true ? LV_LIST : x || 0);  // "View more" adds LV_LIST rows (true: restored from the URL)
+  const rows = subs.slice(0, n).map((r) => {
+    const tip = [r.desc, r.model && r.model.replace("claude-", ""), r.tool && "last tool " + r.tool, r.result && "result: " + r.result, r.id && "click: open detail"].filter(Boolean).join(" · ");
+    return `<div class="lv-inl" data-sid="${s.sid}"${r.id ? ` data-wk="${esc(r.id)}"` : ""} title="${esc(tip)}">
+${lineCells(r, "└ ")}</div>`;
+  }).join("");
+  const total = Math.max(subs.length, ((lv.agents[s.sid] || {}).totals || {}).workers || 0);  // trimmed preview: count from totals
+  return rows + (total > LV_INLINE_SUBS ? `<div class="lv-inl" data-inl="${s.sid}"${n < total ? "" : ` data-less="1"`}><span class="lv-vm">${n < total ? `View more (${total - Math.min(n, subs.length)})` : "Show less"}</span></div>` : "");
+}
+// display path: worktree id + repo path, relative under the session cwd, "scratchpad/…" for a harness scratchpad, ~ for home; full path stays in the tooltip
+function shortPath(p, cwd) { p = String(p || "").replace(/\/{2,}/g, "/"); cwd = (cwd || "").replace(/\/{2,}/g, "/").replace(/\/$/, "");
+  if (/^\/(?:worktrees|\.claude)\//.test(p)) p = p.slice(1);  // relative path that picked up a stray leading slash
+  const home = ((cwd || "").match(/^\/(?:home\/[^/]+|root)(?=\/|$)/) || [])[0];
+  const wt = p.match(/(?:^|\/)(?:\.claude\/)?worktrees\/agent-([0-9a-f]{8})[0-9a-f]*\/(.*)$/);  // worker worktree: its agent id (matches the worker row) + repo-relative path
+  if (wt) return `wt ${wt[1]}/${wt[2]}`;
+  return cwd && p.startsWith(cwd + "/") ? p.slice(cwd.length + 1) : /^\/tmp\/claude-\d+\/.*\/scratchpad\//.test(p) ? p.replace(/^.*?\/scratchpad\//, "scratchpad/") : home && p.startsWith(home + "/") ? "~" + p.slice(home.length) : p; }
+function detailHtml(s) {
+  const d = lv.detail[s.sid];
+  const files = d ? d.measured.files : s.touching.map((p) => ({ path: p, kind: "dir" }));
+  return `<div class="lv-detail">
+    ${s.goal ? `<div class="lv-goal" title="${s.goal_src}">${esc(s.goal)}</div>` : ""}
+    <div class="label">Workers</div>
+    ${workersHtml(s)}
+    ${uxSession(s.sid)}
+    <div class="label" style="margin-top:16px">Touching</div>
+    ${files.length ? `<ul class="lv-files">${cut("files", files).map((f) => `<li><span class="path" title="${esc(f.path)}">&lrm;${esc(shortPath(f.path, d && d.cwd))}</span><span class="agg">${[f.kind !== "dir" && esc(f.kind || ""), f.last && ago(f.last)].filter(Boolean).join(" · ")}</span></li>`).join("")}</ul>${more("files", files.length)}`
+      : `<div class="agg">${d ? "nothing yet" : "loading…"}</div>`}
+  </div>`;
+}
+// MCP server status (/api/mcp_status, live.py) and orchestrator UX (/api/orch_ux, served file); undefined = loading, null = unavailable
+const shiftBy = (newest, rows, keys) => { const ms = Date.now() - +new Date(newest); for (const r of rows) for (const k of keys) if (r[k]) r[k] = new Date(+new Date(r[k]) + ms).toISOString(); };
+const fixture = (tool) => fetch(LV_FIX[tool]).then((r) => r.json()).then((d) => {
+  if (tool === "mcp_status") shiftBy(d.recent[0].ts, [...d.tools, ...d.orchestrators, ...d.recent], ["last", "ts"]);
+  else shiftBy(d.turns[d.turns.length - 1].ts, [...d.turns, ...d.sessions], ["ts", "last"]);
+  return d;
+});
+const aux = (tool, p) => p.catch((e) => { if (e.status !== 404) console.warn("live:", e.message); return LV_DEV ? fixture(tool) : null; })
+  .then((d) => { lv[tool === "mcp_status" ? "mcp" : "ux"] = d; lv.auxAt = Date.now(); lvRender(); }).catch(() => { lv[tool === "mcp_status" ? "mcp" : "ux"] = null; lvRender(); });
+function lvAux() { aux("mcp_status", api("mcp_status", { verbose: true }).catch((e) => e.status === 400 ? api("mcp_status", {}) : Promise.reject(e))); aux("orch_ux", api("orch_ux", {})); }
+const sidEq = (a, b) => !!a && !!b && (a.startsWith(b) || b.startsWith(a));
+function orchOf(sid) {  // MCP caller sessions; current = the most recent caller
+  const os = (lv.mcp && lv.mcp.orchestrators) || [], o = os.find((x) => sidEq(x.sid, sid));
+  if (!o) return "";
+  const cur = os.reduce((a, b) => ((b.last || "") > (a.last || "") ? b : a)) === o;
+  return `<span class="badge${cur ? " cur" : ""}" title="${cur ? "current orchestrator: most recent caller of" : "orchestrator: calls"} the MCP server · ${o.calls} calls in ${lv.mcp.window_h}h, last ${ago(o.last)} · ${esc(Object.entries(o.tools || {}).map(([k, v]) => k + " " + v).join(", "))}">${cur ? "orchestrator" : "orch"}</span>`;
+}
+const kch = (n) => n == null ? NA : n >= 1e3 ? (n / 1e3).toFixed(1) + "k" : String(n);
+function mcpHtml() {
+  const m = lv.mcp;
+  if (m === undefined) return `<div class="lv-unav">loading…</div>`;
+  if (!m) return `<div class="lv-unav">MCP status unavailable</div>`;
+  const sv = m.server || {}, last = (m.recent || [])[0], tools = [...(m.tools || [])].sort((a, b) => b.calls - a.calls);
+  const used = tools.filter((t) => t.calls > 0), toolsShown = lv.more["mcp-tools"] ? tools : used.slice(0, LV_LIST);  // unused tools only behind "view more"
+  const c = !m.calls ? "#3a3f47" : m.errors ? "var(--amber)" : "var(--impact)";
+  const orch = (m.orchestrators || []).map((o) => `<span title="${esc(o.sid)} · last ${ago(o.last)} · ${esc(Object.entries(o.tools || {}).map(([k, v]) => k + " " + v).join(", "))}">${esc(o.name || o.sid.slice(0, 8))} <span class="agg">${o.calls} calls</span></span>`).join(" · ");
+  const recent = cut("mcp-recent", m.recent || []).map((r) => `<div class="lv-t" title="${esc(JSON.stringify(r.args || {}))}"><span>${r.ok ? "" : `<i class="dot" style="display:inline-block;background:var(--red);margin-right:6px" title="failed"></i>`}${esc(r.tool)} <span class="agg">${esc(r.via || "")}</span></span>
+    <span class="num agg" title="${esc(r.ts)}">${hhmm(r.ts)}</span><span class="num" title="duration, ms">${r.ms ?? NA}</span><span class="num" title="response size, chars">${kch(r.chars)}</span><span class="num agg">${r.ok ? "ok" : "error"}</span></div>`).join("");
+  return `<div class="lv-health" title="${esc(sv.name || "")} ${esc(sv.version || "")} · pid ${sv.pid ?? NA} · started ${sv.started ? hhmm(sv.started) : NA} · log ${esc(sv.log || NA)}">
+      <i class="dot" style="display:inline-block;background:${c};margin-right:8px"></i><b>${esc(sv.name || "MCP")}</b> <span class="agg">pid ${sv.pid ?? NA}</span> ·
+      <span title="tool calls in the last ${m.window_h}h">${m.calls} calls / ${m.window_h}h</span> ·
+      <span title="failed calls in the window" style="color:${m.errors ? "var(--amber)" : "inherit"}">${m.errors ? m.errors + " errors" : "no errors"}</span> ·
+      <span title="${last ? esc(last.ts) : ""}">last ${last ? ago(last.ts) : NA}</span>${orch ? ` · <span class="agg">used by</span> ${orch}` : ""}</div>
+    <div class="lv-2col"><div><div class="lv-t hd"><span>Tool</span><span class="num">Calls</span><span class="num">Errors</span><span class="num" title="median duration">p50 ms</span><span class="num" title="average response size, chars">Avg size</span></div>
+      ${toolsShown.map((t) => `<div class="lv-t" title="${esc(t.name)} · p95 ${t.p95_ms} ms · max ${kch(t.max_chars)} chars · last ${ago(t.last)}"><span>${esc(t.name)}</span><span class="num">${t.calls}</span>
+        <span class="num" style="color:${t.errors ? "var(--amber)" : "var(--mute)"}">${t.errors}</span><span class="num">${t.p50_ms ?? NA}</span><span class="num">${kch(t.avg_chars)}</span></div>`).join("")}${tools.length > toolsShown.length || lv.more["mcp-tools"] && tools.length > used.slice(0, LV_LIST).length ? `<button class="more" data-more="mcp-tools">${lv.more["mcp-tools"] ? "Show less" : `View more (${tools.length - toolsShown.length})`}</button>` : ""}</div>
+      <div><div class="lv-t hd"><span>Recent call</span><span class="num">At</span><span class="num">ms</span><span class="num">Size</span><span class="num">Result</span></div>${recent}${more("mcp-recent", (m.recent || []).length)}</div></div>`;
+}
+function strip(all, scope) {  // bars: reply words (sqrt height), colour = what the user did next; click -> turn detail
+  const turns = all.slice(-LV_STRIP), mx = Math.max(1, ...turns.map((x) => x.reply_words || 0)), sel = lv.turn && lv.turn.startsWith(scope + "|") ? +lv.turn.split("|")[1] : -1;
+  const bars = turns.map((t, i) => {
+    const [c, l] = LV_NEXT[t.next] || LV_NEXT.null;
+    return `<i class="${i === sel ? "on" : ""}" data-turn="${esc(scope)}|${i}" style="height:${Math.max(3, Math.sqrt((t.reply_words || 0) / mx) * 44).toFixed(0)}px;background:${c}" title="${hhmm(t.ts)} · ${t.reply_words ?? NA} words · ${t.min ?? NA} min turn · next: ${esc(l)}"></i>`;
+  }).join("");
+  const t = turns[sel], [c, l] = t ? LV_NEXT[t.next] || LV_NEXT.null : [];
+  const tg = ((lv.ux || {}).calibration || {}).target_reply_words, ty = tg ? Math.min(44, Math.sqrt(tg / mx) * 44).toFixed(0) : null;  // dashed line at the word target
+  return `<div class="lv-strip">${bars}${ty ? `<b class="lv-tgt" style="bottom:${ty}px" title="target ${tg} words"></b>` : ""}</div><div class="lv-axis"><span title="tallest bar; height is square-root scaled">max ${mx} words${tg ? ` · dashed: target ${tg}` : ""}</span><span>older → newer</span></div>`
+    + (t ? `<div class="lv-turn">${hhmm(t.ts)} · <b>${t.reply_words ?? NA}</b> reply words · ${t.tool_calls ?? NA} tools · ${t.min ?? NA} min · next: <b style="color:${c}">${esc(l)}</b><div title="${esc(t.user_text || "")}">user: ${esc(t.user_text || NA)}</div><div title="${esc(t.reply_text || "")}">reply: ${esc(t.reply_text || NA)}</div></div>` : "");
+}
+const uxCounts = (o) => [["turns", "turns", "user turns in the window"], ["corrections", "corrections", "next user turn corrected the reply"], ["interrupts", "interrupts", "user interrupted the turn"],
+  ["rejections", "rejected", "user rejected a tool call"], ["more_requests", "asked more", "user asked for more"]].map(([k, l, t]) => `<span title="${t}">${o[k] ?? NA} ${l}</span>`).join(" · ");
+const uxMemo = {};
+function uxHtml() {  // ~3 ms of string work; inputs change only on full polls or a bar click
+  if (uxMemo.ux !== lv.ux || uxMemo.turn !== lv.turn) Object.assign(uxMemo, { ux: lv.ux, turn: lv.turn, html: uxBuild() });
+  return uxMemo.html;
+}
+function uxBuild() {
+  const u = lv.ux;
+  if (u === undefined) return `<div class="lv-unav">loading…</div>`;
+  if (!u) return `<div class="lv-unav">Orchestrator UX unavailable</div>`;
+  const cal = u.calibration || {}, o = u.overall || {}, vc = cal.verdict === "ok" ? "var(--impact)" : "var(--amber)";
+  return `<div class="verdict" title="${esc(cal.why || "")} · classifier ${esc(u.classifier || NA)} · generated ${ago(u.generated)}"><b style="color:${vc}">${esc((cal.verdict || NA).replace("_", " "))}</b>
+      · reply p50 <b>${cal.current_p50 ?? NA}</b> words vs target ${cal.target_reply_words ?? NA} <span class="agg">· p90 ${o.reply_words_p90 ?? NA} · ${o.tools_per_turn_p50 ?? NA} tools/turn · ${o.turn_min_p50 ?? NA} min/turn · ${u.window_days}d</span></div>
+    ${cut("nudges", u.nudges || []).map((n) => `<div class="lv-warn ${n.severity === "warn" ? "" : "info"}" title="${esc(n.evidence || "")}">${esc(n.text)}</div>`).join("")}${more("nudges", (u.nudges || []).length)}
+    ${strip(u.turns || [], "all")}<div class="agg">${uxCounts(o)}</div>`;
+}
+function uxSession(sid) {
+  const u = lv.ux, r = u && (u.sessions || []).find((x) => sidEq(x.sid, sid));
+  if (!r) return "";
+  return `<div class="label" style="margin-top:16px">Reply length</div><div class="agg" style="margin-bottom:2px"><span title="median reply length, words">reply p50 ${r.reply_words_p50} words</span> · ${uxCounts(r)}</div>${strip((u.turns || []).filter((t) => sidEq(t.sid, sid)), sid)}`;
+}
+function lvStatus() {  // freshness only; legends live in the viewer
+  const age = lv.at ? Math.round((Date.now() - lv.at) / 1000) : null, stale = age != null && age * 1000 > LV_STALE_POLLS * LV_POLL_MS;
+  const src = `overview: ${lv.at ? hhmm(lv.at) : NA} · mcp/orch ux: ${lv.auxAt ? hhmm(lv.auxAt) : NA}${lv.delta.length ? "\n" + lv.delta.join("\n") : ""}`;
+  const html = `<button class="lnk" data-legend>Legend</button>`
+    + `<span style="margin-left:auto" title="${esc(src)}">${lv.err ? `<span class="err">${esc(lv.err)}</span> · ` : ""}${lv.at ? `<span class="${stale ? "stale" : ""}">updated ${age < 60 ? age + "s" : Math.round(age / 60) + "m"} ago</span>${lv.delta.length ? ` · ${lv.delta.length} changes` : ""}` : "connecting…"} · every ${LV_POLL_MS / 1000}s</span>`;
+  if (html !== lv.statusHtml) document.getElementById("status").innerHTML = lv.statusHtml = html;  // ticks every second: write only on change
+}
+const LEGEND = () => [...Object.values(LV_STATE).map(([c, l]) => [`<i class="dot" style="background:${c}"></i>`, "session " + l]),
+  ...Object.values(LV_AG_STATE).map(([c, l]) => [`<i class="sw" style="background:${c}"></i>`, "worker " + l]),
+  [`<i class="dot" style="background:var(--amber)"></i>`, "low return: burned much, returned little"],
+  [`<span class="chip" style="color:var(--mute);margin:0">inline</span>`, LV_INLINE_TIP],
+  [`<span class="lv-flag" style="color:var(--red)">bloat</span>`, `worker context above ${LV_BLOAT_K}k tokens`],
+  [`<span class="lv-flag" style="color:var(--amber)">stuck</span>`, `running worker idle more than ${LV_STUCK_MIN} min`],
+  [`<span class="badge cur">orchestrator</span>`, "session calling the MCP server most recently (orch: earlier callers)"],
+  ...Object.values(LV_CHIP).map(([c, l, t]) => [`<span class="chip" style="color:${c};margin:0">${l}</span>`, t]),
+  ...Object.values(LV_NEXT).map(([c, l]) => [`<i class="sw" style="background:${c}"></i>`, l]),
+  [`<i class="sw" style="background:var(--impact)"></i>`, `ctx bar: ≤${LV_CTX_AMBER_K}k tokens`],
+  [`<i class="sw" style="background:var(--amber)"></i>`, `ctx bar: above ${LV_CTX_AMBER_K}k`],
+  [`<i class="sw" style="background:var(--red)"></i>`, `ctx bar: above ${LV_CTX_BUDGET_K}k worker budget`],
+  ["", "bar height = words"],
+  ["", "context = tokens on the last call · hover any number for its source"]].map(([k, l]) => `<div class="row"><span class="k">${k}</span><span>${l}</span></div>`).join("");
+const needs = (s) => [s.state === "waiting_user" && "waiting on you", nextTxt((lv.agents[s.sid] || {}).totals)].filter(Boolean).join(" · ");  // what this session wants from the user, "" = nothing
+const needRank = (s) => s.state === "waiting_user" ? 0 : needs(s) ? 1 : 2;
+const lvSorted = () => [...lv.sessions.values()].sort((a, b) => needRank(a) - needRank(b) || LV_ORDER.indexOf(a.state) - LV_ORDER.indexOf(b.state) || (b.last || "").localeCompare(a.last || ""));
+function needLine(ss) {  // answers "which session needs me now?" before the list
+  const n = ss.filter(needs), w = ss.filter((s) => s.state === "working").length;
+  return `<div class="lv-need">${n.length ? "Needs you: " + n.map((s) => `<b>${esc(s.name)}</b> <span style="color:var(--amber)">${esc(needs(s))}</span>`).join(" · ") : `<span class="agg">Nothing needs you now</span>`}<span class="agg"> · ${w} working</span></div>`;
+}
+function lvRender() {
+  const el = document.getElementById("live");
+  const ss = lvSorted();
+  const overlaps = lv.inferred.filter((x) => x.issue === "overlap");
+  const html = `<section class="quota">${quotaBar("5h", lv.quota && lv.quota["5h"])}${quotaBar("7d", lv.quota && lv.quota["7d"])}</section>
+    <section class="lv-sec"><div class="label">Sessions</div>
+      ${lv.at ? needLine(ss) : ""}
+      <div class="lv-hd"><i></i><span>Session</span><span class="num">Cost</span><span class="num">Context</span><span class="num">Last</span></div>
+      ${overlaps.map((o) => `<div class="lv-warn" title="${esc(o.method)}">${esc(o.a)} and ${esc(o.b)} both edit ${esc(o.on.join(", "))}</div>`).join("")}
+      ${ss.length ? cut("sessions", ss).map((s) => { const [c, l] = LV_STATE[s.state] || ["#3a3f47", s.state];
+        return `<div class="lv-row${lv.open === s.sid ? " on" : ""}" data-sid="${s.sid}">
+          <i class="dot" style="background:${c}" title="${esc(l)}"></i><span class="name" title="${esc(s.sid)}${s.goal ? " · goal (" + esc(s.goal_src || "") + "): " + esc(s.goal) : ""}">${esc(s.name)}${orchOf(s.sid)}${needs(s) ? `<span class="chip" style="color:var(--amber)">${esc(needs(s))}</span>` : ""}</span>
+          <span class="num" title="session cost, USD · telemetry cost_usd, incl. subagents">${fmt(s.cost)}</span><span class="num" title="context tokens on the last call · transcript usage">${s.ctx_k}k</span><span class="num agg" title="last activity ${esc(s.last || "")}">${ago(s.last)}</span></div>`
+          + (lv.open === s.sid ? detailHtml(s) : inlineSubs(s)); }).join("") + more("sessions", ss.length)
+        : `<div class="agg">${lv.at ? "No sessions in the window." : "loading…"}</div>`}
+    </section>
+    <section class="lv-sec"><div class="label">MCP server</div>${mcpHtml()}</section>
+    <section class="lv-sec"><div class="label">Orchestrator UX</div>${uxHtml()}</section>
+    ${lv.ledger.length ? `<section class="lv-sec"><div class="label">Delegations</div>${cut("ledger", lv.ledger).map((l) => `<div class="lv-line" title="${esc(l)}">${esc(l)}</div>`).join("")}${more("ledger", lv.ledger.length)}</section>` : ""}`;
+  if (html !== lv.html) { el.innerHTML = html; lv.html = html; }  // unchanged poll: no DOM rebuild, no layout
+  if (!lv.legendSet) { document.getElementById("legend-body").innerHTML = LEGEND(); lv.legendSet = true; }
+  lvStatus(); if (livePage) lvSync();
+}
+document.getElementById("live").onclick = (e) => {
+  const m = e.target.closest("[data-more]"), n = e.target.closest("[data-node]"), r = e.target.closest(".lv-row, .lv-inl"), tb = e.target.closest("[data-turn]");
+  if (tb) { lv.turn = lv.turn === tb.dataset.turn ? null : tb.dataset.turn; return lvRender(); }
+  if (m) { const k = m.dataset.more, a = lv.open && lv.agents[lv.open]; lv.more[k] = !lv.more[k];
+    if (k === "agents" && lv.more[k] && a && !a.full) lvAgents(lv.open);  // trimmed list (omitted > 0): fetch every worker so "View more" reaches them
+    return lvRender(); }
+  const cp = e.target.closest("[data-copy]");  // handoff path in an open worker: copy, no toggle
+  if (cp) { const t = cp.textContent; globalThis.navigator?.clipboard?.writeText(cp.dataset.copy); cp.textContent = "copied"; return setTimeout(() => { cp.textContent = t; }, 1200); }
+  const x = e.target.closest("[data-inl]");  // inline subs "View more": next LV_LIST rows, "Show less" once all are shown, without toggling the session
+  if (x) { const k = "inl:" + x.dataset.inl, a = lv.agents[x.dataset.inl], cur = lv.more[k] === true ? LV_LIST : lv.more[k] || 0;
+    lv.more[k] = x.dataset.less ? 0 : cur + LV_LIST; if (a && !a.full && lv.more[k]) lvAgents(x.dataset.inl); return lvRender(); }
+  const w = e.target.closest("[data-wk]");  // inline worker row: same detail as the session view's worker click (?open=&node= deeplink)
+  if (w) { lv.open = w.dataset.sid; lv.nodeOpen = w.dataset.sid + "/" + w.dataset.wk; lvRender(); lvSession(lv.open); lvAgents(lv.open); lvNode(lv.open, w.dataset.wk); return; }
+  if (n && lv.open && !e.target.closest(".lv-node")) { const k = lv.open + "/" + n.dataset.node; lv.nodeOpen = lv.nodeOpen === k ? null : k; lvRender(); if (lv.nodeOpen) lvNode(lv.open, n.dataset.node); return; }
+  if (r) {
+    lv.open = lv.open === r.dataset.sid ? null : r.dataset.sid; lv.nodeOpen = null; lv.more.files = lv.more.agents = false;
+    lvRender(); if (lv.open) { lvSession(lv.open); lvAgents(lv.open); }
+  }
+};
+const legend = document.getElementById("legend");
+legend.onclose = () => { lv.legend = false; lvSync(); };
+legend.onclick = (e) => { if (e.target === legend) legend.close(); };  // click on the backdrop closes
+document.getElementById("status").onclick = (e) => { if (e.target.closest("[data-legend]")) { lv.legend = true; legend.showModal(); lvSync(); } };
+function showPage() {
+  document.body.classList.toggle("page-live", livePage);
+  if (!livePage) history.replaceState(null, "", location.pathname);
+  renderNav();
+  if (livePage) {
+    lvRender();
+    if (!lv.at) { lvPoll(); if (lv.open) { lvSession(lv.open); lvAgents(lv.open); if (lv.nodeOpen) lvNode(lv.open, LV_Q.get("node")); } if (lv.legend) legend.showModal(); }
+  }
+}
+setInterval(() => { if (livePage && !document.hidden) lvStatus(); }, 1000);
+setInterval(lvPoll, LV_POLL_MS);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && livePage) lvPoll(); });
+showPage();
+</script>
+</body>
+</html>

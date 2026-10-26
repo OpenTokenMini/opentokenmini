@@ -1,0 +1,2 @@
+{"type": "assistant", "sessionId": "s2", "timestamp": "2026-10-03T08:00:00Z", "requestId": "rt4", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "t4", "name": "mcp__claude_ai_Docs__read", "input": {}}]}}
+{"type": "user", "sessionId": "s2", "timestamp": "2026-10-03T08:00:02Z", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "t4", "content": [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": "AAAA"}}]}]}}

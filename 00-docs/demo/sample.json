@@ -1,0 +1,1130 @@
+{
+ "generated": "2026-10-25",
+ "days": 30,
+ "prices": "logged cost where the harness records one, else list price, see 02-measure/schemas/prices.json",
+ "totals": {
+  "cost": 723.1,
+  "calls": 24942,
+  "sessions": 1113,
+  "turns": 6899,
+  "projects": 275,
+  "subagent_cost": 165.05,
+  "cost_by_type": {
+   "input": 3.81,
+   "output": 256.6,
+   "cache_read": 208.48,
+   "cache_write": 254.2
+  },
+  "big_context": 150000,
+  "big_context_cost": 63.02
+ },
+ "harnesses": {
+  "claude-code": {
+   "cost": 706.49,
+   "calls": 24064,
+   "sessions": 1069
+  },
+  "codex": {
+   "cost": 15.54,
+   "calls": 718,
+   "sessions": 18
+  },
+  "antigravity": {
+   "cost": 1.06,
+   "calls": 156,
+   "sessions": 23
+  },
+  "opencode": {
+   "cost": 0.0,
+   "calls": 4,
+   "sessions": 3
+  }
+ },
+ "tokens": {
+  "input_tokens": 4032065,
+  "output_tokens": 15469678,
+  "cache_read_input_tokens": 1116165961,
+  "cache_creation_input_tokens": 41156915
+ },
+ "by_day": [
+  {
+   "day": "2026-09-25",
+   "opus-5-5": 6.02,
+   "gpt-6-sol": 0.13
+  },
+  {
+   "day": "2026-09-26",
+   "opus-5-5": 41.07,
+   "gpt-6-astra": 9.69
+  },
+  {
+   "day": "2026-09-27",
+   "opus-5-5": 47.1,
+   "sonnet-5": 2.55,
+   "fable-5-1": 2.88,
+   "deepseek/deepseek-v4.1-flash": 0.0
+  },
+  {
+   "day": "2026-09-28",
+   "opus-5-5": 39.69,
+   "sonnet-5-5": 0.45,
+   "gemini-3.8-flash": 0.15
+  },
+  {
+   "day": "2026-09-29",
+   "opus-5-5": 29.75,
+   "sonnet-5-5": 10.43
+  },
+  {
+   "day": "2026-09-30",
+   "opus-5-5": 30.11,
+   "sonnet-5-5": 7.29
+  },
+  {
+   "day": "2026-10-01",
+   "opus-5-5": 8.97,
+   "sonnet-5-5": 0.37,
+   "gemini-3.8-flash": 0.04
+  },
+  {
+   "day": "2026-10-02",
+   "opus-5-5": 22.72,
+   "gemini-3.8-flash": 0.05
+  },
+  {
+   "day": "2026-10-03",
+   "sonnet-5-5": 1.65,
+   "haiku-4-5-20251001": 0.04,
+   "opus-5-5": 40.76,
+   "gemini-3.8-flash": 0.25
+  },
+  {
+   "day": "2026-10-04",
+   "opus-5-5": 39.89,
+   "sonnet-5-5": 0.09,
+   "gpt-6.1-sol": 0.3,
+   "gpt-6-luna": 0.01
+  },
+  {
+   "day": "2026-10-05",
+   "opus-5-5": 30.06,
+   "fable-5-1": 0.48,
+   "gpt-6-astra": 0.49
+  },
+  {
+   "day": "2026-10-06",
+   "opus-5-5": 20.59,
+   "haiku-4-5-20251001": 0.02
+  },
+  {
+   "day": "2026-10-07",
+   "opus-5-5": 14.37,
+   "haiku-5-5": 0.02,
+   "gpt-6-astra": 4.81,
+   "gemini-3.8-flash-n": 0.26
+  },
+  {
+   "day": "2026-10-08",
+   "sonnet-5-5": 1.62,
+   "opus-5-5": 23.83,
+   "fable-5-1": 5.86,
+   "gpt-6.1-sol": 0.07,
+   "gemini-3.8-flash-n": 0.23
+  },
+  {
+   "day": "2026-10-09",
+   "fable-5-1": 1.11,
+   "opus-5-5": 12.12,
+   "opus-4-8": 0.07,
+   "gpt-6-astra": 0.02,
+   "gemini-3.8-flash-n": 0.01
+  },
+  {
+   "day": "2026-10-10",
+   "opus-5-5": 15.89,
+   "gemini-3.8-flash-n": 0.03
+  },
+  {
+   "day": "2026-10-11",
+   "haiku-5-5": 2.15,
+   "opus-5-5": 44.11,
+   "opus-4-8": 2.86
+  },
+  {
+   "day": "2026-10-12",
+   "opus-5-5": 5.58
+  },
+  {
+   "day": "2026-10-13",
+   "haiku-5-5": 0.02,
+   "opus-5-5": 15.81,
+   "sonnet-5-5": 0.3,
+   "gemini-3.8-flash-n": 0.04
+  },
+  {
+   "day": "2026-10-14",
+   "haiku-5-5": 0.01,
+   "opus-5-5": 20.23,
+   "opus-4-8": 0.33,
+   "gemini-3.8-flash-n": 0.01
+  },
+  {
+   "day": "2026-10-15",
+   "opus-5-5": 25.66,
+   "haiku-5-5": 0.01
+  },
+  {
+   "day": "2026-10-16",
+   "opus-5-5": 4.69
+  },
+  {
+   "day": "2026-10-17",
+   "opus-5-5": 15.72
+  },
+  {
+   "day": "2026-10-18",
+   "haiku-5-5": 0.01,
+   "opus-5-5": 58.38,
+   "gpt-5.6-luna": 0.02,
+   "ling-3.1-flash-free": 0.0,
+   "big-pickle": 0.0
+  },
+  {
+   "day": "2026-10-19",
+   "opus-5-5": 21.66,
+   "haiku-5-5": 0.02,
+   "sonnet-5-5": 0.05
+  },
+  {
+   "day": "2026-10-20",
+   "opus-5-5": 6.69
+  },
+  {
+   "day": "2026-10-21",
+   "opus-5-5": 7.44
+  },
+  {
+   "day": "2026-10-23",
+   "opus-5-5": 0.12
+  },
+  {
+   "day": "2026-10-25",
+   "opus-5-5": 16.78
+  }
+ ],
+ "models": {
+  "opus-5-5": 665.8,
+  "sonnet-5-5": 22.25,
+  "gpt-6-astra": 15.01,
+  "fable-5-1": 10.33,
+  "opus-4-8": 3.26,
+  "sonnet-5": 2.55,
+  "haiku-5-5": 2.24,
+  "gemini-3.8-flash-n": 0.59,
+  "gemini-3.8-flash": 0.48,
+  "gpt-6.1-sol": 0.37,
+  "gpt-6-sol": 0.13,
+  "haiku-4-5-20251001": 0.06,
+  "gpt-5.6-luna": 0.02,
+  "gpt-6-luna": 0.01,
+  "deepseek/deepseek-v4.1-flash": 0.0,
+  "ling-3.1-flash-free": 0.0,
+  "big-pickle": 0.0
+ },
+ "projects": [
+  {
+   "name": "web-app",
+   "cost": 262.27,
+   "calls": 13297,
+   "sessions": 1026,
+   "harnesses": [
+    "claude-code",
+    "codex"
+   ]
+  },
+  {
+   "name": "api",
+   "cost": 44.45,
+   "calls": 752,
+   "sessions": 7,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "infra",
+   "cost": 28.01,
+   "calls": 800,
+   "sessions": 11,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "mobile",
+   "cost": 22.19,
+   "calls": 358,
+   "sessions": 2,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "docs-site",
+   "cost": 20.31,
+   "calls": 597,
+   "sessions": 1,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "data-pipeline",
+   "cost": 16.16,
+   "calls": 317,
+   "sessions": 1,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "cli",
+   "cost": 15.96,
+   "calls": 438,
+   "sessions": 4,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "design-system",
+   "cost": 14.98,
+   "calls": 444,
+   "sessions": 4,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "billing",
+   "cost": 14.98,
+   "calls": 338,
+   "sessions": 8,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "auth",
+   "cost": 13.25,
+   "calls": 223,
+   "sessions": 1,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "search",
+   "cost": 10.87,
+   "calls": 220,
+   "sessions": 1,
+   "harnesses": [
+    "claude-code"
+   ]
+  },
+  {
+   "name": "analytics",
+   "cost": 9.71,
+   "calls": 270,
+   "sessions": 1,
+   "harnesses": [
+    "claude-code"
+   ]
+  }
+ ],
+ "tools": [
+  {
+   "name": "Bash",
+   "cost": 467.28,
+   "calls": 11644
+  },
+  {
+   "name": "(reply)",
+   "cost": 155.06,
+   "calls": 5821
+  },
+  {
+   "name": "Write",
+   "cost": 42.18,
+   "calls": 438
+  },
+  {
+   "name": "SendMessage",
+   "cost": 14.73,
+   "calls": 270
+  },
+  {
+   "name": "exec",
+   "cost": 14.23,
+   "calls": 603
+  },
+  {
+   "name": "Agent",
+   "cost": 8.06,
+   "calls": 146
+  },
+  {
+   "name": "Read",
+   "cost": 7.37,
+   "calls": 285
+  },
+  {
+   "name": "ToolSearch",
+   "cost": 4.93,
+   "calls": 204
+  },
+  {
+   "name": "Edit",
+   "cost": 3.71,
+   "calls": 114
+  },
+  {
+   "name": "mcp__server__run",
+   "cost": 0.92,
+   "calls": 2220
+  },
+  {
+   "name": "ListAgents",
+   "cost": 0.51,
+   "calls": 17
+  },
+  {
+   "name": "mcp__server__post",
+   "cost": 0.48,
+   "calls": 1585
+  }
+ ],
+ "sessions": [
+  {
+   "cost": 58.12,
+   "calls": 1633,
+   "turns": 70,
+   "harness": "claude-code",
+   "project": "docs-site",
+   "day": "2026-10-18",
+   "subagent_cost": 50.18,
+   "ctx_max": 160030,
+   "ctx_avg": 42275,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 42.14,
+   "calls": 702,
+   "turns": 160,
+   "harness": "claude-code",
+   "project": "api",
+   "day": "2026-09-26",
+   "subagent_cost": 21.7,
+   "ctx_max": 290854,
+   "ctx_avg": 134009,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 28.42,
+   "calls": 712,
+   "turns": 118,
+   "harness": "claude-code",
+   "project": "repo-13",
+   "day": "2026-10-11",
+   "subagent_cost": 13.97,
+   "ctx_max": 142005,
+   "ctx_avg": 47373,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 28.08,
+   "calls": 477,
+   "turns": 103,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-09-30",
+   "subagent_cost": 9.9,
+   "ctx_max": 262353,
+   "ctx_avg": 138962,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 27.04,
+   "calls": 617,
+   "turns": 190,
+   "harness": "claude-code",
+   "project": "cli",
+   "day": "2026-10-08",
+   "subagent_cost": 0,
+   "ctx_max": 254543,
+   "ctx_avg": 78648,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 20.38,
+   "calls": 432,
+   "turns": 65,
+   "harness": "claude-code",
+   "project": "data-pipeline",
+   "day": "2026-09-27",
+   "subagent_cost": 14.28,
+   "ctx_max": 162778,
+   "ctx_avg": 69764,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 16.48,
+   "calls": 467,
+   "turns": 28,
+   "harness": "claude-code",
+   "project": "infra",
+   "day": "2026-10-25",
+   "subagent_cost": 13.53,
+   "ctx_max": 82967,
+   "ctx_avg": 32584,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 14.01,
+   "calls": 333,
+   "turns": 118,
+   "harness": "claude-code",
+   "project": "repo-14",
+   "day": "2026-10-17",
+   "subagent_cost": 0,
+   "ctx_max": 112782,
+   "ctx_avg": 54132,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 13.27,
+   "calls": 181,
+   "turns": 32,
+   "harness": "claude-code",
+   "project": "repo-15",
+   "day": "2026-09-29",
+   "subagent_cost": 0.62,
+   "ctx_max": 226178,
+   "ctx_avg": 137282,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 11.5,
+   "calls": 102,
+   "turns": 53,
+   "harness": "claude-code",
+   "project": "mobile",
+   "day": "2026-10-08",
+   "subagent_cost": 0,
+   "ctx_max": 116525,
+   "ctx_avg": 50646,
+   "model": "fable-5-1"
+  },
+  {
+   "cost": 11.27,
+   "calls": 236,
+   "turns": 55,
+   "harness": "claude-code",
+   "project": "search",
+   "day": "2026-10-04",
+   "subagent_cost": 8.42,
+   "ctx_max": 122167,
+   "ctx_avg": 49449,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 10.13,
+   "calls": 201,
+   "turns": 43,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-09-29",
+   "subagent_cost": 3.45,
+   "ctx_max": 140567,
+   "ctx_avg": 92625,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 9.63,
+   "calls": 370,
+   "turns": 5,
+   "harness": "codex",
+   "project": "web-app",
+   "day": "2026-09-26",
+   "subagent_cost": 0,
+   "ctx_max": 244337,
+   "ctx_avg": 116823,
+   "model": "gpt-6-astra"
+  },
+  {
+   "cost": 9.05,
+   "calls": 190,
+   "turns": 59,
+   "harness": "claude-code",
+   "project": "repo-16",
+   "day": "2026-09-28",
+   "subagent_cost": 0,
+   "ctx_max": 149640,
+   "ctx_avg": 104558,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 8.87,
+   "calls": 277,
+   "turns": 72,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-19",
+   "subagent_cost": 3.84,
+   "ctx_max": 94045,
+   "ctx_avg": 38587,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 8.39,
+   "calls": 145,
+   "turns": 59,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-09-27",
+   "subagent_cost": 0,
+   "ctx_max": 214855,
+   "ctx_avg": 133671,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 8.07,
+   "calls": 230,
+   "turns": 54,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-09-29",
+   "subagent_cost": 5.05,
+   "ctx_max": 131417,
+   "ctx_avg": 73318,
+   "model": "sonnet-5-5"
+  },
+  {
+   "cost": 7.85,
+   "calls": 200,
+   "turns": 68,
+   "harness": "claude-code",
+   "project": "repo-17",
+   "day": "2026-09-28",
+   "subagent_cost": 0,
+   "ctx_max": 176606,
+   "ctx_avg": 98528,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 7.47,
+   "calls": 202,
+   "turns": 64,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-15",
+   "subagent_cost": 0,
+   "ctx_max": 99819,
+   "ctx_avg": 59948,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 7.01,
+   "calls": 139,
+   "turns": 41,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-05",
+   "subagent_cost": 2.4,
+   "ctx_max": 109084,
+   "ctx_avg": 51730,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 6.93,
+   "calls": 128,
+   "turns": 31,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-09-27",
+   "subagent_cost": 0,
+   "ctx_max": 194517,
+   "ctx_avg": 121990,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 6.38,
+   "calls": 134,
+   "turns": 30,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-11",
+   "subagent_cost": 0,
+   "ctx_max": 117835,
+   "ctx_avg": 61302,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 6.05,
+   "calls": 136,
+   "turns": 37,
+   "harness": "claude-code",
+   "project": "repo-18",
+   "day": "2026-10-14",
+   "subagent_cost": 3.05,
+   "ctx_max": 82100,
+   "ctx_avg": 46686,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 6.02,
+   "calls": 102,
+   "turns": 37,
+   "harness": "claude-code",
+   "project": "repo-19",
+   "day": "2026-09-25",
+   "subagent_cost": 0,
+   "ctx_max": 202578,
+   "ctx_avg": 111392,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 5.82,
+   "calls": 157,
+   "turns": 37,
+   "harness": "claude-code",
+   "project": "repo-20",
+   "day": "2026-10-14",
+   "subagent_cost": 0,
+   "ctx_max": 91040,
+   "ctx_avg": 53419,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 5.75,
+   "calls": 112,
+   "turns": 32,
+   "harness": "claude-code",
+   "project": "repo-21",
+   "day": "2026-10-02",
+   "subagent_cost": 0,
+   "ctx_max": 184245,
+   "ctx_avg": 117686,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 5.27,
+   "calls": 143,
+   "turns": 29,
+   "harness": "claude-code",
+   "project": "repo-22",
+   "day": "2026-10-02",
+   "subagent_cost": 1.42,
+   "ctx_max": 149934,
+   "ctx_avg": 88159,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 5.27,
+   "calls": 155,
+   "turns": 48,
+   "harness": "claude-code",
+   "project": "repo-23",
+   "day": "2026-10-10",
+   "subagent_cost": 0,
+   "ctx_max": 91241,
+   "ctx_avg": 43710,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 5.15,
+   "calls": 126,
+   "turns": 31,
+   "harness": "claude-code",
+   "project": "cli",
+   "day": "2026-10-12",
+   "subagent_cost": 0,
+   "ctx_max": 107945,
+   "ctx_avg": 59509,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 4.99,
+   "calls": 104,
+   "turns": 31,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-03",
+   "subagent_cost": 1.89,
+   "ctx_max": 119758,
+   "ctx_avg": 52476,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 4.94,
+   "calls": 154,
+   "turns": 53,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-19",
+   "subagent_cost": 0,
+   "ctx_max": 99087,
+   "ctx_avg": 45752,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 4.83,
+   "calls": 132,
+   "turns": 34,
+   "harness": "claude-code",
+   "project": "repo-24",
+   "day": "2026-10-02",
+   "subagent_cost": 0,
+   "ctx_max": 142707,
+   "ctx_avg": 95194,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 4.63,
+   "calls": 182,
+   "turns": 65,
+   "harness": "claude-code",
+   "project": "infra",
+   "day": "2026-10-19",
+   "subagent_cost": 0,
+   "ctx_max": 77344,
+   "ctx_avg": 40619,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 4.61,
+   "calls": 142,
+   "turns": 87,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-09-30",
+   "subagent_cost": 0.14,
+   "ctx_max": 129267,
+   "ctx_avg": 92289,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 4.17,
+   "calls": 144,
+   "turns": 44,
+   "harness": "claude-code",
+   "project": "repo-25",
+   "day": "2026-10-20",
+   "subagent_cost": 0,
+   "ctx_max": 68814,
+   "ctx_avg": 30204,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 4.17,
+   "calls": 92,
+   "turns": 29,
+   "harness": "claude-code",
+   "project": "repo-26",
+   "day": "2026-10-21",
+   "subagent_cost": 0,
+   "ctx_max": 105258,
+   "ctx_avg": 53100,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 4.09,
+   "calls": 103,
+   "turns": 39,
+   "harness": "claude-code",
+   "project": "repo-27",
+   "day": "2026-10-03",
+   "subagent_cost": 0.03,
+   "ctx_max": 158111,
+   "ctx_avg": 100796,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.96,
+   "calls": 202,
+   "turns": 58,
+   "harness": "codex",
+   "project": "(unknown)",
+   "day": "2026-10-07",
+   "subagent_cost": 0,
+   "ctx_max": 197200,
+   "ctx_avg": 89048,
+   "model": "gpt-6-astra"
+  },
+  {
+   "cost": 3.88,
+   "calls": 126,
+   "turns": 28,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-15",
+   "subagent_cost": 0.01,
+   "ctx_max": 80224,
+   "ctx_avg": 46205,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.88,
+   "calls": 66,
+   "turns": 10,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-03",
+   "subagent_cost": 0,
+   "ctx_max": 163664,
+   "ctx_avg": 122501,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.85,
+   "calls": 104,
+   "turns": 31,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-14",
+   "subagent_cost": 0,
+   "ctx_max": 76689,
+   "ctx_avg": 44971,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.7,
+   "calls": 66,
+   "turns": 27,
+   "harness": "claude-code",
+   "project": "billing",
+   "day": "2026-10-06",
+   "subagent_cost": 0,
+   "ctx_max": 117363,
+   "ctx_avg": 64780,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.62,
+   "calls": 110,
+   "turns": 39,
+   "harness": "claude-code",
+   "project": "repo-28",
+   "day": "2026-10-11",
+   "subagent_cost": 0,
+   "ctx_max": 97033,
+   "ctx_avg": 51000,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.53,
+   "calls": 67,
+   "turns": 15,
+   "harness": "claude-code",
+   "project": "billing",
+   "day": "2026-10-06",
+   "subagent_cost": 0,
+   "ctx_max": 110479,
+   "ctx_avg": 72592,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.53,
+   "calls": 71,
+   "turns": 23,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-13",
+   "subagent_cost": 0,
+   "ctx_max": 90220,
+   "ctx_avg": 48222,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.41,
+   "calls": 50,
+   "turns": 12,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-09-28",
+   "subagent_cost": 2.59,
+   "ctx_max": 109662,
+   "ctx_avg": 69019,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.41,
+   "calls": 135,
+   "turns": 40,
+   "harness": "claude-code",
+   "project": "repo-29",
+   "day": "2026-10-07",
+   "subagent_cost": 0,
+   "ctx_max": 67790,
+   "ctx_avg": 36736,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.39,
+   "calls": 107,
+   "turns": 38,
+   "harness": "claude-code",
+   "project": "repo-30",
+   "day": "2026-10-02",
+   "subagent_cost": 0,
+   "ctx_max": 127045,
+   "ctx_avg": 83234,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.33,
+   "calls": 84,
+   "turns": 32,
+   "harness": "claude-code",
+   "project": "repo-31",
+   "day": "2026-10-15",
+   "subagent_cost": 0,
+   "ctx_max": 88167,
+   "ctx_avg": 50331,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.33,
+   "calls": 74,
+   "turns": 16,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-13",
+   "subagent_cost": 0,
+   "ctx_max": 100299,
+   "ctx_avg": 54213,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.31,
+   "calls": 73,
+   "turns": 20,
+   "harness": "claude-code",
+   "project": "repo-32",
+   "day": "2026-10-15",
+   "subagent_cost": 0,
+   "ctx_max": 87269,
+   "ctx_avg": 49718,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.22,
+   "calls": 43,
+   "turns": 17,
+   "harness": "claude-code",
+   "project": "repo-33",
+   "day": "2026-10-01",
+   "subagent_cost": 0,
+   "ctx_max": 118061,
+   "ctx_avg": 84785,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.21,
+   "calls": 103,
+   "turns": 31,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-13",
+   "subagent_cost": 0.67,
+   "ctx_max": 89302,
+   "ctx_avg": 41193,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.1,
+   "calls": 81,
+   "turns": 16,
+   "harness": "claude-code",
+   "project": "billing",
+   "day": "2026-10-06",
+   "subagent_cost": 0,
+   "ctx_max": 108320,
+   "ctx_avg": 67685,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.05,
+   "calls": 70,
+   "turns": 12,
+   "harness": "claude-code",
+   "project": "repo-34",
+   "day": "2026-10-05",
+   "subagent_cost": 0,
+   "ctx_max": 113524,
+   "ctx_avg": 71784,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.03,
+   "calls": 80,
+   "turns": 39,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-09-28",
+   "subagent_cost": 0,
+   "ctx_max": 122055,
+   "ctx_avg": 73956,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.03,
+   "calls": 67,
+   "turns": 15,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-03",
+   "subagent_cost": 0,
+   "ctx_max": 140685,
+   "ctx_avg": 95656,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 3.01,
+   "calls": 82,
+   "turns": 34,
+   "harness": "claude-code",
+   "project": "repo-35",
+   "day": "2026-10-04",
+   "subagent_cost": 0,
+   "ctx_max": 106776,
+   "ctx_avg": 59633,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 2.85,
+   "calls": 34,
+   "turns": 7,
+   "harness": "claude-code",
+   "project": "web-app",
+   "day": "2026-10-03",
+   "subagent_cost": 1.28,
+   "ctx_max": 81770,
+   "ctx_avg": 54343,
+   "model": "opus-5-5"
+  },
+  {
+   "cost": 2.85,
+   "calls": 121,
+   "turns": 40,
+   "harness": "claude-code",
+   "project": "repo-23",
+   "day": "2026-10-10",
+   "subagent_cost": 0,
+   "ctx_max": 74814,
+   "ctx_avg": 36660,
+   "model": "opus-5-5"
+  }
+ ],
+ "note": "neutral sample: real shape, project names replaced"
+}

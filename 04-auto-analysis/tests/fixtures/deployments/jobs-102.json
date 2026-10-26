@@ -1,0 +1,2 @@
+{"jobs": [{"name": "lint", "conclusion": "success", "steps": [{"name": "ruff", "conclusion": "success"}]},
+          {"name": "test", "conclusion": "failure", "steps": [{"name": "Set up job", "conclusion": "success"}, {"name": "unittest", "conclusion": "failure"}, {"name": "upload", "conclusion": "skipped"}]}]}

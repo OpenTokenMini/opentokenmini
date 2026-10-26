@@ -1,0 +1,21 @@
+{"server": {"name": "otm-live", "pid": 41234, "started": "2026-10-25T08:00:00Z", "version": "0.4.0", "log": "~/.local/share/opentokenmini/live/mcp.log"},
+ "window_h": 24, "calls": 412, "errors": 3,
+ "tools": [
+  {"name": "overview", "calls": 260, "errors": 0, "p50_ms": 42, "p95_ms": 180, "avg_chars": 3100, "max_chars": 9800, "last": "2026-10-25T12:29:40Z"},
+  {"name": "agents", "calls": 71, "errors": 1, "p50_ms": 65, "p95_ms": 240, "avg_chars": 2400, "max_chars": 7100, "last": "2026-10-25T12:29:55Z"},
+  {"name": "session", "calls": 48, "errors": 0, "p50_ms": 38, "p95_ms": 120, "avg_chars": 1800, "max_chars": 5200, "last": "2026-10-25T12:27:10Z"},
+  {"name": "node", "calls": 22, "errors": 2, "p50_ms": 90, "p95_ms": 410, "avg_chars": 4200, "max_chars": 12000, "last": "2026-10-25T12:20:00Z"},
+  {"name": "who_touches", "calls": 7, "errors": 0, "p50_ms": 12, "p95_ms": 30, "avg_chars": 300, "max_chars": 900, "last": "2026-10-25T11:50:00Z"},
+  {"name": "record", "calls": 4, "errors": 0, "p50_ms": 8, "p95_ms": 15, "avg_chars": 120, "max_chars": 200, "last": "2026-10-25T11:10:00Z"},
+  {"name": "method", "calls": 0, "errors": 0, "p50_ms": null, "p95_ms": null, "avg_chars": null, "max_chars": null, "last": null}],
+ "orchestrators": [
+  {"sid": "aaaa1111-0000-0000-0000-000000000000", "name": "alpha", "calls": 300, "tools": {"overview": 200, "agents": 60, "session": 40}, "last": "2026-10-25T12:29:55Z"},
+  {"sid": "bbbb2222-0000-0000-0000-000000000000", "name": "beta", "calls": 12, "tools": {"overview": 10, "node": 2}, "last": "2026-10-25T10:00:00Z"}],
+ "recent": [
+  {"ts": "2026-10-25T12:29:55Z", "tool": "agents", "via": "mcp", "ms": 61, "chars": 2300, "ok": true, "args": {"session": "aaaa1111"}},
+  {"ts": "2026-10-25T12:29:40Z", "tool": "overview", "via": "http", "ms": 40, "chars": 3000, "ok": true, "args": {"caller": "panel-x", "full": true}},
+  {"ts": "2026-10-25T12:28:00Z", "tool": "node", "via": "mcp", "ms": 400, "chars": 0, "ok": false, "args": {"session": "aaaa1111", "node": "zz"}},
+  {"ts": "2026-10-25T12:27:10Z", "tool": "session", "via": "mcp", "ms": 35, "chars": 1700, "ok": true, "args": {"id_or_name": "alpha"}},
+  {"ts": "2026-10-25T12:26:00Z", "tool": "overview", "via": "mcp", "ms": 44, "chars": 3200, "ok": true, "args": {}},
+  {"ts": "2026-10-25T12:20:00Z", "tool": "node", "via": "mcp", "ms": 88, "chars": 4100, "ok": true, "args": {"session": "aaaa1111", "node": "a2"}},
+  {"ts": "2026-10-25T12:10:00Z", "tool": "overview", "via": "mcp", "ms": 39, "chars": 3100, "ok": true, "args": {}}]}

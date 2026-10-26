@@ -1,0 +1,33 @@
+{
+  "$id": "session.schema.json",
+  "title": "One session (v=1): sessions.jsonl",
+  "type": "object", "additionalProperties": false,
+  "required": ["v", "session_id", "harness", "project", "repo", "user", "start", "end", "active_minutes",
+               "calls", "turns", "errors", "retries", "subagent_cost", "tokens", "cost", "cost_basis",
+               "models", "tools", "mcp", "sources"],
+  "properties": {
+    "v": {"const": 1},
+    "session_id": {"type": "string", "minLength": 1},
+    "harness": {"$ref": "common.schema.json#/$defs/harness"},
+    "project": {"type": "string"},
+    "repo": {"type": ["string", "null"]},
+    "user": {"$ref": "common.schema.json#/$defs/hash12"},
+    "start": {"$ref": "common.schema.json#/$defs/ts"},
+    "end": {"$ref": "common.schema.json#/$defs/ts"},
+    "active_minutes": {"type": "number", "minimum": 0},
+    "calls": {"$ref": "common.schema.json#/$defs/count"},
+    "turns": {"$ref": "common.schema.json#/$defs/count"},
+    "errors": {"$ref": "common.schema.json#/$defs/count"},
+    "retries": {"$ref": "common.schema.json#/$defs/count"},
+    "subagent_cost": {"$ref": "common.schema.json#/$defs/usd"},
+    "tokens": {"$ref": "common.schema.json#/$defs/tokens"},
+    "cost": {"$ref": "common.schema.json#/$defs/cost"},
+    "cost_basis": {"$ref": "common.schema.json#/$defs/basis"},
+    "models": {"type": "object", "additionalProperties": {"$ref": "common.schema.json#/$defs/usd"}},
+    "tools": {"type": "object", "additionalProperties": {"$ref": "common.schema.json#/$defs/count"}},
+    "mcp": {"type": "object", "additionalProperties": {
+      "type": "object", "additionalProperties": false, "required": ["calls", "errors"],
+      "properties": {"calls": {"$ref": "common.schema.json#/$defs/count"}, "errors": {"$ref": "common.schema.json#/$defs/count"}}}},
+    "sources": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/source"}}
+  }
+}

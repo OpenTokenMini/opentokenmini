@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenTokenMini: your last 30 days</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<style>
+  :root { --bg:#111513; --card:#1a201c; --line:#2a332d; --ink:#e4ebe5; --dim:#8b998e; --green:#5fbf87; --warn:#e0a07f }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--bg); color:var(--ink); font:400 15px/1.5 Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased }
+  main { max-width:920px; margin:0 auto; padding:40px 20px 80px }
+  h1 { font:600 15px/1 Inter, system-ui, sans-serif; color:var(--dim); margin:0 0 18px; letter-spacing:.02em }
+  h1 b { color:var(--ink) }
+  .sample { display:none; background:#2b2418; color:var(--warn); border-radius:8px; padding:8px 12px; font-size:13px; margin-bottom:18px }
+  .hero { display:flex; align-items:flex-end; gap:36px; flex-wrap:wrap; margin-bottom:8px }
+  .big { font:700 56px/1 Inter, system-ui, sans-serif; letter-spacing:-.02em }
+  .big small { display:block; font:400 14px/1.4 Inter, sans-serif; color:var(--dim); letter-spacing:0; margin-top:6px }
+  .kpis { display:flex; gap:28px; flex-wrap:wrap; padding-bottom:8px }
+  .kpi div { font:600 20px/1.1 Inter, sans-serif; font-variant-numeric:tabular-nums } .kpi span { color:var(--dim); font-size:13px }
+  .chart { display:flex; align-items:flex-end; gap:3px; height:90px; margin:22px 0 4px }
+  .chart > div { flex:1; display:flex; flex-direction:column-reverse; min-width:3px; height:100% }
+  .chart i { display:block; border-radius:1px }
+  .axis { display:flex; justify-content:space-between; color:var(--dim); font-size:12px }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:var(--dim); margin-top:8px }
+  .legend i, .rows i { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px }
+  .facts { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:30px 0 }
+  .fact { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px }
+  .fact b { display:block; font:700 30px/1.1 Inter, sans-serif; color:var(--warn); margin-bottom:6px }
+  .fact p { margin:0; font-size:14px } .fact p span { color:var(--dim) }
+  .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; min-width:0 }
+  h2 { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--dim); font-weight:600; margin:0 0 10px }
+  .rows > div { display:grid; grid-template-columns:1fr 64px; gap:8px; font-size:14px; padding:5px 0; border-top:1px solid var(--line); cursor:default }
+  .rows > div:first-child { border-top:0 }
+  .rows u { text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  .rows em { font-style:normal; text-align:right; font-variant-numeric:tabular-nums }
+  .rows s { grid-column:1 / -1; text-decoration:none; height:3px; background:var(--green); opacity:.6; border-radius:2px; margin-top:-2px }
+  .rows small { grid-column:1 / -1; color:var(--dim); font-size:12px; margin-top:-4px }
+  .more { background:none; border:0; color:var(--green); font:inherit; font-size:13px; cursor:pointer; padding:8px 0 0 }
+  details { margin-top:22px } summary { cursor:pointer; color:var(--green); font-size:14px; list-style:none } summary::before { content:"+ " }
+  details[open] summary::before { content:"− " }
+  .find { margin:12px 0 0; padding:0; list-style:none }
+  .find li { padding:9px 0; border-top:1px solid var(--line); font-size:14px } .find li:first-child { border-top:0 }
+  .find b { color:var(--warn) }
+  .note { color:var(--dim); font-size:12px; margin-top:26px }
+  @media (max-width:760px) { .grid, .facts { grid-template-columns:1fr } .big { font-size:44px } }
+</style>
+</head>
+<body>
+<main>
+  <h1><b>OpenTokenMini</b> · your last <span id="days">30</span> days</h1>
+  <div class="sample" id="sample">Sample data. Run <code>python3 02-measure/from-transcripts.py 30 &gt; 00-docs/demo/usage.json</code> and reload to see yours.</div>
+
+  <div class="hero">
+    <div class="big" id="spent">…<small>spent</small></div>
+    <div class="kpis" id="kpis"></div>
+  </div>
+  <div class="chart" id="chart"></div>
+  <div class="axis" id="axis"></div>
+  <div class="legend" id="legend"></div>
+
+  <div class="facts" id="facts"></div>
+
+  <div class="grid">
+    <div class="panel"><h2>By model</h2><div class="rows" id="models"></div></div>
+    <div class="panel"><h2>By project</h2><div class="rows" id="projects"></div></div>
+    <div class="panel"><h2>Top sessions</h2><div class="rows" id="sessions"></div></div>
+  </div>
+
+  <details>
+    <summary>More findings</summary>
+    <ul class="find" id="find"></ul>
+    <div class="grid" style="margin-top:14px">
+      <div class="panel"><h2>Token costs</h2><div class="rows" id="types"></div></div>
+      <div class="panel"><h2>By tool</h2><div class="rows" id="tools"></div></div>
+      <div class="panel"><h2>By agent</h2><div class="rows" id="harnesses"></div></div>
+    </div>
+  </details>
+
+  <p class="note">Read from session logs on this machine: token counts, models, tool names, folders, timestamps. No prompts or code, nothing sent anywhere. Costs are logged where the agent records them, else list price.</p>
+</main>
+<script>
+const COLORS = ["#5fbf87", "#e0a07f", "#7fa6e0", "#d6c27a", "#b48fd6", "#55605a"];
+const LIST = 5;
+const usd = v => "$" + (v >= 100 ? Math.round(v).toLocaleString("en") : v >= 10 ? v.toFixed(0) : v.toFixed(2));
+const pct = (a, b) => b ? Math.round(100 * a / b) + "%" : "0%";
+const num = v => v >= 1e9 ? (v / 1e9).toFixed(1) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? Math.round(v / 1e3) + "k" : String(v);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
+const $ = id => document.getElementById(id);
+const AGENTS = {"claude-code": "Claude Code", codex: "Codex", opencode: "OpenCode", antigravity: "Antigravity", pi: "Pi"};
+const plural = (n, w) => `${n.toLocaleString("en")} ${w}${n === 1 ? "" : "s"}`;
+const projName = p => p === "projects" ? "projects root" : p === "(scratch)" ? "scratch dirs" : p === "(unknown)" ? "unknown folder" : p;
+
+// rows(el, items, {label, value, right, sub, color}): ≤5 rows, "View more" adds 10.
+function rows(el, items, o) {
+  items = items.filter(x => o.value(x) > 0);
+  const max = Math.max(...items.map(o.value), 1e-9);
+  let n = LIST;
+  const draw = () => {
+    el.innerHTML = items.slice(0, n).map(x => `<div title="${esc(o.title ? o.title(x) : o.label(x))}">
+      <u>${o.color ? `<i style="background:${o.color(x)}"></i>` : ""}${esc(o.label(x))}</u><em>${o.right(x)}</em>
+      ${o.sub ? `<small>${esc(o.sub(x))}</small>` : ""}<s style="width:${100 * o.value(x) / max}%"></s></div>`).join("")
+      || `<div><u style="color:var(--dim)">nothing yet</u></div>`;
+    if (items.length > n) {
+      const b = Object.assign(document.createElement("button"), {className: "more", textContent: `View more (${items.length - n})`});
+      b.onclick = () => { n += LIST * 2; draw(); };
+      el.append(b);
+    }
+  };
+  draw();
+}
+
+const load = f => fetch(f).then(r => { if (!r.ok) throw r.status; return r.json(); });
+load("usage.json").catch(() => load("sample.json").then(d => { $("sample").style.display = "block"; return d; }))
+.catch(() => { $("spent").innerHTML = "No data<small>run python3 02-measure/from-transcripts.py 30 &gt; 00-docs/demo/usage.json</small>"; })
+.then(d => { if (d) render(d); });
+
+function render(d) {
+  if (!d.by_day.length) { $("spent").innerHTML = `No sessions<small>none in the last ${d.days} days of local logs</small>`; return; }
+  const t = d.totals, s = d.sessions || [], tk = d.tokens;
+  $("days").textContent = d.days;
+  $("spent").innerHTML = `${usd(t.cost)}<small>spent, ${usd(t.cost / d.days)} a day</small>`;
+  $("kpis").innerHTML = [[t.sessions.toLocaleString("en"), "sessions"], [t.turns.toLocaleString("en"), "prompts"],
+    [usd(t.cost / Math.max(1, t.turns)), "per prompt"]]
+    .map(([v, l]) => `<div class="kpi"><div>${v}</div><span>${l}</span></div>`).join("");
+
+  // daily chart, stacked by model
+  const models = Object.keys(d.models).slice(0, COLORS.length - 1);
+  const color = m => COLORS[models.includes(m) ? models.indexOf(m) : COLORS.length - 1];
+  const dayTotal = x => Object.entries(x).reduce((a, [k, v]) => k === "day" ? a : a + v, 0);
+  const max = Math.max(...d.by_day.map(dayTotal), 1e-9);
+  $("chart").innerHTML = d.by_day.map(x => `<div title="${x.day}: ${usd(dayTotal(x))}">` + Object.entries(x).filter(([k]) => k !== "day")
+    .map(([k, v]) => `<i style="height:${100 * v / max}%;background:${color(k)}"></i>`).join("") + "</div>").join("");
+  if (d.by_day.length) $("axis").innerHTML = `<span>${d.by_day[0].day}</span><span>peak ${usd(max)}/day</span><span>${d.by_day.at(-1).day}</span>`;
+
+  // the two facts that matter most: priciest session (and why), then the biggest structural lever
+  const facts = [], more = [];
+  const top = s[0];
+  if (top) {
+    const ctxs = s.map(x => x.ctx_avg || 0).sort((a, b) => a - b), med = ctxs[ctxs.length >> 1] || 0;
+    const why = top.subagent_cost / top.cost > .5 ? `${pct(top.subagent_cost, top.cost)} of it was subagents`
+      : med && top.ctx_avg > 2 * med ? `each call carried ${num(top.ctx_avg)} tokens of context, ${(top.ctx_avg / med).toFixed(1)}× your usual`
+      : `${top.calls.toLocaleString("en")} model calls for ${top.turns} prompts`;
+    facts.push([usd(top.cost), `priciest session: <span>${esc(projName(top.project))}, ${top.day}.</span> ${why}.`]);
+  }
+  const inTok = tk.input_tokens + tk.cache_read_input_tokens + tk.cache_creation_input_tokens;
+  const ct = t.cost_by_type;
+  const cw = ct ? `went to <span>writing the prompt cache</span>, ${ct.cache_write > 1.1 * ct.output ? "more than" : "about as much as"} all the output. Pauses longer than the cache lifetime write it again.` : "";
+  if (ct && ct.cache_write > .9 * ct.output && ct.cache_write / t.cost > .2) facts.push([pct(ct.cache_write, t.cost), cw]);
+  else if (ct && ct.cache_read) facts.push([pct(tk.cache_read_input_tokens, inTok), `of input tokens were <span>cache reads</span>: ${usd(ct.cache_read)} instead of roughly ${usd(ct.cache_read * 10)} uncached.`]);
+  else if (t.subagent_cost / t.cost > .15) facts.push([pct(t.subagent_cost, t.cost), `of the spend was <span>delegated to subagents.</span>`]);
+  $("facts").innerHTML = facts.map(([b, p]) => `<div class="fact"><b>${b}</b><p>${p}</p></div>`).join("");
+
+  // more findings
+  const top10 = s.slice(0, 10).reduce((a, x) => a + x.cost, 0);
+  more.push(`<b>${pct(top10, t.cost)}</b> of the spend came from 10 sessions out of ${t.sessions.toLocaleString("en")}.`);
+  if (t.subagent_cost) more.push(`<b>${pct(t.subagent_cost, t.cost)}</b> (${usd(t.subagent_cost)}) went to subagents.`);
+  if (ct) more.push(`<b>${pct(tk.cache_read_input_tokens, inTok)}</b> of input tokens were cache reads (${num(tk.cache_read_input_tokens)}). They cost ${usd(ct.cache_read)}; uncached, roughly ${usd(ct.cache_read * 10)}.`);
+  if (ct && !facts[1]?.[1].startsWith("went to")) more.push(`<b>${pct(ct.cache_write, t.cost)}</b> went to writing the prompt cache, vs ${pct(ct.output, t.cost)} on output.`);
+  if (t.big_context_cost) more.push(`<b>${pct(t.big_context_cost, t.cost)}</b> was spent on calls carrying over ${num(t.big_context)} tokens of context.`);
+  const bash = d.tools.find(x => x.name === "Bash");
+  if (bash) more.push(`<b>${pct(bash.cost, t.cost)}</b> was on turns that ran shell commands.`);
+  const tm = Object.entries(d.models)[0];
+  if (tm) more.push(`<b>${pct(tm[1], t.cost)}</b> went to one model, ${esc(tm[0])}.`);
+  $("find").innerHTML = more.map(x => `<li>${x}</li>`).join("");
+
+  rows($("models"), Object.entries(d.models), {label: x => x[0], value: x => x[1], right: x => usd(x[1]), color: x => color(x[0])});
+  rows($("projects"), d.projects, {label: p => projName(p.name), value: p => p.cost, right: p => usd(p.cost),
+    sub: p => plural(p.sessions, "session")});
+  rows($("sessions"), s, {label: x => projName(x.project), value: x => x.cost, right: x => usd(x.cost),
+    sub: x => `${x.day} · ${plural(x.turns, "prompt")}` + (x.subagent_cost ? ` · ${pct(x.subagent_cost, x.cost)} subagents` : "")
+      + (x.ctx_max ? ` · peak ${num(x.ctx_max)} ctx` : ""),
+    title: x => `${x.harness} · ${x.model || ""} · ${x.calls} calls`});
+  if (ct) rows($("types"), [["output", ct.output], ["cache writes", ct.cache_write], ["cache reads", ct.cache_read], ["input", ct.input]]
+    .sort((a, b) => b[1] - a[1]), {label: x => x[0], value: x => x[1], right: x => pct(x[1], t.cost)});
+  rows($("tools"), d.tools, {label: x => x.name === "(reply)" ? "reply, no tool" : x.name, value: x => x.cost, right: x => pct(x.cost, t.cost)});
+  rows($("harnesses"), Object.entries(d.harnesses || {}), {label: x => AGENTS[x[0]] || x[0], value: x => x[1].cost + 1e-6,
+    right: x => usd(x[1].cost), sub: x => plural(x[1].sessions, "session")});
+}
+</script>
+</body>
+</html>

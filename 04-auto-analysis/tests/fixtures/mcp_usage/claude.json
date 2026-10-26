@@ -1,0 +1,26 @@
+{
+ "mcpServers": {
+  "gh": {
+   "command": "gh-mcp",
+   "env": {
+    "GH_TOKEN": "secret"
+   }
+  }
+ },
+ "projects": {
+  "PROJ": {
+   "mcpServers": {
+    "docs server": {
+     "type": "http",
+     "url": "https://example.invalid/mcp",
+     "headers": {
+      "Authorization": "secret"
+     }
+    }
+   },
+   "disabledMcpServers": [
+    "claude.ai Gmail"
+   ]
+  }
+ }
+}

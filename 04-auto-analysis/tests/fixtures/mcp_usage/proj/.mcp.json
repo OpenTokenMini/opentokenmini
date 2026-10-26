@@ -1,0 +1,10 @@
+{
+ "mcpServers": {
+  "unused-db": {
+   "command": "db-mcp",
+   "env": {
+    "DB_PASSWORD": "secret"
+   }
+  }
+ }
+}

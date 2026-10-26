@@ -1,0 +1,2 @@
+{"v": 1, "recv_ts": "2026-10-01T10:00:05Z", "path": "/v1/logs", "content_type": "application/json", "harness_hint": "claude-code", "data": {"resourceLogs": []}}
+{"ts": 1790000000.5, "signal": "metrics", "service": "codex", "data": {"resourceMetrics": []}}

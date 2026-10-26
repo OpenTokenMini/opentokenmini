@@ -1,0 +1,43 @@
+{
+  "_comment": "Copy to config.json (gitignored). null = constant at the top of the stage file. Keys are stage dir names; connector names come from each stage AGENTS.md Reconfigure.",
+  "data_dir": null,
+  "collector": {
+    "sink": "files",
+    "bind": "127.0.0.1",
+    "port": null,
+    "token_env": null,
+    "hash_identity": true
+  },
+  "readers": {
+    "enabled": [
+      "claude-code",
+      "codex",
+      "antigravity",
+      "opencode",
+      "pi"
+    ],
+    "paths": {
+      "codex": "~/.codex/sessions"
+    }
+  },
+  "analyze": {
+    "source": "files",
+    "sink": "files",
+    "prefer_source": "otel"
+  },
+  "impact": {
+    "vcs": "local_git",
+    "repos": [],
+    "read_subjects": false
+  },
+  "decide": {
+    "vendor": "jev",
+    "points": [
+      "outlier_explanation",
+      "recommendation"
+    ]
+  },
+  "mcp": {
+    "source": "files"
+  }
+}

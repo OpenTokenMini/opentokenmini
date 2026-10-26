@@ -1,0 +1,26 @@
+{
+  "$id": "deployment.schema.json",
+  "title": "One CI run (v=1): deployments.jsonl",
+  "type": "object", "additionalProperties": false,
+  "required": ["v", "ci", "run_id", "repo_label", "workflow", "event", "head_sha", "head_branch", "status", "conclusion",
+               "created", "duration_s", "failed_step", "session_id", "harness", "link", "link_p"],
+  "properties": {
+    "v": {"const": 1},
+    "ci": {"enum": ["github_actions", "gitlab_ci"]},
+    "run_id": {"type": "string", "minLength": 1},
+    "repo_label": {"type": "string"},
+    "workflow": {"type": "string"},
+    "event": {"type": "string"},
+    "head_sha": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "head_branch": {"type": ["string", "null"]},
+    "status": {"type": "string"},
+    "conclusion": {"type": ["string", "null"]},
+    "created": {"$ref": "common.schema.json#/$defs/ts"},
+    "duration_s": {"anyOf": [{"$ref": "common.schema.json#/$defs/count"}, {"type": "null"}]},
+    "failed_step": {"type": ["string", "null"]},
+    "session_id": {"type": ["string", "null"]},
+    "harness": {"anyOf": [{"$ref": "common.schema.json#/$defs/harness"}, {"type": "null"}]},
+    "link": {"enum": ["trailer", "window", null]},
+    "link_p": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+  }
+}

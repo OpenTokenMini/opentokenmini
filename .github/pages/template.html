@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<meta name="description" content="{description}">
+<meta name="robots" content="{robots}">
+<link rel="canonical" href="{url}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{description}">
+<meta property="og:url" content="{url}">
+<meta property="og:image" content="https://opentokenmini.org/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="alternate" type="text/markdown" href="{raw}" title="Raw markdown">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#eef1ec; --ink:#1f2a22; --dim:#5f6e62; --green:#2f7a4f; --line:#cdd5ce; --code:#e2e8e2 }
+  body { margin:0; background:var(--bg); color:var(--ink); font:400 16px/1.65 Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased }
+  header { position:relative; display:flex; gap:20px; align-items:center; padding:14px 24px; border-bottom:1px solid var(--line); font-size:14px }
+  header .brand { display:flex; gap:8px; align-items:center; margin-right:auto; color:var(--ink); text-decoration:none;
+                  font:400 15px "JetBrains Mono", monospace; letter-spacing:.02em; text-transform:uppercase }
+  header .brand b { font-weight:800 }
+  header .brand b:first-of-type { margin-right:.28em } header .brand b:last-of-type { margin-left:.28em }
+  header a { color:var(--green); text-decoration:none }
+  header .acts { position:absolute; left:50%; transform:translateX(-50%); display:flex; gap:10px }
+  header .go { color:#fff; background:var(--green); font-weight:500; padding:8px 16px; border-radius:8px }
+  header .go.help { color:var(--green); background:#fff; box-shadow:0 1px 0 #c5d3c8 }
+  header .go:hover { opacity:.88 }
+  @media (max-width:700px) { header .acts { position:static; transform:none } }
+  .wrap { display:flex; gap:40px; justify-content:center; padding:32px 24px 80px }
+  main { flex:0 1 760px; min-width:0 }
+  .tree { flex:0 0 220px; position:sticky; top:24px; align-self:flex-start; max-height:calc(100vh - 48px); overflow:auto; font-size:14px }
+  .tree ul { list-style:none; margin:0 0 8px; padding:0 0 0 12px } .tree > ul { padding:0 }
+  .tree li { margin:3px 0 } .tree a { text-decoration:none; color:var(--ink) }
+  .tree a[aria-current] { color:var(--green); font-weight:600 }
+  .tree summary { cursor:pointer; color:var(--dim); font:13px "JetBrains Mono", monospace; text-transform:uppercase; margin:10px 0 4px }
+  @media (max-width:900px) { .wrap { flex-direction:column } .tree { position:static; max-height:none } }
+  a { color:var(--green) }
+  code { font:14px "JetBrains Mono", monospace; background:var(--code); padding:1px 5px; border-radius:4px }
+  pre { background:var(--code); padding:14px; border-radius:8px; overflow:auto } pre code { padding:0 }
+  table { border-collapse:collapse } th, td { border-bottom:1px solid var(--line); padding:6px 10px; text-align:left }
+  h1, h2, h3 { line-height:1.25 } h1 { font-size:28px } h2 { font-size:20px; margin-top:36px }
+  main img { max-width:100%; height:auto }
+  .path { color:var(--dim); font:13px "JetBrains Mono", monospace }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3BVRYNN200"></script>
+<script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag("js", new Date()); gtag("config", "G-3BVRYNN200");</script>
+</head>
+<body>
+<header>
+  <a class="brand" href="/"><img src="/logo.svg" width="22" height="22" alt=""><span><b>Open</b>Token<b>Mini</b></span></a>
+  <div class="acts"><a class="go" href="https://github.com/OpenTokenMini/opentokenmini">Get the code →</a><a class="go help" href="https://forms.gle/cqjyqVN9qky4gQ5U6">Get our help →</a></div>
+  <a href="/llms.txt">For agents</a>
+</header>
+<div class="wrap"><main><div class="path">{path} · <a href="{raw}">raw</a> · <a href="{github}">GitHub</a></div><article>
+{body}
+</article></main>
+{nav}</div>
+</body>
+</html>

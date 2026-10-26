@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenTokenMini: AI agent cost monitoring and optimization, free and open source</title>
+<meta name="description" content="Nobody knows what their AI agents spend on. OpenTokenMini measures what every agent call costs, links it to the commits it produced, and feeds it back to the agent so it spends less. Works with Claude Code, Codex and open models. Free and open source.">
+<link rel="canonical" href="https://opentokenmini.org/">
+<link rel="alternate" hreflang="en" href="https://opentokenmini.org/">
+<link rel="alternate" hreflang="es" href="https://opentokenmini.org/es/">
+<link rel="alternate" hreflang="zh-Hans" href="https://opentokenmini.org/zh/">
+<link rel="alternate" hreflang="x-default" href="https://opentokenmini.org/">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="OpenTokenMini">
+<meta property="og:url" content="https://opentokenmini.org/">
+<meta property="og:title" content="OpenTokenMini: AI agent cost monitoring and optimization, free and open source">
+<meta property="og:description" content="Nobody knows what their AI agents spend on. OpenTokenMini measures what every agent call costs, links it to the commits it produced, and feeds it back to the agent so it spends less. Works with Claude Code, Codex and open models. Free and open source.">
+<meta property="og:image" content="https://opentokenmini.org/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"OpenTokenMini",
+ "description":"Open method and reference implementation to measure what AI agents spend, on which work, and what comes out of it.",
+ "url":"https://opentokenmini.org/","codeRepository":"https://github.com/OpenTokenMini/opentokenmini",
+ "license":"https://www.apache.org/licenses/LICENSE-2.0","programmingLanguage":"Python",
+ "sameAs":["https://github.com/OpenTokenMini"]}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#eef1ec; --ink:#1f2a22; --dim:#5f6e62; --green:#2f7a4f; --line:#cdd5ce }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:var(--bg); color:var(--ink); font:400 18px/1.6 Inter, system-ui, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; text-align:center;
+         -webkit-font-smoothing:antialiased }
+  main { max-width:760px; width:100%; min-width:0; box-sizing:border-box; padding:56px 24px }
+  h1 { display:flex; gap:14px; align-items:center; justify-content:center; margin:0;
+       font:400 32px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing:.02em; text-transform:uppercase }
+  h1 b { font-weight:800 }
+  h1 b:first-child { margin-right:.28em } h1 b:last-child { margin-left:.28em }
+  .lead { font-size:30px; line-height:1.25; font-weight:600; letter-spacing:-.015em; max-width:none; margin:0 auto 18px }
+  p { max-width:540px; margin:0 auto 20px }
+  figure { margin:52px 0 40px }
+  figure img { width:100% }
+  nav { margin:28px 0 48px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap }
+  .go { font:500 15px Inter, system-ui, sans-serif; color:var(--green); box-shadow:inset 0 0 0 1.5px var(--green); padding:12px 20px; border-radius:8px; text-decoration:none }
+  .go + .go { color:#fff; background:var(--green) }
+  .go.help { color:var(--green); background:#fff; box-shadow:0 1px 0 #c5d3c8 }
+  .go:hover { opacity:.88 }
+  .more { margin:36px 0 0 }
+  .small { color:var(--dim); font-size:15px }
+  .talk { display:inline-block; margin-top:10px; padding:12px 22px; border-radius:999px; background:#dfe8e0;
+          color:var(--green); font-weight:600; text-decoration:none; box-shadow:0 1px 0 #c5d3c8 }
+  .talk:hover { background:var(--green); color:#fff }
+  .foss { margin:10px auto 0; font:600 13px "JetBrains Mono", ui-monospace, monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--green) }
+  .sub { font-size:21px; font-weight:600; color:var(--dim); margin:-10px auto 22px }
+  .value { line-height:1.85; margin:36px auto 0 }
+  .shot { display:block; width:100%; margin:44px auto 0; border-radius:10px; box-shadow:0 2px 14px rgba(0,0,0,.14) }
+  .try { max-width:700px; margin:52px auto 0; text-align:left }
+  .try p { margin:0; max-width:none }
+  .try-h { text-align:center; font-weight:600; font-size:15px; margin-bottom:10px !important }
+  .cmd { display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:8px; background:#e2e8e2 }
+  .cmd code { flex:1; min-width:0; overflow-x:auto; white-space:nowrap; font:12.5px "JetBrains Mono", ui-monospace, monospace; overflow-wrap:anywhere }
+  .cmd button { font:500 13px Inter, system-ui, sans-serif; color:var(--green); background:none; border:1.5px solid var(--green); border-radius:6px; padding:6px 12px; cursor:pointer }
+  .try-n { text-align:center; font-size:14px; color:var(--dim); margin-top:10px !important }
+  .lang { margin-top:36px; font-size:14px; color:var(--dim) }
+  .lang a { color:var(--dim); margin:0 6px } .lang a[aria-current] { color:var(--ink); text-decoration:none; font-weight:600 }
+  @media (max-width:600px) { main { padding:40px 18px } .lead { font-size:26px } }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3BVRYNN200"></script>
+<script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag("js", new Date()); gtag("config", "G-3BVRYNN200");</script>
+</head>
+<body>
+<main>
+  <h1><img src="/logo.svg" width="40" height="40" alt=""><span><b>Open</b>Token<b>Mini</b></span></h1>
+  <p class="foss">Free and open source</p>
+  <nav>
+    <a class="go" href="/docs/">Read the docs →</a>
+    <a class="go" href="https://github.com/OpenTokenMini/opentokenmini">Get the code →</a>
+    <a class="go help" href="https://forms.gle/cqjyqVN9qky4gQ5U6">Get our help →</a>
+  </nav>
+  <p class="lead">Nobody knows what their AI agents spend on</p>
+  <p class="sub">Not you, not your team, not anyone</p>
+  <p class="value"><b>Open</b>Token<b>Mini</b> measures, analyzes and fixes it<br>
+  <b>Your agent stops guessing</b>, <i>and so do you</i></p>
+  <img class="shot" src="/dashboard.png" alt="OpenTokenMini dashboard: cost, tokens and effectiveness for the organization, then per team with its top issues">
+  <div class="try">
+    <p class="try-h">Install using your coding agent</p>
+    <div class="cmd"><code>Clone https://github.com/OpenTokenMini/opentokenmini and follow AGENTS.md</code><button type="button">Copy</button></div>
+    <p class="try-n"><b><i>It explains each step and <u>asks before turning anything on</u>.<br>
+    <span>Integrations for Open Models, OpenAI and Anthropic</span></i></b></p>
+  </div>
+  <img class="shot" src="/session-timeline.png" alt="One agent session over time: context, output and compactions per call, cost by kind of work">
+  <nav class="more"><a class="go" href="/docs/00-docs/humans/overview.md">Understand our methodology →</a></nav>
+  <figure>
+    <img src="/flow.svg" alt="Agent spend by vendor, split by the work it went to and what came out of it">
+  </figure>
+  <p class="small">Unusual setup, or want it built for you?<br><a class="talk" href="https://forms.gle/cqjyqVN9qky4gQ5U6">Talk to us, we build it with you →</a></p>
+  <div class="lang"><a href="/" hreflang="en" aria-current="page">English</a>·<a href="/es/" hreflang="es">Español</a>·<a href="/zh/" hreflang="zh-Hans">中文</a></div>
+</main>
+<script>
+  const cp = document.querySelector(".try button"), copied = cp.dataset.done || "Copied!";
+  cp.onclick = () => navigator.clipboard.writeText(document.querySelector(".cmd code").textContent).then(() => { const t = cp.textContent; cp.textContent = copied; setTimeout(() => cp.textContent = t, 1500) });
+  // first visit to the English page: follow the browser language once; any click on the switcher sticks
+  document.querySelectorAll(".lang a").forEach(a => a.onclick = () => localStorage.lang = a.hreflang);
+  const want = (navigator.languages || [navigator.language || ""]).map(l => l.slice(0, 2)).find(l => ["en", "es", "zh"].includes(l));
+  if (location.pathname === "/" && !localStorage.lang && (want === "es" || want === "zh")) location.replace("/" + want + "/");
+</script>
+</body>
+</html>

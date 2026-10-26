@@ -1,0 +1,4 @@
+{"v": 1, "generated": "2026-10-02T09:00:00Z",
+ "deployments": {"repos": 1, "runs": 6, "runs_linked": 2, "agent": {"failure_rate": 0.5, "n": 2}, "baseline": {"failure_rate": 0.25, "n": 4}},
+ "issues": {"repos": 1, "prs": 4, "prs_merged": 3, "prs_linked": 3, "ticketless_share": 0.5, "cost_linked": 2.5, "issues": 5, "issues_closed_without_pr": 1, "truncated": []},
+ "future_stage": {"anything": [1, 2]}}

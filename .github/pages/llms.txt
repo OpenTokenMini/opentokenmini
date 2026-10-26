@@ -1,0 +1,4 @@
+# OpenTokenMini
+
+> Open method and reference implementation to measure what AI agents spend, on which work, and what comes out of it, across OpenAI, Anthropic and open models. Start at AGENTS.md. Every file below is raw markdown.
+

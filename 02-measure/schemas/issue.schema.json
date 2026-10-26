@@ -1,0 +1,29 @@
+{
+  "$id": "issue.schema.json",
+  "title": "One GitHub PR or issue (v=1): issues.jsonl",
+  "type": "object", "additionalProperties": false,
+  "required": ["v", "kind", "source", "repo_label", "number", "state", "state_reason", "type", "created", "closed", "merged",
+               "author", "labels", "keys", "issues", "prs", "commits", "merge_sha", "session_ids", "cost"],
+  "properties": {
+    "v": {"const": 1},
+    "kind": {"enum": ["pr", "issue"]},
+    "source": {"enum": ["github"]},
+    "repo_label": {"type": "string"},
+    "number": {"type": "integer", "minimum": 1},
+    "state": {"enum": ["open", "closed", "merged"]},
+    "state_reason": {"type": ["string", "null"]},
+    "type": {"type": ["string", "null"]},
+    "created": {"$ref": "common.schema.json#/$defs/ts"},
+    "closed": {"anyOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/ts"}]},
+    "merged": {"anyOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/ts"}]},
+    "author": {"$ref": "common.schema.json#/$defs/hash12"},
+    "labels": {"type": "array", "items": {"type": "string"}},
+    "keys": {"type": "array", "items": {"type": "string"}},
+    "issues": {"type": "array", "items": {"type": "integer"}},
+    "prs": {"type": "array", "items": {"type": "integer"}},
+    "commits": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"}},
+    "merge_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{7,64}$"},
+    "session_ids": {"type": "array", "items": {"type": "string"}},
+    "cost": {"$ref": "common.schema.json#/$defs/usd"}
+  }
+}

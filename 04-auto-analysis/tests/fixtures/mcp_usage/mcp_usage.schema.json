@@ -1,0 +1,25 @@
+{
+  "$id": "mcp_usage.schema.json",
+  "title": "MCP usage per server or per server tool (v=1): mcp_usage.jsonl. Draft kept with the tests until promoted to 02-measure/schemas/",
+  "type": "object", "additionalProperties": false,
+  "required": ["v", "harness", "kind", "server", "tool", "calls", "errors", "input_tokens_est", "result_tokens_est",
+               "context_share", "sessions", "first", "last", "config", "loaded_sessions", "never_called"],
+  "properties": {
+    "v": {"const": 1},
+    "harness": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/harness"},
+    "kind": {"enum": ["server", "tool"]},
+    "server": {"type": "string", "minLength": 1},
+    "tool": {"type": ["string", "null"]},
+    "calls": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/count"},
+    "errors": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/count"},
+    "input_tokens_est": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/count"},
+    "result_tokens_est": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/count"},
+    "context_share": {"type": "number", "minimum": 0, "maximum": 1},
+    "sessions": {"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/count"},
+    "first": {"anyOf": [{"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/ts"}, {"type": "null"}]},
+    "last": {"anyOf": [{"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/ts"}, {"type": "null"}]},
+    "config": {"enum": ["enabled", "disabled", "none", null]},
+    "loaded_sessions": {"anyOf": [{"$ref": "../../../../02-measure/schemas/common.schema.json#/$defs/count"}, {"type": "null"}]},
+    "never_called": {"type": ["boolean", "null"]}
+  }
+}

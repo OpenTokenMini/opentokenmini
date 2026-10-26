@@ -1,0 +1,19 @@
+# Publishes opentokenmini.org: the landing, and the repo under /docs/ as raw files plus one HTML page per .md
+name: docs
+on:
+  push: {branches: [main]}
+  workflow_dispatch:
+permissions: {contents: read, pages: write, id-token: write}
+concurrency: {group: pages, cancel-in-progress: true}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: {name: github-pages, url: "${{ steps.deploy.outputs.page_url }}"}
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install markdown && python3 .github/pages/build.py _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: _site}
+      - id: deploy
+        uses: actions/deploy-pages@v4

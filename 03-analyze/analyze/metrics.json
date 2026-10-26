@@ -1,0 +1,33 @@
+{
+ "_comment": "Metric catalog (definitions only; formulas, edge cases and thresholds in METHOD.md and analyze.py constants). scope group = one value per group (all, harness); session = one value per session, used for outliers.",
+ "metrics": [
+  {"id": "M-spend", "scope": "group", "unit": "USD", "name": "Spend", "definition": "sum of cost.total of api_call events"},
+  {"id": "M-cost-share-input", "scope": "group", "unit": "ratio", "name": "Input cost share", "definition": "cost.input / cost.total"},
+  {"id": "M-cost-share-output", "scope": "group", "unit": "ratio", "name": "Output cost share", "definition": "cost.output / cost.total (reasoning included)"},
+  {"id": "M-cost-share-cache-read", "scope": "group", "unit": "ratio", "name": "Cache read cost share", "definition": "cost.cache_read / cost.total"},
+  {"id": "M-cost-share-cache-write", "scope": "group", "unit": "ratio", "name": "Cache write cost share", "definition": "cost.cache_write / cost.total"},
+  {"id": "M-cache-hit-rate", "scope": "group", "unit": "ratio", "name": "Cache hit rate", "definition": "cache_read / (input + cache_read + cache_write) tokens"},
+  {"id": "M-cost-per-call", "scope": "group", "unit": "USD", "name": "Cost per call", "definition": "spend / api calls"},
+  {"id": "M-calls-per-turn", "scope": "group", "unit": "calls", "name": "Calls per turn", "definition": "api calls / user prompts"},
+  {"id": "M-subagent-share", "scope": "group", "unit": "ratio", "name": "Subagent share", "definition": "cost of subagent api calls / spend"},
+  {"id": "M-top-model-share", "scope": "group", "unit": "ratio", "name": "Top model share", "definition": "cost of the costliest model / spend"},
+  {"id": "M-session-cost-median", "scope": "group", "unit": "USD", "name": "Median session cost", "definition": "median cost.total over sessions with at least one api call"},
+  {"id": "M-session-cost-p90", "scope": "group", "unit": "USD", "name": "P90 session cost", "definition": "nearest-rank 90th percentile of session cost.total"},
+  {"id": "M-error-rate", "scope": "group", "unit": "ratio", "name": "Error rate", "definition": "api calls with error / api calls"},
+  {"id": "M-retries-per-call", "scope": "group", "unit": "retries", "name": "Retries per call", "definition": "sum of retries / api calls"},
+  {"id": "M-mcp-error-rate", "scope": "group", "unit": "ratio", "name": "MCP error rate", "definition": "MCP tool uses in errored events / MCP tool uses"},
+  {"id": "M-approval-rate", "scope": "group", "unit": "ratio", "name": "Approval rate", "definition": "accepted tool decisions / tool decisions"},
+  {"id": "M-human-decision-share", "scope": "group", "unit": "ratio", "name": "Human decisions", "definition": "tool decisions made by a person (decision_source user) / tool decisions"},
+  {"id": "M-session-cost", "scope": "session", "unit": "USD", "scale": "log", "name": "Session cost", "definition": "cost.total of one session"},
+  {"id": "M-session-cost-per-call", "scope": "session", "unit": "USD", "scale": "log", "name": "Session cost per call", "definition": "session cost.total / session calls"},
+  {"id": "M-session-calls-per-turn", "scope": "session", "unit": "calls", "spread_floor": true, "name": "Session calls per turn", "definition": "session calls / session turns"},
+  {"id": "M-session-cache-hit-rate", "scope": "session", "unit": "ratio", "name": "Session cache hit rate", "definition": "M-cache-hit-rate on one session"}
+ ],
+ "recommendations": [
+  {"id": "rec-shorter-replies", "candidate": "shorter default replies", "evidence": ["M-cost-share-output"]},
+  {"id": "rec-keep-sessions", "candidate": "keep long sessions instead of restarting", "evidence": ["M-cost-share-cache-write", "M-cache-hit-rate"]},
+  {"id": "rec-subagents-large-only", "candidate": "delegate only large tasks to subagents", "evidence": ["M-subagent-share"]},
+  {"id": "rec-model-per-task", "candidate": "model per task (small model for search and trivial work)", "evidence": ["M-top-model-share", "M-cost-per-call"]},
+  {"id": "rec-fix-mcp", "candidate": "update or remove MCP servers that send agents into loops", "evidence": ["M-mcp-error-rate"]}
+ ]
+}

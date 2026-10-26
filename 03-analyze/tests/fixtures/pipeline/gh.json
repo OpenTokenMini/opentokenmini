@@ -1,0 +1,215 @@
+{
+ "runs": [
+  {
+   "databaseId": 1,
+   "workflowName": "ci",
+   "event": "push",
+   "headSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "headBranch": "main",
+   "status": "completed",
+   "conclusion": "success",
+   "createdAt": "{today}T10:00:01Z",
+   "startedAt": "{today}T10:00:01Z",
+   "updatedAt": "{today}T10:02:01Z"
+  },
+  {
+   "databaseId": 2,
+   "workflowName": "ci",
+   "event": "pull_request",
+   "headSha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "headBranch": "main",
+   "status": "completed",
+   "conclusion": "failure",
+   "createdAt": "{today}T10:00:02Z",
+   "startedAt": "{today}T10:00:02Z",
+   "updatedAt": "{today}T10:02:02Z"
+  },
+  {
+   "databaseId": 3,
+   "workflowName": "ci",
+   "event": "push",
+   "headSha": "cccccccccccccccccccccccccccccccccccccccc",
+   "headBranch": "main",
+   "status": "completed",
+   "conclusion": "success",
+   "createdAt": "{today}T10:00:03Z",
+   "startedAt": "{today}T10:00:03Z",
+   "updatedAt": "{today}T10:02:03Z"
+  },
+  {
+   "databaseId": 4,
+   "workflowName": "ci",
+   "event": "push",
+   "headSha": "dddddddddddddddddddddddddddddddddddddddd",
+   "headBranch": "main",
+   "status": "completed",
+   "conclusion": "failure",
+   "createdAt": "{today}T10:00:04Z",
+   "startedAt": "{today}T10:00:04Z",
+   "updatedAt": "{today}T10:02:04Z"
+  },
+  {
+   "databaseId": 5,
+   "workflowName": "ci",
+   "event": "push",
+   "headSha": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "headBranch": "main",
+   "status": "completed",
+   "conclusion": "success",
+   "createdAt": "{today}T10:00:05Z",
+   "startedAt": "{today}T10:00:05Z",
+   "updatedAt": "{today}T10:02:05Z"
+  },
+  {
+   "databaseId": 6,
+   "workflowName": "ci",
+   "event": "push",
+   "headSha": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "headBranch": "main",
+   "status": "completed",
+   "conclusion": "cancelled",
+   "createdAt": "{today}T10:00:06Z",
+   "startedAt": "{today}T10:00:06Z",
+   "updatedAt": "{today}T10:02:06Z"
+  }
+ ],
+ "jobs": {
+  "2": {
+   "jobs": [
+    {
+     "name": "test",
+     "conclusion": "failure",
+     "steps": [
+      {
+       "name": "unittest",
+       "conclusion": "failure"
+      }
+     ]
+    }
+   ]
+  },
+  "4": {
+   "jobs": [
+    {
+     "name": "lint",
+     "conclusion": "failure",
+     "steps": []
+    }
+   ]
+  }
+ },
+ "pullRequests": {
+  "data": {
+   "repository": {
+    "pullRequests": {
+     "pageInfo": {
+      "hasNextPage": false,
+      "endCursor": null
+     },
+     "nodes": [
+      {
+       "number": 10,
+       "state": "MERGED",
+       "createdAt": "{today}T09:00:00Z",
+       "updatedAt": "{today}T11:00:00Z",
+       "closedAt": "{today}T11:00:00Z",
+       "mergedAt": "{today}T11:00:00Z",
+       "title": "Fix crash",
+       "headRefName": "fix/3-crash",
+       "author": {
+        "login": "dev1"
+       },
+       "labels": {
+        "nodes": [
+         {
+          "name": "bug"
+         }
+        ]
+       },
+       "mergeCommit": {
+        "oid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "commits": {
+        "nodes": [
+         {
+          "commit": {
+           "oid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+         }
+        ]
+       },
+       "closingIssuesReferences": {
+        "nodes": [
+         {
+          "number": 3
+         }
+        ]
+       }
+      },
+      {
+       "number": 11,
+       "state": "OPEN",
+       "createdAt": "{today}T09:00:00Z",
+       "updatedAt": "{today}T11:00:00Z",
+       "closedAt": null,
+       "mergedAt": null,
+       "title": "Tweak docs",
+       "headRefName": "tweak",
+       "author": {
+        "login": "dev1"
+       },
+       "labels": {
+        "nodes": []
+       },
+       "mergeCommit": null,
+       "commits": {
+        "nodes": [
+         {
+          "commit": {
+           "oid": "cccccccccccccccccccccccccccccccccccccccc"
+          }
+         }
+        ]
+       },
+       "closingIssuesReferences": {
+        "nodes": []
+       }
+      }
+     ]
+    }
+   }
+  }
+ },
+ "issues": {
+  "data": {
+   "repository": {
+    "issues": {
+     "pageInfo": {
+      "hasNextPage": false,
+      "endCursor": null
+     },
+     "nodes": [
+      {
+       "number": 3,
+       "state": "CLOSED",
+       "stateReason": "COMPLETED",
+       "createdAt": "{today}T08:00:00Z",
+       "updatedAt": "{today}T11:00:00Z",
+       "closedAt": "{today}T11:00:00Z",
+       "author": {
+        "login": "dev2"
+       },
+       "labels": {
+        "nodes": [
+         {
+          "name": "bug"
+         }
+        ]
+       }
+      }
+     ]
+    }
+   }
+  }
+ }
+}

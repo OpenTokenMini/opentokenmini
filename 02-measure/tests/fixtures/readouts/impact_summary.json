@@ -1,0 +1,34 @@
+{
+ "v": 1,
+ "generated": "2026-10-02T09:00:00Z",
+ "repos_scanned": 1,
+ "sessions_total": 2,
+ "sessions_linked": 1,
+ "by_repo": [
+  {
+   "cost": 0.01725,
+   "sessions": 1,
+   "commits_kept": 1,
+   "commits_reverted": 0,
+   "lines_added": 40,
+   "cost_per_kept_commit": 0.01725,
+   "cost_per_100_lines": 0.043125,
+   "revert_rate": 0.0,
+   "repo_label": "demo/app"
+  }
+ ],
+ "by_harness": [
+  {
+   "cost": 0.01725,
+   "sessions": 1,
+   "commits_kept": 1,
+   "commits_reverted": 0,
+   "lines_added": 40,
+   "cost_per_kept_commit": 0.01725,
+   "cost_per_100_lines": 0.043125,
+   "revert_rate": 0.0,
+   "harness": "claude-code"
+  }
+ ],
+ "unlinked_cost": 0.000125
+}

@@ -1,0 +1,34 @@
+{
+  "_": "Decision point catalog (METHOD.md D-*). Questions, options and rubrics only; thresholds are constants in decide.py.",
+  "outlier_explanation": {
+    "kind": "choice",
+    "question": "What best explains why this session is an outlier on the named metric?",
+    "options": {
+      "subagent_fanout": "most of the cost is in subagents",
+      "long_session": "many human turns, steady cost per turn",
+      "agent_loop": "many API calls per human turn, or many retries or errors",
+      "heavy_context": "high cost per call, dominated by cache reads or input tokens",
+      "cache_churn": "cache writes are a large share of cost",
+      "verbose_output": "output tokens are a large share of cost",
+      "expensive_model": "most cost on a high-priced model for routine work",
+      "normal": "value in line with the session's size; no specific cause"
+    }
+  },
+  "recommendation": {
+    "kind": "noul",
+    "question": "Does this usage data support suggesting this change to the users of this harness: {candidate}?",
+    "options": {"yes": "the data shows the cost the change targets is a meaningful share", "no": null},
+    "_candidates": "analyze/metrics.json recommendations (single source of truth; decide dedups by id <rec id>/<harness>)"
+  },
+  "commit_link": {
+    "kind": "noul",
+    "question": "Were these commits produced with the help of this agent session?",
+    "options": {"yes": "commits land during or right after the session, in its project, sized like its edits", "no": null}
+  },
+  "intent": {
+    "kind": "choice",
+    "question": "What was the user's intent in this session?",
+    "options": {"build": null, "debug": null, "explore": null, "review": null, "ops": null, "other": null},
+    "_": "Reserved. Needs prompt text, which v002 events never carry; listing it in decide.points is an error."
+  }
+}
